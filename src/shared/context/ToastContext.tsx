@@ -58,8 +58,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                         key={toast.id}
                         className={`pointer-events-auto flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg ${
                             toast.type === 'success'
-                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200'
-                                : 'border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-900/30 dark:text-red-200'
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-neutral-950/90 dark:text-emerald-200'
+                                : 'border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-neutral-950/90 dark:text-red-200'
                         }`}
                     >
                         {toast.type === 'success' ? (

@@ -13,7 +13,7 @@ export default function AppLayout() {
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    {/* Botón de menú móvil */}
+
                     <div className="md:hidden p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center">
                         <button
                             type="button"

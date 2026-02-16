@@ -73,7 +73,6 @@ export default function UserTable({
                                     <th className="px-4 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
                                         Registrado
                                     </th>
-                                    <th className="px-4 py-3.5 text-right" />
                                 </tr>
                             </thead>
 
@@ -152,17 +151,7 @@ export default function UserTable({
                                             })}
                                         </td>
 
-                                        <td className="px-4 py-4 text-right">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onViewDetail(user.id);
-                                                }}
-                                                className="text-xs text-zinc-500 hover:text-indigo-400 transition-colors font-medium"
-                                            >
-                                                Ver
-                                            </button>
-                                        </td>
+                                     
                                     </tr>
                                 ))}
                             </tbody>
