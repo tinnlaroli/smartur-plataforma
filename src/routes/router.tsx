@@ -2,11 +2,15 @@ import { createBrowserRouter } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 
 import { UserPage } from '../features/users/pages/UserPage';
+import { CompanyPage } from '../features/companies/pages/CompanyPage';
+import { TouristServicePage } from '../features/tourist-services/pages/TouristServicePage';
+import { LocationPage } from '../features/locations/pages/LocationPage';
 import { Login } from '../features/auth/pages/Login';
 import { TwoFactor } from '../features/auth/pages/TwoFactor';
 import { SignUp } from '../features/auth/pages/SignUp';
 import { ForgotPassword } from '../features/auth/pages/ForgotPassword';
 import { ResetPassword } from '../features/auth/pages/ResetPassword';
+import { Home } from '../features/home/Home';
 
 export const router = createBrowserRouter([
     {
@@ -15,11 +19,23 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <div>Home</div>,
+                element: <Home />,
             },
             {
                 path: 'usuarios',
                 element: <UserPage />,
+            },
+            {
+                path: 'companias',
+                element: <CompanyPage />,
+            },
+            {
+                path: 'servicios',
+                element: <TouristServicePage />,
+            },
+            {
+                path: 'ubicaciones',
+                element: <LocationPage />,
             },
         ],
     },

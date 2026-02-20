@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CreateUserDTO } from '../types/types';
+import { Toaster } from 'sileo';
 interface Props {
     onClose: () => void;
     onSubmit: (data: CreateUserDTO) => Promise<boolean | undefined>;
@@ -29,7 +30,8 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+
+        <><Toaster position="top-right" /><div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-md transform transition-all">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -50,8 +52,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -70,8 +71,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 required
                                 onChange={handleChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
-                                placeholder="Ej. Juan Pérez"
-                            />
+                                placeholder="Ej. Juan Pérez" />
                         </div>
 
                         <div className="space-y-1">
@@ -88,8 +88,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
-                                placeholder="user@ejemplo.com"
-                            />
+                                placeholder="user@ejemplo.com" />
                         </div>
 
                         <div className="space-y-1">
@@ -106,8 +105,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 value={formData.password}
                                 onChange={handleChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
-                                placeholder="••••••••"
-                            />
+                                placeholder="••••••••" />
                         </div>
                         <div className="space-y-1">
                             <label
@@ -146,6 +144,6 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div></>
     );
 }

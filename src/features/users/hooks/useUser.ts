@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { CreateUserDTO, User, UpdateUserDTO } from '../types/types';
-import { useToast } from '../../../shared/context/ToastContext';
 import { useSearchParams } from 'react-router-dom';
 import { userServices } from '../api/userApi';
 import axios from 'axios';
-
+import { sileo } from 'sileo';
 export function useUser() {
     const [users, setUsers] = useState<User[]>([]);
     const [user, setUser] = useState<User | null>(null);
@@ -12,11 +11,10 @@ export function useUser() {
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
 
-    const toast = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const page = Number(searchParams.get('page')) || 1;
-    const limit = Number(searchParams.get('limit')) || 8;
+    const limit = Number(searchParams.get('limit')) || 10;
     const search = searchParams.get('search') || '';
     const roleParam = searchParams.get('role');
     const role = roleParam ? Number(roleParam) : undefined;
@@ -31,11 +29,11 @@ export function useUser() {
             setUsers(data.users);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            toast.error('Error al cargar usuarios');
+            sileo.error({ title: 'Error al cargar usuarios', description: error.message });
         } finally {
             setIsLoading(false);
         }
-    }, [page, limit, search, role, toast]);
+    }, [page, limit, search, role]);
 
     useEffect(() => {
         fetchUsers();
@@ -59,7 +57,20 @@ export function useUser() {
         try {
             await userServices.create(data);
             await fetchUsers();
-            toast.success('Usuario registrado exitosamente');
+            sileo.success({
+                title: 'User created successfully',
+                description: 'Changes saved',
+                duration: 6000,
+                fill: 'black',
+                styles: {
+                    description: 'text-white',
+                    title: 'text-white',
+                },
+                autopilot: {
+                    expand: 500,
+                    collapse: 3000,
+                },
+            });
             return true;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -67,8 +78,7 @@ export function useUser() {
                     error.response?.data?.error ||
                     error.response?.data?.message ||
                     'Error inesperado';
-                toast.error(message);
-                return false;
+                sileo.error({ title: message, duration: 6000, styles: { title: 'text-white' } });
             }
         } finally {
             setIsLoading(false);
@@ -79,11 +89,24 @@ export function useUser() {
         setIsLoading(true);
         try {
             await userServices.update(id, data);
-            toast.success('Usuario actualizado exitosamente');
+            sileo.success({
+                title: 'User updated successfully',
+                description: 'Changes saved',
+                duration: 6000,
+                fill: 'black',
+                styles: {
+                    description: 'text-white',
+                    title: 'text-white',
+                },
+                autopilot: {
+                    expand: 500,
+                    collapse: 3000,
+                },
+            });
             await fetchUsers();
             return true;
         } catch (error: any) {
-            setError(error.message || 'Error al actualizar usuario');
+            sileo.error({ title: error.message, duration: 6000, styles: { title: 'text-white' } });
         } finally {
             setIsLoading(false);
         }
@@ -94,12 +117,25 @@ export function useUser() {
 
         try {
             await userServices.delete(id);
-            toast.success('Usuario eliminado exitosamente');
+            sileo.success({
+                title: 'Usuario eliminado exitosamente',
+                description: 'Changes saved',
+                duration: 6000,
+                fill: 'black',
+                styles: {
+                    description: 'text-white',
+                    title: 'text-white',
+                },
+                autopilot: {
+                    expand: 500,
+                    collapse: 3000,
+                },
+            });
             await fetchUsers();
 
             return true;
         } catch (error: any) {
-            setError(error.message || 'Error al actualizar usuario');
+            sileo.error({ title: error.message, duration: 6000, styles: { title: 'text-white' } });
         } finally {
             setIsLoading(false);
         }

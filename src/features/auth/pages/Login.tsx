@@ -2,20 +2,11 @@ import { Mail, Lock, LogIn, ArrowRight, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import type { LoginPayload } from '../types';
-import { useToast } from '../../../shared/context/ToastContext';
-import { isAxiosError } from 'axios';
 import { authApi } from '../authApi';
-
-function getErrorMessage(err: unknown): string {
-    if (isAxiosError(err) && err.response?.data?.message) {
-        return String(err.response.data.message);
-    }
-    if (err instanceof Error) return err.message;
-    return 'Ha ocurrido un error';
-}
+import { sileo } from 'sileo';
+import Loader from '../components/Loader';
 
 export const Login = () => {
-    const toast = useToast();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState<LoginPayload>({
@@ -24,6 +15,7 @@ export const Login = () => {
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -40,14 +32,31 @@ export const Login = () => {
         try {
             const response = await authApi.login(formData);
             if (response.requiresVerification) {
-                navigate('auth/two-factor', {
+                navigate('/auth/two-factor', {
                     state: { email: response.email },
+                });
+                sileo.success({
+                    title: 'Code sent to your email',
+                    description: 'Check your email to verify your account',
+                    duration: 6000,
+                    fill: 'black',
+                    styles: {
+                        description: 'text-white',
+                        title: 'text-white',
+                    },
+                    autopilot: {
+                        expand: 500,
+                        collapse: 3000,
+                    },
                 });
                 return;
             }
-            toast.success('Enviamos el codigo a su correo');
         } catch (error) {
-            toast.error(getErrorMessage(error));
+            sileo.error({
+                title: 'Error',
+                description: 'Something went wrong',
+                duration: 6000,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -55,6 +64,8 @@ export const Login = () => {
 
     return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+            {isInitialLoading && <Loader onLoaded={() => setIsInitialLoading(false)} />}
+            {isLoading && <Loader onLoaded={() => setIsLoading(false)} />}
             <div className="w-full max-w-md">
                 <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
                     <div className="flex justify-center mb-6">
@@ -143,7 +154,6 @@ export const Login = () => {
                             )}
                         </button>
 
-                        {/* Separador */}
                         <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-zinc-800"></div>

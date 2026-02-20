@@ -1,6 +1,6 @@
 import { isAxiosError } from 'axios';
 import { useToast } from '../../../shared/context/ToastContext';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { authApi } from '../authApi';
 import type { ResetPasswordPayload } from '../types';
@@ -221,7 +221,6 @@ export const ResetPassword = () => {
                                 </div>
                             )}
                         </button>
-
                     </form>
                 </div>
 

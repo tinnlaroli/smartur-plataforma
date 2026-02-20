@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { UpdateUserDTO } from '../types/types';
-import { CheckCircle, Save, X } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 
 interface Props {
     user: {

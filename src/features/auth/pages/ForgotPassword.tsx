@@ -1,21 +1,11 @@
-import { isAxiosError } from 'axios';
-import { useToast } from '../../../shared/context/ToastContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import type { ForgotPasswordPayload } from '../types';
 import { authApi } from '../authApi';
 import { Mail, ArrowLeft, Send } from 'lucide-react';
-
-function getErrorMessage(err: unknown): string {
-    if (isAxiosError(err) && err.response?.data?.message) {
-        return String(err.response.data.message);
-    }
-    if (err instanceof Error) return err.message;
-    return 'Ha ocurrido un error';
-}
+import { sileo } from 'sileo';
 
 export const ForgotPassword = () => {
-    const toast = useToast();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,12 +27,19 @@ export const ForgotPassword = () => {
 
         try {
             await authApi.forgotPassword(formData);
-            toast.success('Hemos enviado un código a tu correo electrónico');
+            sileo.success({
+                title: 'Email sent',
+                description: 'Check your email to reset your password',
+            })
             navigate('/auth/reset-password', {
                 state: { email: formData.email },
             });
         } catch (error) {
-            toast.error(getErrorMessage(error));
+            sileo.error({
+                title: 'Error',
+                description: 'Something went wrong',
+                duration: 6000
+            })
         } finally {
             setIsLoading(false);
         }
@@ -53,7 +50,7 @@ export const ForgotPassword = () => {
             <div className="w-full max-w-md">
                 <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
                     <button
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate('/auth/login')}
                         className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-300 transition-colors mb-6 group"
                     >
                         <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />

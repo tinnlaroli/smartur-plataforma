@@ -45,7 +45,7 @@ export const SignUp = () => {
         setIsLoading(true);
 
         try {
-            const response = await authApi.signUp(formData);
+            await authApi.signUp(formData);
             navigate('/login');
             toast.success('Cuenta creada correctamente');
         } catch (error) {
