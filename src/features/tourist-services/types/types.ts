@@ -8,6 +8,8 @@ export interface TouristService {
     id_location: number;
     service_type: string;
     active: boolean;
+    id_evaluation?: number;
+    total_score?: number;
     created_at: string;
 }
 

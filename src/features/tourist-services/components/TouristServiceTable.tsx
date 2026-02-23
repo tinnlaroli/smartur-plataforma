@@ -1,11 +1,13 @@
-import type { TouristService } from '../types/types';
 import { useRef } from 'react';
+import { ClipboardCheck, Eye } from 'lucide-react';
+import type { TouristService } from '../types/types';
 
 interface Props {
     services: TouristService[];
     selectedServices: number[];
     onToggle: (id: number) => void;
     onViewDetail: (id: number) => void;
+    onEvaluate: (service: TouristService) => void;
 }
 
 export default function TouristServiceTable({
@@ -13,6 +15,7 @@ export default function TouristServiceTable({
     selectedServices,
     onToggle,
     onViewDetail,
+    onEvaluate,
 }: Props) {
     const tableRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +55,9 @@ export default function TouristServiceTable({
                     </div>
                     <div className="w-24 flex-shrink-0 text-xs font-medium uppercase text-zinc-400">
                         Estado
+                    </div>
+                    <div className="w-24 flex-shrink-0 text-xs font-medium uppercase text-zinc-400 text-right">
+                        Acciones
                     </div>
                 </div>
             </div>
@@ -95,6 +101,24 @@ export default function TouristServiceTable({
                                     />
                                     {service.active ? 'Activo' : 'Inactivo'}
                                 </span>
+                            </div>
+                            <div className="w-24 flex-shrink-0 flex justify-end gap-2">
+                                <button
+                                    onClick={() => onViewDetail(service.id)}
+                                    className="p-1.5 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                                    title="Ver detalle"
+                                >
+                                    <Eye className="h-4 w-4" />
+                                </button>
+                                {service.service_type === 'restaurant' && (
+                                    <button
+                                        onClick={() => onEvaluate(service)}
+                                        className="p-1.5 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                        title="Evaluar Servicio"
+                                    >
+                                        <ClipboardCheck className="h-4 w-4" />
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}

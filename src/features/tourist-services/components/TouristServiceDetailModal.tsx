@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTouristService } from '../hooks/useTouristService';
-import { UserPen, X, Wrench, Building2, MapPin, Tag, Activity } from 'lucide-react';
+import { UserPen, X, Wrench, Building2, MapPin, Tag, Activity, Award } from 'lucide-react';
 import EditTouristServiceModal from './EditTouristServiceModal';
 import type { UpdateTouristServiceDTO } from '../types/types';
+import EvaluationResultModal from '../../evaluations/components/EvaluationResultModal';
 
 interface Props {
     isOpen: boolean;
@@ -19,6 +20,8 @@ const TouristServiceDetailModal: React.FC<Props> = ({
 }) => {
     const { service, isLoading, error, findById } = useTouristService();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+    const [evaluationId, setEvaluationId] = useState<number | null>(null);
 
     useEffect(() => {
         if (serviceId && isOpen) {
@@ -72,8 +75,16 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                     >
                                         {service.name}
                                     </h3>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-500">
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-500 flex items-center gap-2">
                                         Servicio ID: {service.id}
+                                        {service.total_score !== undefined &&
+                                            service.total_score !== null && (
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold text-indigo-500 border border-indigo-500/20">
+                                                    <Award className="h-3 w-3" />
+                                                    Puntaje:{' '}
+                                                    {Number(service.total_score).toFixed(1)}
+                                                </span>
+                                            )}
                                     </p>
                                 </div>
                             </div>
@@ -136,7 +147,22 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800">
+                            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                                {service.id_evaluation && (
+                                    <button
+                                        onClick={() => {
+                                            setEvaluationId(service.id_evaluation!);
+                                            setIsResultModalOpen(true);
+                                        }}
+                                        className="w-full inline-flex items-center justify-center gap-2 
+                                        rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white
+                                        hover:bg-emerald-700 shadow-sm transition-all duration-200 active:scale-[0.98] font-bold"
+                                    >
+                                        <Activity className="h-4 w-4" />
+                                        <span>Ver Resultados de Evaluación</span>
+                                    </button>
+                                )}
+
                                 <button
                                     onClick={() => setIsEditModalOpen(true)}
                                     className="w-full inline-flex items-center justify-center gap-2 
@@ -156,6 +182,13 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                     onClose={() => setIsEditModalOpen(false)}
                     onSubmit={updateService}
                     service={service}
+                />
+            )}
+            {isResultModalOpen && evaluationId && (
+                <EvaluationResultModal
+                    isOpen={isResultModalOpen}
+                    onClose={() => setIsResultModalOpen(false)}
+                    evaluationId={evaluationId}
                 />
             )}
         </div>

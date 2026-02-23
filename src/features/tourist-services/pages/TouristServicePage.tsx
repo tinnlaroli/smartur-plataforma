@@ -6,7 +6,8 @@ import CreateTouristServiceModal from '../components/CreateTouristServiceModal';
 import TouristServiceDetailModal from '../components/TouristServiceDetailModal';
 import TouristServiceTable from '../components/TouristServiceTable';
 import SearchInput from '../components/SearchInput';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ClipboardCheck } from 'lucide-react';
+import EvaluationWizardModal from '../../evaluations/components/EvaluationWizardModal';
 
 export const TouristServicePage = () => {
     const {
@@ -19,6 +20,7 @@ export const TouristServicePage = () => {
         deleteService,
         search: urlSearch,
         setSearch: setUrlSearch,
+        fetchServices,
     } = useTouristService();
 
     const [selectedServices, setSelectedServices] = useState<number[]>([]);
@@ -29,6 +31,7 @@ export const TouristServicePage = () => {
     const [searchTerm, setSearchTerm] = useState(urlSearch);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -59,6 +62,14 @@ export const TouristServicePage = () => {
         }
     };
 
+    const isOneRestaurantSelected = () => {
+        if (selectedServices.length !== 1) return false;
+        const selected = services.find((s) => s.id === selectedServices[0]);
+        return selected?.service_type === 'restaurant';
+    };
+
+    const selectedServiceName = services.find((s) => s.id === selectedServices[0])?.name || '';
+
     return (
         <div className="space-y-4">
             <div className="sm:flex sm:items-center sm:justify-between">
@@ -75,12 +86,22 @@ export const TouristServicePage = () => {
                     {selectedServices.length > 0 && (
                         <button
                             onClick={handleDeleteSelected}
-                            className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-500 transition-all"
+                            className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-500 transition-all font-bold"
                         >
                             <Trash2 className="h-4 w-4" />
                             <span>Eliminar ({selectedServices.length})</span>
                         </button>
                     )}
+                    {isOneRestaurantSelected() && (
+                        <button
+                            onClick={() => setIsEvaluationModalOpen(true)}
+                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-500 transition-all animate-in slide-in-from-right-2 font-bold"
+                        >
+                            <ClipboardCheck className="h-4 w-4" />
+                            <span>Evaluar Servicio</span>
+                        </button>
+                    )}
+
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 whitespace-nowrap"
@@ -113,6 +134,10 @@ export const TouristServicePage = () => {
                                 setSelectedId(id);
                                 setIsDetailModalOpen(true);
                             }}
+                            onEvaluate={(service) => {
+                                setSelectedServices([service.id]);
+                                setIsEvaluationModalOpen(true);
+                            }}
                         />
                     </div>
                 )}
@@ -144,6 +169,17 @@ export const TouristServicePage = () => {
                     }}
                     serviceId={selectedId}
                     updateService={updateService}
+                />
+            )}
+            {isEvaluationModalOpen && selectedServices.length === 1 && (
+                <EvaluationWizardModal
+                    isOpen={isEvaluationModalOpen}
+                    onClose={() => {
+                        setIsEvaluationModalOpen(false);
+                        fetchServices(); // Refrescar para ver id_evaluation
+                    }}
+                    serviceId={selectedServices[0]}
+                    serviceName={selectedServiceName}
                 />
             )}
         </div>
