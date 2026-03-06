@@ -5,8 +5,6 @@ import { authApi } from '../authApi';
 import { Mail, Lock, User, ArrowRight, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
 import { sileo } from 'sileo';
 
-
-
 export const SignUp = () => {
     const navigate = useNavigate();
 
@@ -77,29 +75,27 @@ export const SignUp = () => {
     const allValidationsPassed = Object.values(passwordValidations).every(Boolean);
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
             <div className="w-full max-w-md">
-                <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
-
-                    <div className="flex justify-center mb-6">
-                        <div className="h-12 w-12 rounded-full bg-indigo-600/10 flex items-center justify-center">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
+                    <div className="mb-6 flex justify-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/10">
                             <User className="h-6 w-6 text-indigo-400" />
                         </div>
                     </div>
 
-                    <div className="text-center mb-8">
+                    <div className="mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-white">Crear cuenta</h2>
-                        <p className="text-sm text-zinc-400 mt-1">
+                        <p className="mt-1 text-sm text-zinc-400">
                             Ingresa tus datos para registrarte
                         </p>
                     </div>
 
                     <form onSubmit={handleSingUp} className="space-y-5">
-
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="user-name"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                                className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
                             >
                                 Nombre completo
                             </label>
@@ -112,9 +108,9 @@ export const SignUp = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="Ej. Juan Pérez"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                             </div>
                         </div>
 
@@ -122,7 +118,7 @@ export const SignUp = () => {
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="user-email"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                                className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
                             >
                                 Correo electrónico
                             </label>
@@ -135,16 +131,16 @@ export const SignUp = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="correo@ejemplo.com"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="user-password"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                                className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
                             >
                                 Contraseña
                             </label>
@@ -157,25 +153,25 @@ export const SignUp = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-12 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-12 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-indigo-400 transition-colors"
+                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 transition-colors hover:text-indigo-400"
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="w-4 h-4" />
+                                        <EyeOff className="h-4 w-4" />
                                     ) : (
-                                        <Eye className="w-4 h-4" />
+                                        <Eye className="h-4 w-4" />
                                     )}
                                 </button>
                             </div>
 
                             {formData.password && (
-                                <div className="space-y-2 bg-zinc-950/50 rounded-lg p-3 border border-zinc-800 mt-2">
-                                    <p className="text-xs font-medium text-zinc-400 mb-2">
+                                <div className="mt-2 space-y-2 rounded-lg border border-zinc-800 bg-zinc-950/50 p-3">
+                                    <p className="mb-2 text-xs font-medium text-zinc-400">
                                         La contraseña debe tener:
                                     </p>
 
@@ -248,18 +244,18 @@ export const SignUp = () => {
                                     </div>
 
                                     <div className="mt-3">
-                                        <div className="flex items-center gap-1.5 mb-1">
+                                        <div className="mb-1 flex items-center gap-1.5">
                                             <span className="text-xs text-zinc-400">
                                                 Fortaleza:
                                             </span>
                                             <span
                                                 className={`text-xs font-medium ${
                                                     Object.values(passwordValidations).filter(
-                                                        Boolean
+                                                        Boolean,
                                                     ).length <= 2
                                                         ? 'text-rose-400'
                                                         : Object.values(passwordValidations).filter(
-                                                                Boolean
+                                                                Boolean,
                                                             ).length <= 3
                                                           ? 'text-yellow-400'
                                                           : 'text-emerald-400'
@@ -269,21 +265,21 @@ export const SignUp = () => {
                                                     .length <= 2
                                                     ? 'Débil'
                                                     : Object.values(passwordValidations).filter(
-                                                            Boolean
+                                                            Boolean,
                                                         ).length <= 3
                                                       ? 'Media'
                                                       : 'Fuerte'}
                                             </span>
                                         </div>
-                                        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
                                             <div
                                                 className={`h-full transition-all duration-300 ${
                                                     Object.values(passwordValidations).filter(
-                                                        Boolean
+                                                        Boolean,
                                                     ).length <= 2
                                                         ? 'bg-rose-500'
                                                         : Object.values(passwordValidations).filter(
-                                                                Boolean
+                                                                Boolean,
                                                             ).length <= 3
                                                           ? 'bg-yellow-500'
                                                           : 'bg-emerald-500'
@@ -309,14 +305,14 @@ export const SignUp = () => {
                                 Acepto los{' '}
                                 <a
                                     href="#"
-                                    className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                                    className="text-indigo-400 transition-colors hover:text-indigo-300"
                                 >
                                     términos y condiciones
                                 </a>{' '}
                                 y la{' '}
                                 <a
                                     href="#"
-                                    className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                                    className="text-indigo-400 transition-colors hover:text-indigo-300"
                                 >
                                     política de privacidad
                                 </a>
@@ -326,7 +322,7 @@ export const SignUp = () => {
                         <button
                             type="submit"
                             disabled={isLoading || !allValidationsPassed}
-                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
@@ -345,7 +341,7 @@ export const SignUp = () => {
                             ¿Ya tienes una cuenta?{' '}
                             <Link
                                 to="/auth/login"
-                                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                                className="font-medium text-indigo-400 transition-colors hover:text-indigo-300"
                             >
                                 Inicia sesión
                             </Link>
@@ -354,7 +350,7 @@ export const SignUp = () => {
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-xs text-zinc-600 mt-6">
+                <p className="mt-6 text-center text-xs text-zinc-600">
                     © 2024 Smartur. Todos los derechos reservados.
                 </p>
             </div>

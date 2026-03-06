@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     X,
     Users,
@@ -20,6 +20,13 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/auth/login');
+        if (onClose) onClose();
+    };
 
     const menuItems = [
         { id: 'home', label: 'Inicio', icon: Home, path: '/dashboard', end: true },
@@ -63,30 +70,23 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <>
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden animate-in fade-in duration-300"
+                    className="animate-in fade-in fixed inset-0 z-40 bg-black/20 backdrop-blur-sm duration-300 md:hidden"
                     onClick={onClose}
                     aria-hidden="true"
                 />
             )}
 
             <aside
-                className={`
-                    fixed inset-y-0 left-0 z-50 
-                    transform bg-white dark:bg-[#0d0d0f] 
-                    shadow-sm transition-all duration-300 ease-in-out
-                    md:static md:translate-x-0 border-r border-zinc-200 dark:border-zinc-800
-                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-                    ${isCollapsed ? 'w-20' : 'w-64'}
-                `}
+                className={`fixed inset-y-0 left-0 z-50 transform border-r border-zinc-200 bg-white shadow-sm transition-all duration-300 ease-in-out md:static md:translate-x-0 dark:border-zinc-800 dark:bg-[#0d0d0f] ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-64'} `}
             >
                 <div
-                    className={`flex h-16 items-center border-b border-zinc-200 dark:border-zinc-800 transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-between px-4'}`}
+                    className={`flex h-16 items-center border-b border-zinc-200 transition-all duration-300 dark:border-zinc-800 ${isCollapsed ? 'justify-center' : 'justify-between px-4'}`}
                 >
                     <div className="flex items-center overflow-hidden transition-all duration-300">
                         <img
                             src={isCollapsed ? '/image.png' : '/smartur.png'}
                             alt="Smartur"
-                            className={`transition-all duration-500 object-contain drop-shadow-sm ${isCollapsed ? 'h-10 w-10 p-1' : 'h-24 w-auto'}`}
+                            className={`object-contain drop-shadow-sm transition-all duration-500 ${isCollapsed ? 'h-10 w-10 p-1' : 'h-24 w-auto'}`}
                         />
                     </div>
 
@@ -94,11 +94,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         <button
                             type="button"
                             onClick={toggleCollapse}
-                            className={`
-                                rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 
-                                dark:hover:bg-zinc-800 dark:hover:text-zinc-300 transition-all
-                                ${isCollapsed ? 'absolute -right-3 top-6 bg-white dark:bg-[#0d0d0f] border border-zinc-200 dark:border-zinc-800 shadow-md z-10 p-1' : 'hidden md:flex'}
-                            `}
+                            className={`rounded-lg p-1.5 text-zinc-400 transition-all hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 ${isCollapsed ? 'absolute top-6 -right-3 z-10 border border-zinc-200 bg-white p-1 shadow-md dark:border-zinc-800 dark:bg-[#0d0d0f]' : 'hidden md:flex'} `}
                             title={isCollapsed ? 'Expandir' : 'Contraer'}
                         >
                             {isCollapsed ? (
@@ -110,28 +106,23 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
                         <button
                             type="button"
-                            className="md:hidden rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 transition-colors"
+                            className="rounded-lg p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 md:hidden dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
                             onClick={onClose}
                         >
                             <X className="h-5 w-5" />
                         </button>
                     </div>
                 </div>
-                <nav className="p-2 space-y-1">
+                <nav className="space-y-1 p-2">
                     {menuItems.map((item, index) => (
                         <NavLink key={item.id} to={item.path} onClick={onClose} end={item.end}>
                             {({ isActive }) => (
                                 <div
-                                    className={`
-                                        relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200
-                                        ${isCollapsed ? 'justify-center mx-1' : ''}
-                                        ${
-                                            isActive
-                                                ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 shadow-sm shadow-indigo-500/10'
-                                                : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200'
-                                        }
-                                        group hover:scale-[1.02] active:scale-[0.98]
-                                    `}
+                                    className={`relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ${isCollapsed ? 'mx-1 justify-center' : ''} ${
+                                        isActive
+                                            ? 'bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-500/10 dark:bg-indigo-950/40 dark:text-indigo-400'
+                                            : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200'
+                                    } group hover:scale-[1.02] active:scale-[0.98]`}
                                     style={{
                                         animationDelay: `${index * 50}ms`,
                                     }}
@@ -142,13 +133,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     />
 
                                     <span
-                                        className={`transition-all duration-300 overflow-hidden whitespace-nowrap font-medium ${isCollapsed ? 'w-0 opacity-0 absolute' : 'w-auto opacity-100'}`}
+                                        className={`overflow-hidden font-medium whitespace-nowrap transition-all duration-300 ${isCollapsed ? 'absolute w-0 opacity-0' : 'w-auto opacity-100'}`}
                                     >
                                         {item.label}
                                     </span>
 
                                     {isActive && !isCollapsed && (
-                                        <span className="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-pulse" />
+                                        <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-600 dark:bg-indigo-400" />
                                     )}
 
                                     {isActive && isCollapsed && (
@@ -160,18 +151,44 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     ))}
                 </nav>
 
-                <button className="absolute bottom-4 left-0 right-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span>Cerrar sesión</span>
-                    <LogOut className="h-5 w-5" />
-                </button>
+                <div className="absolute right-0 bottom-4 left-0 space-y-4 px-2">
+                    <button
+                        onClick={handleLogout}
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-rose-500 transition-all duration-200 hover:bg-rose-50 hover:text-rose-600 dark:text-rose-400 dark:hover:bg-rose-950/30 ${isCollapsed ? 'justify-center' : ''} group active:scale-[0.98]`}
+                        title={isCollapsed ? 'Cerrar sesión' : ''}
+                    >
+                        <LogOut
+                            className={`h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:translate-x-0.5`}
+                        />
+                        <span
+                            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${isCollapsed ? 'absolute w-0 opacity-0' : 'w-auto opacity-100'}`}
+                        >
+                            Cerrar sesión
+                        </span>
+                    </button>
 
-                {isCollapsed && (
-                    <div className="absolute bottom-4 left-0 right-0 flex justify-center animate-in fade-in zoom-in duration-500">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 cursor-pointer hover:rotate-6 transition-transform">
-                            <span className="text-sm font-bold">U</span>
+                    {isCollapsed ? (
+                        <div className="animate-in fade-in zoom-in flex justify-center duration-500">
+                            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/20 transition-transform hover:rotate-6">
+                                <span className="text-sm font-bold">U</span>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3 dark:border-zinc-800/50 dark:bg-zinc-900/50">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 text-white shadow-sm">
+                                <span className="text-sm font-bold">U</span>
+                            </div>
+                            <div className="flex min-w-0 flex-col">
+                                <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                                    Administrador
+                                </span>
+                                <span className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                    admin@smartur.com
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </aside>
         </>
     );

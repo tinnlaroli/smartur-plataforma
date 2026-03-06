@@ -1,5 +1,5 @@
 import { Mail, Lock, LogIn, ArrowRight, UserPlus, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import type { LoginPayload } from '../types';
 import { authApi } from '../authApi';
@@ -16,6 +16,13 @@ export const Login = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate('/dashboard');
+        }
+    }, [navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -48,6 +55,7 @@ export const Login = () => {
                 });
                 return;
             }
+
         } catch (error) {
             sileo.error({
                 title: 'Error',
@@ -66,37 +74,29 @@ export const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
             {(isInitialLoading || isLoading) && (
                 <Loader
                     isLoading={isInitialLoading || isLoading}
                     onLoaded={() => {
                         setIsInitialLoading(false);
-                        // No reseteamos isLoading aquí porque queremos que se maneje en el try/catch
                     }}
                 />
             )}
             <div className="w-full max-w-md">
-                <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
-                    <div className="flex justify-center mb-6">
-                        <img
-                            src="/image.png"
-                            alt="Smartur"
-                            className="h-12 w-auto object-contain"
-                        />
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
+                    <div className="mb-6 flex justify-center">
+                        <img src="/image.png" alt="Smartur" className="h-12 w-auto object-contain" />
                     </div>
 
-                    <div className="text-center mb-8">
+                    <div className="mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-white">Bienvenido</h2>
-                        <p className="text-sm text-zinc-400 mt-1">Inicia sesión para continuar</p>
+                        <p className="mt-1 text-sm text-zinc-400">Inicia sesión para continuar</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-5">
                         <div className="space-y-1.5">
-                            <label
-                                htmlFor="user-email"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
-                            >
+                            <label htmlFor="user-email" className="text-xs font-medium tracking-wider text-zinc-400 uppercase">
                                 Correo electrónico
                             </label>
                             <div className="relative">
@@ -108,17 +108,14 @@ export const Login = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="correo@ejemplo.com"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
-                            <label
-                                htmlFor="user-password"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
-                            >
+                            <label htmlFor="user-password" className="text-xs font-medium tracking-wider text-zinc-400 uppercase">
                                 Contraseña
                             </label>
                             <div className="relative">
@@ -130,26 +127,23 @@ export const Login = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                             </div>
                         </div>
 
                         <div className="flex justify-end">
-                            <Link
-                                to="/auth/forgot-password"
-                                className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
-                            >
+                            <Link to="/auth/forgot-password" className="flex items-center gap-1 text-xs text-indigo-400 transition-colors hover:text-indigo-300">
                                 ¿Olvidaste tu contraseña?
-                                <ArrowRight className="w-3 h-3" />
+                                <ArrowRight className="h-3 w-3" />
                             </Link>
                         </div>
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
@@ -169,15 +163,13 @@ export const Login = () => {
                                 <div className="w-full border-t border-zinc-800"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-zinc-900 px-4 text-zinc-500">
-                                    ¿Primera vez?
-                                </span>
+                                <span className="bg-zinc-900 px-4 text-zinc-500">¿Primera vez?</span>
                             </div>
                         </div>
 
                         <Link
                             to="/auth/signup"
-                            className="w-full rounded-lg border border-zinc-800 bg-transparent px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 flex items-center justify-center gap-2"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-800 bg-transparent px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none"
                         >
                             <UserPlus className="h-4 w-4" />
                             <span>Crear cuenta nueva</span>
@@ -185,9 +177,7 @@ export const Login = () => {
                     </form>
                 </div>
 
-                <p className="text-center text-xs text-zinc-600 mt-6">
-                    © 2024 Smartur. Todos los derechos reservados.
-                </p>
+                <p className="mt-6 text-center text-xs text-zinc-600">© 2024 Smartur. Todos los derechos reservados.</p>
             </div>
         </div>
     );

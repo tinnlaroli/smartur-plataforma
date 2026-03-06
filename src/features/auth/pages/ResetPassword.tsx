@@ -1,18 +1,9 @@
-import { isAxiosError } from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { authApi } from '../authApi';
 import type { ResetPasswordPayload } from '../types';
 import { KeyRound, Lock, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import { sileo } from 'sileo';
-
-function getErrorMessage(err: unknown): string {
-    if (isAxiosError(err) && err.response?.data?.message) {
-        return String(err.response.data.message);
-    }
-    if (err instanceof Error) return err.message;
-    return 'Ha ocurrido un error';
-}
 
 export const ResetPassword = () => {
     const navigate = useNavigate();
@@ -60,7 +51,7 @@ export const ResetPassword = () => {
                 },
                 fill: 'black',
                 icon: <Lock className="h-5 w-5" />,
-            })
+            });
             setTimeout(() => navigate('/auth/login'), 2000);
         } catch (error) {
             sileo.error({
@@ -82,31 +73,30 @@ export const ResetPassword = () => {
     if (!emailFromState) return null;
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
             <div className="w-full max-w-md">
-                <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
-
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
                     <button
                         onClick={() => navigate('/forgotpassword')}
-                        className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-300 transition-colors mb-6 group"
+                        className="group mb-6 flex items-center gap-1 text-xs text-zinc-400 transition-colors hover:text-zinc-300"
                     >
-                        <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                        <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
                         <span>Volver</span>
                     </button>
 
-                    <div className="flex justify-center mb-6">
-                        <div className="h-12 w-12 rounded-full bg-indigo-600/10 flex items-center justify-center">
+                    <div className="mb-6 flex justify-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/10">
                             <KeyRound className="h-6 w-6 text-indigo-400" />
                         </div>
                     </div>
 
-                    <div className="text-center mb-8">
+                    <div className="mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-white">
                             Restablecer contraseña
                         </h2>
-                        <p className="text-sm text-zinc-400 mt-2">
+                        <p className="mt-2 text-sm text-zinc-400">
                             Ingresa el código que enviamos a{' '}
-                            <span className="text-indigo-400 font-medium">{formData.email}</span> y
+                            <span className="font-medium text-indigo-400">{formData.email}</span> y
                             tu nueva contraseña
                         </p>
                     </div>
@@ -115,7 +105,7 @@ export const ResetPassword = () => {
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="token"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                                className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
                             >
                                 Código de verificación
                             </label>
@@ -128,11 +118,11 @@ export const ResetPassword = () => {
                                     value={formData.token}
                                     onChange={handleChange}
                                     placeholder="Ej. 123456"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <KeyRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                             </div>
-                            <p className="text-xs text-zinc-500 mt-1">
+                            <p className="mt-1 text-xs text-zinc-500">
                                 Revisa tu bandeja de entrada
                             </p>
                         </div>
@@ -140,7 +130,7 @@ export const ResetPassword = () => {
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="newPassword"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                                className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
                             >
                                 Nueva contraseña
                             </label>
@@ -154,23 +144,23 @@ export const ResetPassword = () => {
                                     onChange={handleChange}
                                     placeholder="••••••••"
                                     minLength={8}
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-indigo-400 hover:text-indigo-300"
+                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-indigo-400 hover:text-indigo-300"
                                 >
                                     {showPassword ? 'Ocultar' : 'Mostrar'}
                                 </button>
                             </div>
-                            <p className="text-xs text-zinc-500 mt-1">Mínimo 8 caracteres</p>
+                            <p className="mt-1 text-xs text-zinc-500">Mínimo 8 caracteres</p>
                         </div>
 
                         {formData.newPassword && (
-                            <div className="space-y-1.5 bg-zinc-950/50 rounded-lg p-3 border border-zinc-800">
-                                <p className="text-xs font-medium text-zinc-400 mb-2">
+                            <div className="space-y-1.5 rounded-lg border border-zinc-800 bg-zinc-950/50 p-3">
+                                <p className="mb-2 text-xs font-medium text-zinc-400">
                                     La contraseña debe tener:
                                 </p>
                                 <div className="flex items-center gap-2 text-xs">
@@ -221,7 +211,7 @@ export const ResetPassword = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
@@ -238,7 +228,7 @@ export const ResetPassword = () => {
                     </form>
                 </div>
 
-                <p className="text-center text-xs text-zinc-600 mt-6">
+                <p className="mt-6 text-center text-xs text-zinc-600">
                     © 2024 Smartur. Todos los derechos reservados.
                 </p>
             </div>

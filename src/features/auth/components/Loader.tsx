@@ -94,7 +94,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                     duration: 0.6,
                     ease: 'power2.in',
                 },
-                0.3
+                0.3,
             );
 
             exitTl.to(
@@ -105,7 +105,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                     duration: 0.6,
                     ease: 'power2.out',
                 },
-                0.4
+                0.4,
             );
 
             exitTl.to(
@@ -114,7 +114,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                     opacity: 0,
                     duration: 0.3,
                 },
-                0.4
+                0.4,
             );
 
             exitTl.to(
@@ -124,7 +124,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                     duration: 0.6,
                     ease: 'power2.inOut',
                 },
-                0.8
+                0.8,
             );
         };
 
@@ -161,16 +161,16 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
 
             <div
                 ref={loaderRef}
-                className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#121212] pointer-events-auto"
+                className="pointer-events-auto fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#121212]"
             >
                 {/* Vortex Container */}
                 <div
                     ref={vortexContainerRef}
-                    className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] flex items-center justify-center"
+                    className="relative flex h-[300px] w-[300px] items-center justify-center md:h-[400px] md:w-[400px]"
                 >
                     <div
                         ref={logoGlowRef}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120px] h-[120px] rounded-full blur-[30px] opacity-0 -z-10"
+                        className="absolute top-1/2 left-1/2 -z-10 h-[120px] w-[120px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-[30px]"
                         style={{
                             background:
                                 'radial-gradient(circle, rgba(168, 85, 247, 0.6), rgba(236, 72, 153, 0.4), transparent)',
@@ -209,18 +209,18 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                             ref={(el) => {
                                 orbitalRingsRef.current[index] = el;
                             }}
-                            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110px] h-[110px] md:w-[140px] md:h-[140px] opacity-0 ${item.color}`}
+                            className={`absolute top-1/2 left-1/2 h-[110px] w-[110px] -translate-x-1/2 -translate-y-1/2 opacity-0 md:h-[140px] md:w-[140px] ${item.color}`}
                         >
                             <div
                                 ref={(el) => {
                                     ringIconsRef.current[index] = el;
                                 }}
-                                className={`absolute w-[35px] h-[35px] md:w-[50px] md:h-[50px] top-0 left-1/2 -translate-x-1/2 flex items-center justify-center rounded-full bg-[#121212] border shadow-lg ${item.borderColor} origin-[center_55px] md:origin-[center_70px]`}
+                                className={`absolute top-0 left-1/2 flex h-[35px] w-[35px] -translate-x-1/2 items-center justify-center rounded-full border bg-[#121212] shadow-lg md:h-[50px] md:w-[50px] ${item.borderColor} origin-[center_55px] md:origin-[center_70px]`}
                             >
                                 <img
                                     src={item.icon}
                                     alt=""
-                                    className="w-[55%] h-[55%] object-contain"
+                                    className="h-[55%] w-[55%] object-contain"
                                 />
                             </div>
                         </div>
@@ -230,7 +230,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                 {/* Explosion Overlay */}
                 <div
                     ref={explosionOverlayRef}
-                    className="fixed inset-0 z-[9998] opacity-0 scale-0 pointer-events-none"
+                    className="pointer-events-none fixed inset-0 z-[9998] scale-0 opacity-0"
                     style={{
                         background:
                             'radial-gradient(circle at center, rgb(168, 85, 247), rgb(236, 72, 153), rgb(34, 211, 238))',
@@ -238,21 +238,21 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
                 ></div>
 
                 {/* Counter */}
-                <div className="loader-counter fixed bottom-[35%] left-1/2 -translate-x-1/2 z-[9999] flex items-baseline font-bold text-lg md:text-xl tracking-widest text-gray-300 opacity-0">
+                <div className="loader-counter fixed bottom-[35%] left-1/2 z-[9999] flex -translate-x-1/2 items-baseline text-lg font-bold tracking-widest text-gray-300 opacity-0 md:text-xl">
                     <span
                         ref={counterRef}
-                        className="counter-text tabular-nums min-w-[2.5ch] text-right"
+                        className="counter-text min-w-[2.5ch] text-right tabular-nums"
                     >
                         0
                     </span>
-                    <span className="text-sm opacity-60 ml-0.5">%</span>
+                    <span className="ml-0.5 text-sm opacity-60">%</span>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="loader-progress fixed bottom-0 left-0 right-0 h-[2px] bg-white/5 z-[9999] overflow-hidden">
+                <div className="loader-progress fixed right-0 bottom-0 left-0 z-[9999] h-[2px] overflow-hidden bg-white/5">
                     <div
                         ref={progressBarRef}
-                        className="h-full w-0 animate-shimmer"
+                        className="animate-shimmer h-full w-0"
                         style={{
                             background:
                                 'linear-gradient(90deg, rgb(168, 85, 247), rgb(236, 72, 153), rgb(34, 211, 238))',

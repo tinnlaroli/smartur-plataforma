@@ -36,7 +36,7 @@ export const ForgotPassword = () => {
                 },
                 fill: 'black',
                 icon: <Mail className="h-5 w-5" />,
-            })
+            });
             navigate('/auth/reset-password', {
                 state: { email: formData.email },
             });
@@ -51,35 +51,35 @@ export const ForgotPassword = () => {
                 },
                 fill: 'black',
                 icon: <XCircle className="h-5 w-5" />,
-            })
+            });
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
+        <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
             <div className="w-full max-w-md">
-                <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
                     <button
                         onClick={() => navigate('/auth/login')}
-                        className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-300 transition-colors mb-6 group"
+                        className="group mb-6 flex items-center gap-1 text-xs text-zinc-400 transition-colors hover:text-zinc-300"
                     >
-                        <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                        <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
                         <span>Volver al inicio de sesión</span>
                     </button>
 
-                    <div className="flex justify-center mb-6">
-                        <div className="h-12 w-12 rounded-full bg-indigo-600/10 flex items-center justify-center">
+                    <div className="mb-6 flex justify-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/10">
                             <Mail className="h-6 w-6 text-indigo-400" />
                         </div>
                     </div>
 
-                    <div className="text-center mb-8">
+                    <div className="mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-white">
                             ¿Olvidaste tu contraseña?
                         </h2>
-                        <p className="text-sm text-zinc-400 mt-2">
+                        <p className="mt-2 text-sm text-zinc-400">
                             No te preocupes, te enviaremos un código de verificación a tu correo
                             electrónico para restablecerla.
                         </p>
@@ -89,7 +89,7 @@ export const ForgotPassword = () => {
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="user-email"
-                                className="text-xs font-medium uppercase tracking-wider text-zinc-400"
+                                className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
                             >
                                 Correo electrónico
                             </label>
@@ -102,11 +102,11 @@ export const ForgotPassword = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="correo@ejemplo.com"
-                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 pl-9 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition-colors"
+                                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
                                 />
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                                <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                             </div>
-                            <p className="text-xs text-zinc-500 mt-1">
+                            <p className="mt-1 text-xs text-zinc-500">
                                 Te enviaremos un código de verificación a este correo
                             </p>
                         </div>
@@ -114,7 +114,7 @@ export const ForgotPassword = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
@@ -129,12 +129,12 @@ export const ForgotPassword = () => {
                             )}
                         </button>
 
-                        <div className="text-center mt-4">
+                        <div className="mt-4 text-center">
                             <p className="text-xs text-zinc-500">
                                 ¿No tienes una cuenta?{' '}
                                 <Link
                                     to="/auth/signup"
-                                    className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                                    className="font-medium text-indigo-400 transition-colors hover:text-indigo-300"
                                 >
                                     Regístrate aquí
                                 </Link>
@@ -143,7 +143,7 @@ export const ForgotPassword = () => {
                     </form>
                 </div>
 
-                <p className="text-center text-xs text-zinc-600 mt-6">
+                <p className="mt-6 text-center text-xs text-zinc-600">
                     © 2024 Smartur. Todos los derechos reservados.
                 </p>
             </div>

@@ -11,31 +11,47 @@ import { SignUp } from '../features/auth/pages/SignUp';
 import { ForgotPassword } from '../features/auth/pages/ForgotPassword';
 import { ResetPassword } from '../features/auth/pages/ResetPassword';
 import { Home } from '../features/home/Home';
+import Landing from '../features/landing/pages/Landing';
+import Form from '../features/form/pages/Form';
+import { ProtectedRoute } from './ProtectedRoute';
 
 export const router = createBrowserRouter([
     {
-        path: '/dashboard',
-        element: <AppLayout />,
+        path: '/',
+        element: <Landing />,
+    },
+    {
+        element: <ProtectedRoute />, // Protección para el dashboard
         children: [
             {
-                index: true,
-                element: <Home />,
+                path: '/dashboard',
+                element: <AppLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Home />,
+                    },
+                    {
+                        path: 'usuarios',
+                        element: <UserPage />,
+                    },
+                    {
+                        path: 'companias',
+                        element: <CompanyPage />,
+                    },
+                    {
+                        path: 'servicios',
+                        element: <TouristServicePage />,
+                    },
+                    {
+                        path: 'ubicaciones',
+                        element: <LocationPage />,
+                    },
+                ],
             },
             {
-                path: 'usuarios',
-                element: <UserPage />,
-            },
-            {
-                path: 'companias',
-                element: <CompanyPage />,
-            },
-            {
-                path: 'servicios',
-                element: <TouristServicePage />,
-            },
-            {
-                path: 'ubicaciones',
-                element: <LocationPage />,
+                path: '/form',
+                element: <Form />,
             },
         ],
     },
