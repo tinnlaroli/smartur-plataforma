@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
-import { ToastProvider } from '../shared/context/ToastContext';
 import { Menu, Bell, Search, User } from 'lucide-react';
 
 export default function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <ToastProvider>
+        <>
             <div className="flex bg-zinc-50 dark:bg-[#0a0a0c] min-h-screen selection:bg-indigo-100 selection:text-indigo-700 dark:selection:bg-indigo-900/30 dark:selection:text-indigo-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -30,12 +29,12 @@ export default function AppLayout() {
                                 <Bell className="h-5 w-5 group-hover:shake" />
                                 <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#0d0d0f]"></span>
                             </button>
-                            <div className="h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
+                            <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
                             <button className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                     Admin
                                 </span>
-                                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-sm ring-2 ring-white dark:ring-zinc-900">
+                                <div className="h-8 w-8 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-sm ring-2 ring-white dark:ring-zinc-900">
                                     <User className="h-4 w-4" />
                                 </div>
                             </button>
@@ -52,7 +51,7 @@ export default function AppLayout() {
                             >
                                 <Menu className="h-5 w-5" />
                             </button>
-                            <span className="ml-3 text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="ml-3 text-base font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                                 Smartur
                             </span>
 
@@ -65,7 +64,7 @@ export default function AppLayout() {
                     </div>
 
                     <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-zinc-50 dark:bg-[#0a0a0c]">
-                        <div className="max-w-[1600px] mx-auto min-h-full w-full animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+                        <div className="max-w-400 mx-auto min-h-full w-full animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
                             <Outlet />
                         </div>
                     </main>
@@ -85,6 +84,6 @@ export default function AppLayout() {
             `,
                 }}
             />
-        </ToastProvider>
+        </>
     );
 }

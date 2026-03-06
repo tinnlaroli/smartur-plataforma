@@ -1,24 +1,29 @@
-export interface Login {
-    email: string;
-    password: string;
-    requiresVerification: boolean;
-}
-
 export interface LoginPayload {
     email: string;
     password: string;
 }
 
-export interface TwoFactorPayload {
+export interface LoginResponse {
+    message: string;
+    requiresVerification: boolean;
+    userId: number;
     email: string;
-    token: number;
 }
 
-export interface SignUp {
-    name: string;
+export interface TwoFactorPayload {
     email: string;
-    password: string;
-    role_id: number;
+    token: string;
+}
+
+export interface TwoFactorResponse {
+    message: string;
+    token: string;
+    user: {
+        id: number;
+        name: string;
+        email: string;
+        role_id: number;
+    };
 }
 
 export interface SignUpPayload {

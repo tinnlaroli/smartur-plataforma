@@ -1,26 +1,27 @@
 import { api } from '../../shared/api/axiosClient';
 import type {
-    Login,
     LoginPayload,
-    SignUp,
+    SignUpPayload,
     TwoFactorPayload,
+    TwoFactorResponse,
     ForgotPasswordPayload,
-    ResetPasswordPayload
+    ResetPasswordPayload,
+    LoginResponse,
 } from './types';
 
 export const authApi = {
     login: async (payload: LoginPayload) => {
-        const { data } = await api.post<Login>('/login', payload);
+        const { data } = await api.post<LoginResponse>('/login', payload);
         return data;
     },
 
-    signUp: async (payload: SignUp) => {
-        const { data } = await api.post<SignUp>('/users', payload);
+    signUp: async (payload: SignUpPayload) => {
+        const { data } = await api.post<SignUpPayload>('/register', payload);
         return data;
     },
 
     twoFactor: async (payload: TwoFactorPayload) => {
-        const { data } = await api.post<TwoFactorPayload>('/two-factor', payload);
+        const { data } = await api.post<TwoFactorResponse>('/two-factor', payload);
         return data;
     },
 

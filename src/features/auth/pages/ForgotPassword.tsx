@@ -2,7 +2,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import type { ForgotPasswordPayload } from '../types';
 import { authApi } from '../authApi';
-import { Mail, ArrowLeft, Send } from 'lucide-react';
+import { Mail, ArrowLeft, Send, XCircle } from 'lucide-react';
 import { sileo } from 'sileo';
 
 export const ForgotPassword = () => {
@@ -28,8 +28,14 @@ export const ForgotPassword = () => {
         try {
             await authApi.forgotPassword(formData);
             sileo.success({
-                title: 'Email sent',
-                description: 'Check your email to reset your password',
+                title: 'Correo enviado',
+                description: 'Revisa tu correo para restablecer tu contraseña',
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <Mail className="h-5 w-5" />,
             })
             navigate('/auth/reset-password', {
                 state: { email: formData.email },
@@ -38,7 +44,13 @@ export const ForgotPassword = () => {
             sileo.error({
                 title: 'Error',
                 description: 'Something went wrong',
-                duration: 6000
+                duration: 6000,
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <XCircle className="h-5 w-5" />,
             })
         } finally {
             setIsLoading(false);

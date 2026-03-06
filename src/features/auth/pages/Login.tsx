@@ -1,4 +1,4 @@
-import { Mail, Lock, LogIn, ArrowRight, UserPlus } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, UserPlus, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import type { LoginPayload } from '../types';
@@ -31,31 +31,34 @@ export const Login = () => {
 
         try {
             const response = await authApi.login(formData);
-            if (response.requiresVerification) {
+            if (response.requiresVerification === true) {
                 navigate('/auth/two-factor', {
                     state: { email: response.email },
                 });
                 sileo.success({
-                    title: 'Code sent to your email',
-                    description: 'Check your email to verify your account',
-                    duration: 6000,
-                    fill: 'black',
+                    title: 'Código enviado a tu correo electrónico',
+                    description: 'Revisa tu bandeja de entrada para verificar tu cuenta',
+                    duration: 5000,
                     styles: {
-                        description: 'text-white',
-                        title: 'text-white',
+                        title: 'text-white!',
+                        description: 'text-white/75!',
                     },
-                    autopilot: {
-                        expand: 500,
-                        collapse: 3000,
-                    },
+                    fill: 'black',
+                    icon: <Lock className="h-5 w-5" />,
                 });
                 return;
             }
         } catch (error) {
             sileo.error({
                 title: 'Error',
-                description: 'Something went wrong',
+                description: 'Algo salió mal',
                 duration: 6000,
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <XCircle className="h-5 w-5" />,
             });
         } finally {
             setIsLoading(false);
@@ -64,8 +67,15 @@ export const Login = () => {
 
     return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
-            {isInitialLoading && <Loader onLoaded={() => setIsInitialLoading(false)} />}
-            {isLoading && <Loader onLoaded={() => setIsLoading(false)} />}
+            {(isInitialLoading || isLoading) && (
+                <Loader
+                    isLoading={isInitialLoading || isLoading}
+                    onLoaded={() => {
+                        setIsInitialLoading(false);
+                        // No reseteamos isLoading aquí porque queremos que se maneje en el try/catch
+                    }}
+                />
+            )}
             <div className="w-full max-w-md">
                 <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
                     <div className="flex justify-center mb-6">

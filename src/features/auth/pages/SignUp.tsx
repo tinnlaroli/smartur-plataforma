@@ -1,21 +1,13 @@
-import { isAxiosError } from 'axios';
-import { useToast } from '../../../shared/context/ToastContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import type { SignUpPayload } from '../types';
 import { authApi } from '../authApi';
 import { Mail, Lock, User, ArrowRight, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
+import { sileo } from 'sileo';
 
-function getErrorMessage(err: unknown): string {
-    if (isAxiosError(err) && err.response?.data?.message) {
-        return String(err.response.data.message);
-    }
-    if (err instanceof Error) return err.message;
-    return 'Ha ocurrido un error';
-}
+
 
 export const SignUp = () => {
-    const toast = useToast();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState<SignUpPayload>({
@@ -46,16 +38,35 @@ export const SignUp = () => {
 
         try {
             await authApi.signUp(formData);
-            navigate('/login');
-            toast.success('Cuenta creada correctamente');
+            navigate('/auth/login');
+            sileo.success({
+                title: '¡Bienvenido!',
+                description: 'Ahora puedes iniciar sesión',
+                duration: 5000,
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <User className="h-5 w-5" />,
+            });
         } catch (error) {
-            toast.error(getErrorMessage(error));
+            sileo.error({
+                title: 'Error',
+                description: 'Algo salió mal',
+                duration: 6000,
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <XCircle className="h-5 w-5" />,
+            });
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Validaciones de contraseña
     const passwordValidations = {
         minLength: formData.password.length >= 8,
         hasUpperCase: /[A-Z]/.test(formData.password),
@@ -68,9 +79,8 @@ export const SignUp = () => {
     return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                {/* Card con fondo oscuro */}
                 <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
-                    {/* Icono decorativo */}
+
                     <div className="flex justify-center mb-6">
                         <div className="h-12 w-12 rounded-full bg-indigo-600/10 flex items-center justify-center">
                             <User className="h-6 w-6 text-indigo-400" />
@@ -85,7 +95,7 @@ export const SignUp = () => {
                     </div>
 
                     <form onSubmit={handleSingUp} className="space-y-5">
-                        {/* Nombre */}
+
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="user-name"
@@ -131,7 +141,6 @@ export const SignUp = () => {
                             </div>
                         </div>
 
-                        {/* Contraseña */}
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="user-password"
@@ -164,7 +173,6 @@ export const SignUp = () => {
                                 </button>
                             </div>
 
-                            {/* Validaciones de contraseña */}
                             {formData.password && (
                                 <div className="space-y-2 bg-zinc-950/50 rounded-lg p-3 border border-zinc-800 mt-2">
                                     <p className="text-xs font-medium text-zinc-400 mb-2">
@@ -239,7 +247,6 @@ export const SignUp = () => {
                                         </span>
                                     </div>
 
-                                    {/* Barra de fortaleza */}
                                     <div className="mt-3">
                                         <div className="flex items-center gap-1.5 mb-1">
                                             <span className="text-xs text-zinc-400">
@@ -290,7 +297,6 @@ export const SignUp = () => {
                                 </div>
                             )}
                         </div>
-
 
                         <div className="flex items-start gap-2 pt-2">
                             <input

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useEvaluations } from '../hooks/useEvaluations';
 import type { EvaluationCriterion, EvaluationDetailDTO } from '../types/types';
-import { useToast } from '../../../shared/context/ToastContext';
+import { sileo } from 'sileo';
 
 interface Props {
     isOpen: boolean;
@@ -33,7 +33,6 @@ const STEPS = [
 
 const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, serviceName }) => {
     const { getRubric, registerEvaluation, rubric, isLoading, error: apiError } = useEvaluations();
-    const { success: toastSuccess, error: toastError } = useToast();
     const [currentStep, setCurrentStep] = useState(0);
     const [responses, setResponses] = useState<
         Record<number, { score: number; subcriterionId: number; observations?: string }>
@@ -103,7 +102,11 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
         );
 
         if (Object.keys(responses).length < criteriaCount) {
-            toastError('Por favor califica todos los criterios antes de finalizar.');
+            sileo.error({
+                title: 'Error',
+                description: 'Por favor califica todos los criterios antes de finalizar.',
+                duration: 6000,
+            });
             return;
         }
 
@@ -138,10 +141,18 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
 
         const result = await registerEvaluation(payload);
         if (result) {
-            toastSuccess('Evaluación registrada exitosamente');
+            sileo.success({
+                title: 'Evaluación registrada exitosamente',
+                description: '¡Gracias por completar la evaluación!',
+                duration: 5000,
+            });
             onClose();
         } else {
-            toastError(apiError || 'Ocurrió un error al registrar la evaluación');
+            sileo.error({
+                title: 'Error',
+                description: 'Ocurrió un error al registrar la evaluación',
+                duration: 6000,
+            });
         }
     };
 

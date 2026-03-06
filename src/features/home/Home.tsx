@@ -28,13 +28,13 @@ export const Home = () => {
     const navigate = useNavigate();
     const token = useLocation().state?.tokenValide;
 
-
     useEffect(() => {
-        if (!token) {
+        const storedToken = localStorage.getItem('token');
+        if (!token && !storedToken) {
             navigate('/auth/login');
         }
     }, [token, navigate]);
-    
+
     const stats = {
         // Usuarios y perfiles
         totalUsers: 1250,

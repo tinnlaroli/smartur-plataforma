@@ -1,10 +1,10 @@
 import { isAxiosError } from 'axios';
-import { useToast } from '../../../shared/context/ToastContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { authApi } from '../authApi';
 import type { ResetPasswordPayload } from '../types';
-import { KeyRound, Lock, ArrowLeft, CheckCircle } from 'lucide-react';
+import { KeyRound, Lock, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
+import { sileo } from 'sileo';
 
 function getErrorMessage(err: unknown): string {
     if (isAxiosError(err) && err.response?.data?.message) {
@@ -15,7 +15,6 @@ function getErrorMessage(err: unknown): string {
 }
 
 export const ResetPassword = () => {
-    const toast = useToast();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -51,10 +50,30 @@ export const ResetPassword = () => {
         try {
             await authApi.resetPassword(formData);
 
-            toast.success('Contraseña actualizada correctamente');
-            setTimeout(() => navigate('/login'), 2000);
+            sileo.success({
+                title: '¡Contraseña actualizada!',
+                description: 'Ahora puedes iniciar sesión',
+                duration: 6000,
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <Lock className="h-5 w-5" />,
+            })
+            setTimeout(() => navigate('/auth/login'), 2000);
         } catch (error) {
-            toast.error(getErrorMessage(error));
+            sileo.error({
+                title: 'Error',
+                description: 'Algo salió mal',
+                duration: 6000,
+                styles: {
+                    title: 'text-white!',
+                    description: 'text-white/75!',
+                },
+                fill: 'black',
+                icon: <XCircle className="h-5 w-5" />,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -65,9 +84,8 @@ export const ResetPassword = () => {
     return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                {/* Card con fondo oscuro */}
                 <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 shadow-2xl">
-                    {/* Botón para volver */}
+
                     <button
                         onClick={() => navigate('/forgotpassword')}
                         className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-300 transition-colors mb-6 group"
@@ -76,7 +94,6 @@ export const ResetPassword = () => {
                         <span>Volver</span>
                     </button>
 
-                    {/* Icono decorativo */}
                     <div className="flex justify-center mb-6">
                         <div className="h-12 w-12 rounded-full bg-indigo-600/10 flex items-center justify-center">
                             <KeyRound className="h-6 w-6 text-indigo-400" />
@@ -95,7 +112,6 @@ export const ResetPassword = () => {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Token/Código */}
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="token"
@@ -121,7 +137,6 @@ export const ResetPassword = () => {
                             </p>
                         </div>
 
-                        {/* Nueva contraseña */}
                         <div className="space-y-1.5">
                             <label
                                 htmlFor="newPassword"
@@ -153,7 +168,6 @@ export const ResetPassword = () => {
                             <p className="text-xs text-zinc-500 mt-1">Mínimo 8 caracteres</p>
                         </div>
 
-                        {/* Requisitos de contraseña (opcional) */}
                         {formData.newPassword && (
                             <div className="space-y-1.5 bg-zinc-950/50 rounded-lg p-3 border border-zinc-800">
                                 <p className="text-xs font-medium text-zinc-400 mb-2">
@@ -224,7 +238,6 @@ export const ResetPassword = () => {
                     </form>
                 </div>
 
-                {/* Footer */}
                 <p className="text-center text-xs text-zinc-600 mt-6">
                     © 2024 Smartur. Todos los derechos reservados.
                 </p>

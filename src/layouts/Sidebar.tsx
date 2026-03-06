@@ -9,6 +9,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Home,
+    LogOut,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -78,7 +79,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     ${isCollapsed ? 'w-20' : 'w-64'}
                 `}
             >
-                {/* Header */}
                 <div
                     className={`flex h-16 items-center border-b border-zinc-200 dark:border-zinc-800 transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-between px-4'}`}
                 >
@@ -91,7 +91,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </div>
 
                     <div className="flex items-center gap-1">
-                        {/* Botón de colapsar/expandir (solo visible en desktop) */}
                         <button
                             type="button"
                             onClick={toggleCollapse}
@@ -109,7 +108,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             )}
                         </button>
 
-                        {/* Botón de cerrar móvil */}
                         <button
                             type="button"
                             className="md:hidden rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 transition-colors"
@@ -161,6 +159,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         </NavLink>
                     ))}
                 </nav>
+
+                <button className="absolute bottom-4 left-0 right-0 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-all hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span>Cerrar sesión</span>
+                    <LogOut className="h-5 w-5" />
+                </button>
 
                 {isCollapsed && (
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center animate-in fade-in zoom-in duration-500">

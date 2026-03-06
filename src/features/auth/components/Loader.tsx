@@ -3,9 +3,10 @@ import gsap from 'gsap';
 
 interface LoaderProps {
     onLoaded?: () => void;
+    isLoading?: boolean; // Nueva prop para control manual
 }
 
-const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
+const Loader: React.FC<LoaderProps> = ({ onLoaded, isLoading = true }) => {
     const loaderRef = useRef<HTMLDivElement>(null);
     const counterRef = useRef<HTMLSpanElement>(null);
     const progressBarRef = useRef<HTMLDivElement>(null);
@@ -16,6 +17,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
     const ringIconsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     const [isVisible, setIsVisible] = useState(true);
+    const finishTriggered = useRef(false);
 
     useEffect(() => {
         const loader = loaderRef.current;
@@ -39,10 +41,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
 
         // Initial rotation set
         if (ringIcons.length === 4) {
-            gsap.set(ringIcons[0], { rotation: 0 });
-            gsap.set(ringIcons[1], { rotation: 90 });
-            gsap.set(ringIcons[2], { rotation: 180 });
-            gsap.set(ringIcons[3], { rotation: 270 });
+            gsap.set(ringIcons, { rotation: (i) => i * 90 });
         }
 
         const rotateLoop = gsap.to(ringIcons, {
@@ -63,6 +62,9 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
         });
 
         const finishLoading = () => {
+            if (finishTriggered.current) return;
+            finishTriggered.current = true;
+
             progressTween.kill();
 
             const exitTl = gsap.timeline({
@@ -74,7 +76,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
 
             exitTl.to(counter, {
                 val: 100,
-                duration: 0.5,
+                duration: 0.4,
                 ease: 'power2.out',
                 onUpdate() {
                     if (counterEl) counterEl.textContent = String(Math.round(counter.val));
@@ -92,7 +94,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
                     duration: 0.6,
                     ease: 'power2.in',
                 },
-                0.5
+                0.3
             );
 
             exitTl.to(
@@ -103,31 +105,36 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
                     duration: 0.6,
                     ease: 'power2.out',
                 },
-                0.6
+                0.4
             );
 
             exitTl.to(
                 ['.loader-counter', '.loader-progress', vortexContainer],
                 {
                     opacity: 0,
-                    duration: 0.4,
+                    duration: 0.3,
                 },
-                0.6
+                0.4
             );
 
             exitTl.to(
                 loader,
                 {
                     opacity: 0,
-                    duration: 0.8,
+                    duration: 0.6,
                     ease: 'power2.inOut',
                 },
-                1.0
+                0.8
             );
         };
 
-        // Simulate load delay
-        const loadTimeout = setTimeout(finishLoading, 2000);
+        // Si ya no estamos cargando, terminamos inmediatamente la fase de espera
+        if (!isLoading) {
+            finishLoading();
+        }
+
+        // De todas formas ponemos un timeout máximo por seguridad
+        const loadTimeout = setTimeout(finishLoading, 4000);
 
         return () => {
             clearTimeout(loadTimeout);
@@ -135,7 +142,7 @@ const Loader: React.FC<LoaderProps> = ({ onLoaded }) => {
             rotateLoop.kill();
             progressTween.kill();
         };
-    }, [onLoaded]);
+    }, [onLoaded, isLoading]);
 
     if (!isVisible) return null;
 
