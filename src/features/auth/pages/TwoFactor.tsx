@@ -21,14 +21,6 @@ export const TwoFactor = () => {
         }
     }, [email, navigate]);
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken && email) {
-            // Si ya hay token y venimos del flujo de login, mandamos al dashboard
-            navigate('/dashboard');
-        }
-    }, [navigate, email]);
-
     const handleChange = (index: number, value: string) => {
         const digit = value.replace(/\D/g, '').slice(-1);
         const newOtp = [...otp];
@@ -86,6 +78,7 @@ export const TwoFactor = () => {
             const { token: jwt } = response;
 
             localStorage.setItem('token', jwt);
+            localStorage.setItem('user', JSON.stringify(response.user));
 
             sileo.success({
                 title: '¡Bienvenido!',
@@ -99,15 +92,15 @@ export const TwoFactor = () => {
                 icon: <Lock className="h-5 w-5" />,
             });
 
-            // Redirección más robusta: ID 2 va al formulario, el resto al dashboard
-            if (response.user.id === 2) {
-                navigate('/form', {
-                    state: { tokenValide: jwt },
-                });
+            const apiUser = response.user;
+            const userRole = Number(apiUser.role_id) || (Number(apiUser.id) === 1 ? 1 : 2);
+
+            console.log('[TwoFactor] Successful login, role:', userRole);
+
+            if (userRole === 1) {
+                navigate('/dashboard', { replace: true });
             } else {
-                navigate('/dashboard', {
-                    state: { tokenValide: jwt },
-                });
+                navigate('/form', { replace: true });
             }
         } catch (error) {
             sileo.error({

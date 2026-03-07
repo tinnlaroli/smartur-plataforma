@@ -1,0 +1,63 @@
+import React from 'react';
+import { User, Trees, Users, Accessibility, Check } from 'lucide-react';
+
+interface ProgressIndicatorProps {
+    currentStep: number;
+    totalSteps: number;
+    isStep4Loading?: boolean;
+}
+
+export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentStep, totalSteps, isStep4Loading = false }) => {
+    const steps = [
+        { name: 'Perfil', icon: User },
+        { name: 'Preferencias', icon: Trees },
+        { name: 'Contexto', icon: Users },
+        { name: 'Condiciones', icon: Accessibility },
+    ];
+
+    const progressPercentage = isStep4Loading ? 100 : Math.round((currentStep / totalSteps) * 100);
+
+    return (
+        <div className="mb-10 w-full" aria-label="Progreso del formulario" role="progressbar">
+            {/* Progress Bar */}
+            <div className="mb-8 flex items-center gap-4">
+                <div className="h-3 flex-1 overflow-hidden rounded-full bg-zinc-800">
+                    <div
+                        className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-700 ease-out"
+                        style={{ width: `${progressPercentage}%` }}
+                    />
+                </div>
+                <span className="min-w-[3ch] text-sm font-bold text-zinc-400">{progressPercentage}%</span>
+            </div>
+
+            {/* Step Indicators */}
+            <div className="relative flex justify-between px-2">
+                {steps.map((step, idx) => {
+                    const stepNumber = idx + 1;
+                    const isStep4AndLoading = stepNumber === totalSteps && isStep4Loading;
+                    const isCompleted = stepNumber < currentStep || isStep4AndLoading;
+                    const isActive = stepNumber === currentStep && !isStep4AndLoading;
+
+                    return (
+                        <div key={step.name} className="relative z-10 flex flex-col items-center">
+                            <div
+                                className={`flex h-12 w-12 items-center justify-center rounded-2xl border-2 transition-all duration-300 ${
+                                    isCompleted
+                                        ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                        : isActive
+                                          ? 'scale-110 border-indigo-500 bg-zinc-900 text-indigo-400 shadow-lg shadow-indigo-500/10'
+                                          : 'border-zinc-800 bg-zinc-900 text-zinc-600'
+                                }`}
+                            >
+                                {isCompleted ? <Check className="h-6 w-6 stroke-[3]" /> : <step.icon className="h-6 w-6" />}
+                            </div>
+                            <span className={`mt-3 text-xs font-bold tracking-tight transition-colors duration-300 ${isActive || isCompleted ? 'text-zinc-200' : 'text-zinc-600'}`}>{step.name}</span>
+                        </div>
+                    );
+                })}
+                {/* Connector line (background) */}
+                <div className="absolute top-6 right-10 left-10 -z-0 hidden h-[2px] bg-zinc-800 sm:block" />
+            </div>
+        </div>
+    );
+};

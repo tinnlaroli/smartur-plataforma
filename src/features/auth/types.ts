@@ -8,6 +8,13 @@ export interface LoginResponse {
     requiresVerification: boolean;
     userId: number;
     email: string;
+    token?: string;
+    user?: {
+        id: number;
+        name: string;
+        email: string;
+        role_id: number;
+    };
 }
 
 export interface TwoFactorPayload {

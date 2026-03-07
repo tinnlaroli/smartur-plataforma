@@ -19,8 +19,11 @@ export const Login = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
-            navigate('/dashboard');
+        const userStr = localStorage.getItem('user');
+        if (token && userStr) {
+            const user = JSON.parse(userStr);
+            const userRole = user.role_id || (Number(user.id) === 1 ? 1 : 2);
+            navigate(userRole === 1 ? '/dashboard' : '/form');
         }
     }, [navigate]);
 
@@ -55,7 +58,6 @@ export const Login = () => {
                 });
                 return;
             }
-
         } catch (error) {
             sileo.error({
                 title: 'Error',
