@@ -4,11 +4,14 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './routes/router.tsx';
 import { Toaster } from 'sileo';
 
-createRoot(document.getElementById('root')!).render(
-    <>
-        <Toaster position="top-right" />
-        <div className="px-4 sm:px-6 lg:px-8"></div>
+import { ThemeProvider } from './contexts/ThemeContext.tsx';
+import { LanguageProvider } from './contexts/LanguageContext.tsx';
 
-        <RouterProvider router={router} />
-    </>
+createRoot(document.getElementById('root')!).render(
+    <ThemeProvider>
+        <LanguageProvider>
+            <Toaster position="top-right" />
+            <RouterProvider router={router} />
+        </LanguageProvider>
+    </ThemeProvider>,
 );

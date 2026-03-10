@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { GetRecommendationsParams, RecommendationsResponse } from '../types/types';
 
-// The recommendations API is on port 8000
 const REC_API_BASE = 'http://localhost:8000';
 
 export const formApi = {
