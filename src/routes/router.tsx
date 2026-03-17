@@ -15,6 +15,12 @@ import Landing from '../features/landing/pages/Landing';
 import Form from '../features/form/pages/Form';
 import { ProtectedRoute } from './ProtectedRoute';
 import { NotFound } from '../features/notfound/NotFound';
+import { ProfilesPage } from '../features/profiles/pages/ProfilesPage';
+import { ActivitiesPage } from '../features/activities/pages/ActivitiesPage';
+import { CertificationsPage } from '../features/certifications/pages/CertificationsPage';
+import { POIPage } from '../features/points-of-interest/pages/POIPage';
+import { StatisticsPage } from '../features/statistics/pages/StatisticsPage';
+import { TemplatesPage } from '../features/evaluations/pages/TemplatesPage';
 
 export const router = createBrowserRouter([
     {
@@ -49,6 +55,30 @@ export const router = createBrowserRouter([
                             {
                                 path: 'ubicaciones',
                                 element: <LocationPage />,
+                            },
+                            {
+                                path: 'perfiles',
+                                element: <ProfilesPage />,
+                            },
+                            {
+                                path: 'actividades',
+                                element: <ActivitiesPage />,
+                            },
+                            {
+                                path: 'certificaciones',
+                                element: <CertificationsPage />,
+                            },
+                            {
+                                path: 'poi',
+                                element: <POIPage />,
+                            },
+                            {
+                                path: 'estadisticas',
+                                element: <StatisticsPage />,
+                            },
+                            {
+                                path: 'plantillas',
+                                element: <TemplatesPage />,
                             },
                             {
                                 path: '*',

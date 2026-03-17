@@ -65,3 +65,70 @@ export interface EvaluationListResponse {
     count: number;
     evaluations: EvaluationSummary[];
 }
+
+export interface Template {
+    id: number;
+    name: string;
+    version: string;
+    servicio: string;
+    estado: boolean;
+    register_at: string;
+}
+
+export interface CreateTemplateDTO {
+    name: string;
+    version: string;
+    service_type: string;
+    active: boolean;
+}
+
+export interface UpdateTemplateDTO {
+    name?: string;
+    version?: string;
+    service_type?: string;
+    active?: boolean;
+}
+
+export interface TemplateResponse {
+    templates: Template[];
+    totalRecords: number;
+    totalPages: number;
+    currentPage: number;
+}
+
+export interface Criterion {
+    id_criterion: number;
+    id_template: number;
+    name: string;
+    description?: string;
+    weight: number;
+    order_index: number;
+    active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CreateCriterionDTO {
+    id_template: number;
+    name: string;
+    description?: string;
+    weight: number;
+    order_index?: number;
+    active: boolean;
+}
+
+export interface UpdateCriterionDTO {
+    id_template?: number;
+    name?: string;
+    description?: string;
+    weight?: number;
+    order_index?: number;
+    active?: boolean;
+}
+
+export interface CriterionResponse {
+    criteria: Criterion[];
+    totalRecords: number;
+    totalPages: number;
+    currentPage: number;
+}
