@@ -24,7 +24,7 @@ export default function Form() {
     // Redirect if no token (protected route should handle this too, but anyway)
     useEffect(() => {
         if (!token) {
-            navigate('/auth/login');
+            navigate('/');
         }
     }, [token, navigate]);
 

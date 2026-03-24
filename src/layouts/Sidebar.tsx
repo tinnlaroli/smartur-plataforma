@@ -14,7 +14,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/auth/login');
+        navigate('/');
         if (onClose) onClose();
     };
 

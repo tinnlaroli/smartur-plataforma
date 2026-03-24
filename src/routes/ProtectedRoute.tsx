@@ -9,13 +9,13 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     const userStr = localStorage.getItem('user');
 
     if (!token) {
-        return <Navigate to="/auth/login" replace />;
+        return <Navigate to="/" replace />;
     }
 
     if (allowedRoles) {
         if (!userStr) {
             // If we have no user data but need to check roles, something is wrong
-            return <Navigate to="/auth/login" replace />;
+            return <Navigate to="/" replace />;
         }
 
         const user = JSON.parse(userStr);

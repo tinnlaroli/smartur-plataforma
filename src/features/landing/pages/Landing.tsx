@@ -10,6 +10,7 @@ import { ImpactMap } from '../components/ImpactMap';
 import { CordobaMap } from '../components/CordobaMap';
 import { Footer } from '../../../components/layout/Footer';
 import { PwaHome } from '../../../components/layout/PwaHome';
+import { useAuthModal } from '../../auth/context/AuthModalContext';
 
 import bgPatron from '../../../assets/landing/bgPatron.png';
 import logoArriba from '../../../assets/landing/logo_arriba.png';
@@ -57,6 +58,7 @@ interface User {
 
 export default function Landing() {
     const navigate = useNavigate();
+    const { openModal } = useAuthModal();
     const [loading, setLoading] = useState(true);
     const [activeSection, setActiveSection] = useState('hero');
     const [isStandalonePwa, setIsStandalonePwa] = useState(false);
@@ -124,9 +126,9 @@ export default function Landing() {
         if (user) {
             navigate('/form');
         } else {
-            navigate('/auth/login');
+            openModal('login');
         }
-    }, [user, navigate]);
+    }, [user, navigate, openModal]);
 
     const logout = () => {
         localStorage.removeItem('token');
@@ -206,7 +208,7 @@ export default function Landing() {
                 isStandalonePwa={isStandalonePwa}
                 user={user}
                 logout={logout}
-                setShowLoginModal={() => navigate('/auth/login')}
+                setShowLoginModal={() => openModal('login')}
                 handleStartExperience={handleStartExperience}
                 setShowCordobaMap={setShowCordobaMap}
                 openInfoCards={openInfoCards}

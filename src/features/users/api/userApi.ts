@@ -1,19 +1,8 @@
 import { api } from '../../../shared/api/axiosClient';
-import type {
-    CreateUserDTO,
-    UpdateUserDTO,
-    User,
-    UserResponse,
-    UserDetailResponse,
-} from '../types/types';
+import type { CreateUserDTO, UpdateUserDTO, User, UserResponse, UserDetailResponse } from '../types/types';
 
 export const userServices = {
-    findAll: async (
-        page: number,
-        limit: number,
-        search?: string,
-        role?: number
-    ): Promise<UserResponse> => {
+    findAll: async (page: number, limit: number, search?: string, role?: number): Promise<UserResponse> => {
         const response = await api.get('/users', {
             params: { page, limit, search: search || undefined, role: role || undefined },
         });
