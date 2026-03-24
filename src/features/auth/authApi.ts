@@ -16,7 +16,15 @@ export const authApi = {
     },
 
     signUp: async (payload: SignUpPayload) => {
-        const { data } = await api.post<SignUpPayload>('/register', payload);
+        const formData = new FormData();
+        Object.entries(payload).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formData.append(key, value);
+            }
+        });
+        const { data } = await api.post<SignUpPayload>('/register', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return data;
     },
 

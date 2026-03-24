@@ -11,9 +11,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 export const AuthModal: React.FC = () => {
     const { isOpen, step, email, closeModal, setStep } = useAuthModal();
     
-    if (isOpen) {
-        console.log('[AuthModal] Rendered step:', step);
-    }
 
     const renderStep = () => {
         switch (step) {

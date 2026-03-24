@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { UpdateUserDTO } from '../types/types';
-import { Save, X } from 'lucide-react';
+import { Save, X, Camera, User as UserIcon } from 'lucide-react';
 
 interface Props {
     user: {
@@ -8,6 +8,7 @@ interface Props {
         name: string;
         role_id: number;
         is_active: boolean;
+        photo_url: string | null;
     };
     onClose: () => void;
     onSubmit: (id: number, data: UpdateUserDTO) => Promise<boolean | undefined>;
@@ -20,6 +21,20 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
         role_id: user.role_id,
         is_active: user.is_active,
     });
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(user.photo_url);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -56,6 +71,10 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
             dataToSend.is_active = formData.is_active;
         }
 
+        if (selectedImage) {
+            dataToSend.image = selectedImage;
+        }
+
         if (Object.keys(dataToSend).length === 0) {
             onClose();
             return;
@@ -75,6 +94,40 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    <div className="flex flex-col items-center justify-center space-y-3 pb-2">
+                        <div className="relative group">
+                            <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-colors group-hover:border-indigo-500">
+                                {previewUrl ? (
+                                    <img
+                                        src={previewUrl}
+                                        alt="Preview"
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center text-zinc-400">
+                                        <UserIcon className="h-8 w-8" />
+                                    </div>
+                                )}
+                            </div>
+                            <label
+                                htmlFor="edit-photo-upload"
+                                className="absolute bottom-0 right-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                            >
+                                <Camera className="h-3.5 w-3.5" />
+                                <input
+                                    id="edit-photo-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+                        <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">
+                            Foto de perfil
+                        </p>
+                    </div>
+
                     <div className="space-y-4">
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">

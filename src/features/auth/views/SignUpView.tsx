@@ -1,4 +1,4 @@
-import { Mail, Lock, User, ArrowRight, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, CheckCircle, XCircle, Eye, EyeOff, Camera } from 'lucide-react';
 import { useState } from 'react';
 import type { SignUpPayload } from '../types';
 import { authApi } from '../authApi';
@@ -20,6 +20,19 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFormData((prev) => ({ ...prev, image: file }));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -73,6 +86,39 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
             </div>
 
             <form onSubmit={handleSingUp} className="space-y-5">
+                {/* Photo Upload */}
+                <div className="flex flex-col items-center justify-center space-y-4 pb-2">
+                    <div className="relative group">
+                        <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-zinc-800 bg-zinc-950 transition-colors group-hover:border-indigo-500">
+                            {previewUrl ? (
+                                <img
+                                    src={previewUrl}
+                                    alt="Preview"
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center text-zinc-600">
+                                    <User className="h-10 w-10" />
+                                </div>
+                            )}
+                        </div>
+                        <label
+                            htmlFor="photo-upload"
+                            className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                        >
+                            <Camera className="h-4 w-4" />
+                            <input
+                                id="photo-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                        </label>
+                    </div>
+                    <p className="text-xs text-zinc-500">Foto de perfil (opcional)</p>
+                </div>
+
                 <div className="space-y-1.5">
                     <label
                         htmlFor="user-name"

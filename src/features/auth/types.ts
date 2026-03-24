@@ -38,6 +38,8 @@ export interface SignUpPayload {
     email: string;
     password: string;
     role_id: number;
+    photo_url?: string | null;
+    image?: File;
 }
 
 export interface ForgotPasswordPayload {

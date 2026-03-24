@@ -20,12 +20,28 @@ export const userServices = {
     },
 
     create: async (data: CreateUserDTO): Promise<User> => {
-        const response = await api.post<User>('/users', data);
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formData.append(key, value);
+            }
+        });
+        const response = await api.post<User>('/users', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return response.data;
     },
 
     update: async (id: number, data: UpdateUserDTO): Promise<User> => {
-        const response = await api.patch<User>(`/users/${id}`, data);
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formData.append(key, value);
+            }
+        });
+        const response = await api.patch<User>(`/users/${id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return response.data;
     },
 

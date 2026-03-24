@@ -6,6 +6,8 @@ export interface User {
     email: string;
     role_id: number;
     is_active: boolean;
+    photo_url: string | null;
+    avatar_icon_key: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -15,6 +17,9 @@ export interface CreateUserDTO {
     email: string;
     password: string;
     role_id: number;
+    photo_url?: string | null;
+    avatar_icon_key?: string | null;
+    image?: File;
 }
 
 export interface UpdateUserDTO {
@@ -22,6 +27,8 @@ export interface UpdateUserDTO {
     password?: string;
     role_id?: number;
     is_active?: boolean;
+    photo_url?: string | null;
+    image?: File;
 }
 
 export interface UserResponse {

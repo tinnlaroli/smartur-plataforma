@@ -19,7 +19,6 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
     const [email, setEmail] = useState('');
 
     const openModal = (initialStep: AuthStep = 'login', initialEmail: string = '') => {
-        console.log('[AuthModalContext] Opening modal:', initialStep, initialEmail);
         setStepState(initialStep);
         setEmail(initialEmail);
         setIsOpen(true);
