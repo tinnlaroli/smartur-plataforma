@@ -2,7 +2,7 @@ import { Mail, Lock, User, ArrowRight, CheckCircle, XCircle, Eye, EyeOff } from 
 import { useState } from 'react';
 import type { SignUpPayload } from '../types';
 import { authApi } from '../authApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 import type { AuthStep } from '../context/AuthModalContext';
 
 interface SignUpViewProps {
@@ -10,7 +10,7 @@ interface SignUpViewProps {
 }
 
 export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
-
+    const toast = useToast();
     const [formData, setFormData] = useState<SignUpPayload>({
         name: '',
         email: '',
@@ -40,29 +40,9 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
         try {
             await authApi.signUp(formData);
             onSwitchStep('login');
-            sileo.success({
-                title: '¡Bienvenido!',
-                description: 'Ahora puedes iniciar sesión',
-                duration: 5000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <User className="h-5 w-5" />,
-            });
+            toast.success('¡Bienvenido!', 'Ahora puedes iniciar sesión');
         } catch (error) {
-            sileo.error({
-                title: 'Error',
-                description: 'Algo salió mal',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <XCircle className="h-5 w-5" />,
-            });
+            toast.error('Algo salió mal', 'No se pudo crear la cuenta');
         } finally {
             setIsLoading(false);
         }

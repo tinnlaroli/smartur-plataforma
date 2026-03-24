@@ -3,8 +3,9 @@ import type { CreateUserDTO, User, UpdateUserDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { userServices } from '../api/userApi';
 import axios from 'axios';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 export function useUser() {
+    const toast = useToast();
     const [users, setUsers] = useState<User[]>([]);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +30,7 @@ export function useUser() {
             setUsers(data.users);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar usuarios', description: error.message });
+            toast.error('Error al cargar usuarios');
         } finally {
             setIsLoading(false);
         }
@@ -57,20 +58,7 @@ export function useUser() {
         try {
             await userServices.create(data);
             await fetchUsers();
-            sileo.success({
-                title: 'User created successfully',
-                description: 'Changes saved',
-                duration: 6000,
-                fill: 'black',
-                styles: {
-                    description: 'text-white',
-                    title: 'text-white',
-                },
-                autopilot: {
-                    expand: 500,
-                    collapse: 3000,
-                },
-            });
+            toast.success('User created successfully', 'Changes saved');
             return true;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -78,7 +66,7 @@ export function useUser() {
                     error.response?.data?.error ||
                     error.response?.data?.message ||
                     'Error inesperado';
-                sileo.error({ title: message, duration: 6000, styles: { title: 'text-white' } });
+                toast.error('text-white');
             }
         } finally {
             setIsLoading(false);
@@ -89,24 +77,11 @@ export function useUser() {
         setIsLoading(true);
         try {
             await userServices.update(id, data);
-            sileo.success({
-                title: 'User updated successfully',
-                description: 'Changes saved',
-                duration: 6000,
-                fill: 'black',
-                styles: {
-                    description: 'text-white',
-                    title: 'text-white',
-                },
-                autopilot: {
-                    expand: 500,
-                    collapse: 3000,
-                },
-            });
+            toast.success('User updated successfully', 'Changes saved');
             await fetchUsers();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message, duration: 6000, styles: { title: 'text-white' } });
+            toast.error('text-white');
         } finally {
             setIsLoading(false);
         }
@@ -117,25 +92,12 @@ export function useUser() {
 
         try {
             await userServices.delete(id);
-            sileo.success({
-                title: 'Usuario eliminado exitosamente',
-                description: 'Changes saved',
-                duration: 6000,
-                fill: 'black',
-                styles: {
-                    description: 'text-white',
-                    title: 'text-white',
-                },
-                autopilot: {
-                    expand: 500,
-                    collapse: 3000,
-                },
-            });
+            toast.success('Usuario eliminado exitosamente', 'Changes saved');
             await fetchUsers();
 
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message, duration: 6000, styles: { title: 'text-white' } });
+            toast.error('text-white');
         } finally {
             setIsLoading(false);
         }

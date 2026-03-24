@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import type { POI, CreatePOIDTO, UpdatePOIDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { poiApi } from '../api/poiApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function usePOI() {
+    const toast = useToast();
     const [points, setPoints] = useState<POI[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +21,7 @@ export function usePOI() {
             setPoints(data.points || []);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar puntos de interés', description: error.message });
+            toast.error('Error al cargar puntos de interés');
         } finally {
             setIsLoading(false);
         }
@@ -34,11 +35,11 @@ export function usePOI() {
         setIsLoading(true);
         try {
             await poiApi.create(data);
-            sileo.success({ title: 'Punto de interés creado' });
+            toast.success('Punto de interés creado');
             await fetchPoints();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al crear punto de interés', description: error.message });
+            toast.error('Error al crear punto de interés');
         } finally {
             setIsLoading(false);
         }

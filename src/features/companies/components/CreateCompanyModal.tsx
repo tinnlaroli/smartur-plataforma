@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CreateCompanyDTO } from '../types/types';
-import { Toaster } from 'sileo';
+
 import { X, Building2, Plus } from 'lucide-react';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 }
 
 export default function CreateCompanyModal({ onClose, onSubmit }: Props) {
+    const toast = useToast();
     const [formData, setFormData] = useState<CreateCompanyDTO>({
         name: '',
         address: '',
@@ -33,7 +34,7 @@ export default function CreateCompanyModal({ onClose, onSubmit }: Props) {
 
     return (
         <>
-            <Toaster position="top-right" />
+            
             <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 backdrop-blur-sm animate-in fade-in duration-200">
                 <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
                     <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">

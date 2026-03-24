@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Profile, CreateProfileDTO, UpdateProfileDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { profileApi } from '../api/profileApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useProfiles() {
+    const toast = useToast();
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +21,7 @@ export function useProfiles() {
             setProfiles(data.travelerProfiles || []);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar perfiles', description: error.message });
+            toast.error('Error al cargar perfiles');
         } finally {
             setIsLoading(false);
         }
@@ -34,11 +35,11 @@ export function useProfiles() {
         setIsLoading(true);
         try {
             await profileApi.create(data);
-            sileo.success({ title: 'Perfil creado' });
+            toast.success('Perfil creado');
             await fetchProfiles();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al crear perfil', description: error.message });
+            toast.error('Error al crear perfil');
         } finally {
             setIsLoading(false);
         }
@@ -48,11 +49,11 @@ export function useProfiles() {
         setIsLoading(true);
         try {
             await profileApi.update(id, data);
-            sileo.success({ title: 'Perfil actualizado' });
+            toast.success('Perfil actualizado');
             await fetchProfiles();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al actualizar perfil', description: error.message });
+            toast.error('Error al actualizar perfil');
         } finally {
             setIsLoading(false);
         }

@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import type { CreateExpenditureDTO, CreateEmploymentDTO, CreateInputDTO } from '../types/types';
 import { statisticsApi } from '../api/statisticsApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useStatistics() {
+    const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
     const recordExpenditure = async (data: CreateExpenditureDTO) => {
         setIsLoading(true);
         try {
             await statisticsApi.registerExpenditure(data);
-            sileo.success({ title: 'Gasto registrado correctamente' });
+            toast.success('Gasto registrado correctamente');
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al registrar gasto', description: error.message });
+            toast.error('Error al registrar gasto');
         } finally {
             setIsLoading(false);
         }
@@ -23,10 +24,10 @@ export function useStatistics() {
         setIsLoading(true);
         try {
             await statisticsApi.registerEmployment(data);
-            sileo.success({ title: 'Empleo registrado correctamente' });
+            toast.success('Empleo registrado correctamente');
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al registrar empleo', description: error.message });
+            toast.error('Error al registrar empleo');
         } finally {
             setIsLoading(false);
         }
@@ -36,10 +37,10 @@ export function useStatistics() {
         setIsLoading(true);
         try {
             await statisticsApi.registerInput(data);
-            sileo.success({ title: 'Insumo registrado correctamente' });
+            toast.success('Insumo registrado correctamente');
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al registrar insumo', description: error.message });
+            toast.error('Error al registrar insumo');
         } finally {
             setIsLoading(false);
         }

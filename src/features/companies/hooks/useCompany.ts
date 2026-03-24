@@ -3,9 +3,10 @@ import type { CreateCompanyDTO, Company, UpdateCompanyDTO } from '../types/types
 import { useSearchParams } from 'react-router-dom';
 import { companyServices } from '../api/companyApi';
 import axios from 'axios';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useCompany() {
+    const toast = useToast();
     const [companies, setCompanies] = useState<Company[]>([]);
     const [company, setCompany] = useState<Company | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +32,7 @@ export function useCompany() {
             setCompanies(data.companies);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar empresas', description: error.message });
+            toast.error('Error al cargar empresas');
         } finally {
             setIsLoading(false);
         }
@@ -59,17 +60,7 @@ export function useCompany() {
         try {
             await companyServices.create(data);
             await fetchCompanies();
-            sileo.success({
-                title: 'Empresa creada exitosamente',
-                description: 'Cambios guardados',
-                duration: 6000,
-                fill: 'black',
-                styles: {
-                    description: 'text-white',
-                    title: 'text-white',
-                },
-                autopilot: { expand: 500, collapse: 3000 },
-            });
+            toast.success('Empresa creada exitosamente', 'Cambios guardados');
             return true;
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -77,7 +68,7 @@ export function useCompany() {
                     error.response?.data?.error ||
                     error.response?.data?.message ||
                     'Error inesperado';
-                sileo.error({ title: message, duration: 6000, styles: { title: 'text-white' } });
+                toast.error('text-white');
             }
         } finally {
             setIsLoading(false);
@@ -88,21 +79,11 @@ export function useCompany() {
         setIsLoading(true);
         try {
             await companyServices.update(id, data);
-            sileo.success({
-                title: 'Empresa actualizada exitosamente',
-                description: 'Cambios guardados',
-                duration: 6000,
-                fill: 'black',
-                styles: {
-                    description: 'text-white',
-                    title: 'text-white',
-                },
-                autopilot: { expand: 500, collapse: 3000 },
-            });
+            toast.success('Empresa actualizada exitosamente', 'Cambios guardados');
             await fetchCompanies();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message, duration: 6000, styles: { title: 'text-white' } });
+            toast.error('text-white');
         } finally {
             setIsLoading(false);
         }
@@ -112,21 +93,11 @@ export function useCompany() {
         setIsLoading(true);
         try {
             await companyServices.delete(id);
-            sileo.success({
-                title: 'Empresa eliminada exitosamente',
-                description: 'Cambios guardados',
-                duration: 6000,
-                fill: 'black',
-                styles: {
-                    description: 'text-white',
-                    title: 'text-white',
-                },
-                autopilot: { expand: 500, collapse: 3000 },
-            });
+            toast.success('Empresa eliminada exitosamente', 'Cambios guardados');
             await fetchCompanies();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message, duration: 6000, styles: { title: 'text-white' } });
+            toast.error('text-white');
         } finally {
             setIsLoading(false);
         }

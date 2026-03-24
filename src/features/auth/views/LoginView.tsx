@@ -1,9 +1,9 @@
-import { Mail, Lock, LogIn, UserPlus, XCircle } from 'lucide-react';
+import { Mail, Lock, LogIn, UserPlus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { LoginPayload } from '../types';
 import { authApi } from '../authApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 import Loader from '../components/Loader';
 import { useAuthModal, type AuthStep } from '../context/AuthModalContext';
 
@@ -15,6 +15,7 @@ interface LoginViewProps {
 export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
     const navigate = useNavigate();
     const { setStep } = useAuthModal();
+    const toast = useToast();
 
     const [formData, setFormData] = useState<LoginPayload>({
         email: '',
@@ -50,17 +51,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
             const response = await authApi.login(formData);
             if (response.requiresVerification === true) {
                 setStep('twoFactor', response.email);
-                sileo.success({
-                    title: 'Código enviado a tu correo electrónico',
-                    description: 'Revisa tu bandeja de entrada para verificar tu cuenta',
-                    duration: 5000,
-                    styles: {
-                        title: 'text-white!',
-                        description: 'text-white/75!',
-                    },
-                    fill: 'black',
-                    icon: <Lock className="h-5 w-5" />,
-                });
+                toast.success('Código enviado a tu correo electrónico', 'Revisa tu bandeja de entrada para verificar tu cuenta');
                 return;
             }
             
@@ -74,17 +65,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
             }
 
         } catch (error) {
-            sileo.error({
-                title: 'Error',
-                description: 'Algo salió mal',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <XCircle className="h-5 w-5" />,
-            });
+            toast.error('Algo salió mal', 'No se pudo iniciar sesión');
         } finally {
             setIsLoading(false);
         }

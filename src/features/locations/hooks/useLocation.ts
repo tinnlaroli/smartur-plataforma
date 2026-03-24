@@ -3,9 +3,10 @@ import type { CreateLocationDTO, Location, UpdateLocationDTO } from '../types/ty
 import { useSearchParams } from 'react-router-dom';
 import { locationApi } from '../api/locationApi';
 import axios from 'axios';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useLocation() {
+    const toast = useToast();
     const [locations, setLocations] = useState<Location[]>([]);
     const [location, setLocation] = useState<Location | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +28,7 @@ export function useLocation() {
             setLocations(data.locations);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar ubicaciones', description: error.message });
+            toast.error('Error al cargar ubicaciones');
         } finally {
             setIsLoading(false);
         }
@@ -55,11 +56,11 @@ export function useLocation() {
         try {
             await locationApi.create(data);
             await fetchLocations();
-            sileo.success({ title: 'Ubicación creada exitosamente' });
+            toast.success('Ubicación creada exitosamente');
             return true;
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
-                sileo.error({ title: error.response?.data?.message || 'Error inesperado' });
+                toast.error('');
             }
         } finally {
             setIsLoading(false);
@@ -70,11 +71,11 @@ export function useLocation() {
         setIsLoading(true);
         try {
             await locationApi.update(id, data);
-            sileo.success({ title: 'Ubicación actualizada exitosamente' });
+            toast.success('Ubicación actualizada exitosamente');
             await fetchLocations();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message });
+            toast.error('');
         } finally {
             setIsLoading(false);
         }
@@ -84,11 +85,11 @@ export function useLocation() {
         setIsLoading(true);
         try {
             await locationApi.delete(id);
-            sileo.success({ title: 'Ubicación eliminada exitosamente' });
+            toast.success('Ubicación eliminada exitosamente');
             await fetchLocations();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message });
+            toast.error('');
         } finally {
             setIsLoading(false);
         }

@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Certification, CreateCertificationDTO, UpdateCertificationDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { certificationApi } from '../api/certificationApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useCertifications() {
+    const toast = useToast();
     const [certifications, setCertifications] = useState<Certification[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +21,7 @@ export function useCertifications() {
             setCertifications(data.certifications || []);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar certificaciones', description: error.message });
+            toast.error('Error al cargar certificaciones');
         } finally {
             setIsLoading(false);
         }
@@ -34,11 +35,11 @@ export function useCertifications() {
         setIsLoading(true);
         try {
             await certificationApi.create(data);
-            sileo.success({ title: 'Certificación registrada' });
+            toast.success('Certificación registrada');
             await fetchCertifications();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al registrar certificación', description: error.message });
+            toast.error('Error al registrar certificación');
         } finally {
             setIsLoading(false);
         }
@@ -48,11 +49,11 @@ export function useCertifications() {
         setIsLoading(true);
         try {
             await certificationApi.updateStatus(id, status);
-            sileo.success({ title: 'Estado actualizado' });
+            toast.success('Estado actualizado');
             await fetchCertifications();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al actualizar estado', description: error.message });
+            toast.error('Error al actualizar estado');
         } finally {
             setIsLoading(false);
         }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: 'https://api-smartur.fly.dev/api/v2',
+    baseURL: 'http://localhost:3000/api/v2',
 });
 
 api.interceptors.request.use(
@@ -14,5 +14,5 @@ api.interceptors.request.use(
     },
     (error) => {
         return Promise.reject(error);
-    }
+    },
 );

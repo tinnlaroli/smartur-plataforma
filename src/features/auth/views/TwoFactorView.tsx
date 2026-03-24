@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, ArrowLeft, Lock, XCircle } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 import { authApi } from '../authApi';
 import type { TwoFactorPayload } from '../types';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 import Loader from '../components/Loader';
 import type { AuthStep } from '../context/AuthModalContext';
 
@@ -14,6 +14,7 @@ interface TwoFactorViewProps {
 }
 
 export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewProps) => {
+    const toast = useToast();
     const navigate = useNavigate();
     const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
@@ -85,17 +86,7 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
             localStorage.setItem('token', jwt);
             localStorage.setItem('user', JSON.stringify(response.user));
 
-            sileo.success({
-                title: '¡Bienvenido!',
-                description: 'Inicio de sesión exitoso',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <Lock className="h-5 w-5" />,
-            });
+            toast.success('¡Bienvenido!', 'Inicio de sesión exitoso');
 
             const apiUser = response.user;
             const userRole = Number(apiUser.role_id) || (Number(apiUser.id) === 1 ? 1 : 2);
@@ -107,17 +98,7 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
             }
             if (onClose) onClose();
         } catch (error) {
-            sileo.error({
-                title: 'Error de verificación',
-                description: 'El código ingresado es incorrecto o ha expirado.',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <XCircle className="h-5 w-5" />,
-            });
+            toast.error('Error de verificación', 'El código ingresado es incorrecto o ha expirado.');
         } finally {
             setIsLoading(false);
         }

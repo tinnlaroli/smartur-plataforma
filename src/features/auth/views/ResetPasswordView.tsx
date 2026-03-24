@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { authApi } from '../authApi';
 import type { ResetPasswordPayload } from '../types';
-import { KeyRound, Lock, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
-import { sileo } from 'sileo';
+import { KeyRound, Lock, ArrowLeft, CheckCircle } from 'lucide-react';
+import { useToast } from '../../../shared/context/ToastContext';
 import type { AuthStep } from '../context/AuthModalContext';
 
 interface ResetPasswordViewProps {
@@ -11,7 +11,7 @@ interface ResetPasswordViewProps {
 }
 
 export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProps) => {
-
+    const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -41,31 +41,10 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
 
         try {
             await authApi.resetPassword(formData);
-
-            sileo.success({
-                title: '¡Contraseña actualizada!',
-                description: 'Ahora puedes iniciar sesión',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <Lock className="h-5 w-5" />,
-            });
+            toast.success('¡Contraseña actualizada!', 'Ahora puedes iniciar sesión');
             setTimeout(() => onSwitchStep('login'), 2000);
         } catch (error) {
-            sileo.error({
-                title: 'Error',
-                description: 'Algo salió mal',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <XCircle className="h-5 w-5" />,
-            });
+            toast.error('Error', 'Algo salió mal al restablecer tu contraseña');
         } finally {
             setIsLoading(false);
         }

@@ -7,9 +7,10 @@ import type {
 import { useSearchParams } from 'react-router-dom';
 import { touristServiceApi } from '../api/touristServiceApi';
 import axios from 'axios';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useTouristService() {
+    const toast = useToast();
     const [services, setServices] = useState<TouristService[]>([]);
     const [service, setService] = useState<TouristService | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +43,7 @@ export function useTouristService() {
             setServices(data.services);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar servicios', description: error.message });
+            toast.error('Error al cargar servicios');
         } finally {
             setIsLoading(false);
         }
@@ -70,11 +71,11 @@ export function useTouristService() {
         try {
             await touristServiceApi.create(data);
             await fetchServices();
-            sileo.success({ title: 'Servicio creado exitosamente' });
+            toast.success('Servicio creado exitosamente');
             return true;
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
-                sileo.error({ title: error.response?.data?.message || 'Error inesperado' });
+                toast.error('');
             }
         } finally {
             setIsLoading(false);
@@ -85,11 +86,11 @@ export function useTouristService() {
         setIsLoading(true);
         try {
             await touristServiceApi.update(id, data);
-            sileo.success({ title: 'Servicio actualizado exitosamente' });
+            toast.success('Servicio actualizado exitosamente');
             await fetchServices();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message });
+            toast.error('');
         } finally {
             setIsLoading(false);
         }
@@ -99,11 +100,11 @@ export function useTouristService() {
         setIsLoading(true);
         try {
             await touristServiceApi.delete(id);
-            sileo.success({ title: 'Servicio eliminado (lógicamente)' });
+            toast.success('Servicio eliminado (lógicamente)');
             await fetchServices();
             return true;
         } catch (error: any) {
-            sileo.error({ title: error.message });
+            toast.error('');
         } finally {
             setIsLoading(false);
         }

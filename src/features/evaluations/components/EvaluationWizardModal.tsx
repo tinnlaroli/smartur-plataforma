@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useEvaluations } from '../hooks/useEvaluations';
 import type { EvaluationCriterion, EvaluationDetailDTO } from '../types/types';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 interface Props {
     isOpen: boolean;
@@ -32,6 +32,7 @@ const STEPS = [
 // Criterios específicos eliminados para usar rúbrica dinámica de 13 registros
 
 const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, serviceName }) => {
+    const toast = useToast();
     const { getRubric, registerEvaluation, rubric, isLoading, error: apiError } = useEvaluations();
     const [currentStep, setCurrentStep] = useState(0);
     const [responses, setResponses] = useState<
@@ -102,11 +103,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
         );
 
         if (Object.keys(responses).length < criteriaCount) {
-            sileo.error({
-                title: 'Error',
-                description: 'Por favor califica todos los criterios antes de finalizar.',
-                duration: 6000,
-            });
+            toast.error('Error', 'Por favor califica todos los criterios antes de finalizar.');
             return;
         }
 
@@ -141,18 +138,10 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
 
         const result = await registerEvaluation(payload);
         if (result) {
-            sileo.success({
-                title: 'Evaluación registrada exitosamente',
-                description: '¡Gracias por completar la evaluación!',
-                duration: 5000,
-            });
+            toast.success('Evaluación registrada exitosamente', '¡Gracias por completar la evaluación!');
             onClose();
         } else {
-            sileo.error({
-                title: 'Error',
-                description: 'Ocurrió un error al registrar la evaluación',
-                duration: 6000,
-            });
+            toast.error('Error', 'Ocurrió un error al registrar la evaluación');
         }
     };
 

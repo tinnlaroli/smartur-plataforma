@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import type { CreateUserDTO } from '../types/types';
-import { Toaster } from 'sileo';
+
 interface Props {
     onClose: () => void;
     onSubmit: (data: CreateUserDTO) => Promise<boolean | undefined>;
 }
 
 export default function CreateUserModal({ onClose, onSubmit }: Props) {
+    const toast = useToast();
     const [formData, setFormData] = useState<CreateUserDTO>({
         name: '',
         email: '',
@@ -31,7 +32,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
 
     return (
 
-        <><Toaster position="top-right" /><div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+        <><div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-md transform transition-all">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">

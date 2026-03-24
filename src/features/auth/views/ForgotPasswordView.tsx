@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { ForgotPasswordPayload } from '../types';
 import { authApi } from '../authApi';
-import { Mail, ArrowLeft, Send, XCircle } from 'lucide-react';
-import { sileo } from 'sileo';
+import { Mail, ArrowLeft, Send } from 'lucide-react';
+import { useToast } from '../../../shared/context/ToastContext';
 import type { AuthStep } from '../context/AuthModalContext';
 
 interface ForgotPasswordViewProps {
@@ -10,6 +10,7 @@ interface ForgotPasswordViewProps {
 }
 
 export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) => {
+    const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState<ForgotPasswordPayload>({
@@ -30,29 +31,10 @@ export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) =>
 
         try {
             await authApi.forgotPassword(formData);
-            sileo.success({
-                title: 'Correo enviado',
-                description: 'Revisa tu correo para restablecer tu contraseña',
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <Mail className="h-5 w-5" />,
-            });
+            toast.success('Correo enviado', 'Revisa tu correo para restablecer tu contraseña');
             onSwitchStep('resetPassword', formData.email);
         } catch (error) {
-            sileo.error({
-                title: 'Error',
-                description: 'Something went wrong',
-                duration: 6000,
-                styles: {
-                    title: 'text-white!',
-                    description: 'text-white/75!',
-                },
-                fill: 'black',
-                icon: <XCircle className="h-5 w-5" />,
-            });
+            toast.error('Error', 'Algo salió mal al enviar el código');
         } finally {
             setIsLoading(false);
         }

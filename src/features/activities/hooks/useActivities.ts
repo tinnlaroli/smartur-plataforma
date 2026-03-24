@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Activity, CreateActivityDTO, UpdateActivityDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { activityApi } from '../api/activityApi';
-import { sileo } from 'sileo';
+import { useToast } from '../../../shared/context/ToastContext';
 
 export function useActivities() {
+    const toast = useToast();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +21,7 @@ export function useActivities() {
             setActivities(data.touristActivities || []);
             setTotalPages(data.totalPages);
         } catch (error: any) {
-            sileo.error({ title: 'Error al cargar actividades', description: error.message });
+            toast.error('Error al cargar actividades');
         } finally {
             setIsLoading(false);
         }
@@ -34,11 +35,11 @@ export function useActivities() {
         setIsLoading(true);
         try {
             await activityApi.create(data);
-            sileo.success({ title: 'Actividad registrada' });
+            toast.success('Actividad registrada');
             await fetchActivities();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al registrar actividad', description: error.message });
+            toast.error('Error al registrar actividad');
         } finally {
             setIsLoading(false);
         }
@@ -48,11 +49,11 @@ export function useActivities() {
         setIsLoading(true);
         try {
             await activityApi.update(id, data);
-            sileo.success({ title: 'Actividad actualizada' });
+            toast.success('Actividad actualizada');
             await fetchActivities();
             return true;
         } catch (error: any) {
-            sileo.error({ title: 'Error al actualizar actividad', description: error.message });
+            toast.error('Error al actualizar actividad');
         } finally {
             setIsLoading(false);
         }
