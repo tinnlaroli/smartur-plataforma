@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: 'http://localhost:3000/api/v2',
+    // En desarrollo, Vite redirige /api/v2 → https://api.smartur.dev via proxy (evita CORS)
+    // En producción apunta directamente al dominio con variable de entorno
+    baseURL: import.meta.env.VITE_API_URL ?? '/api/v2',
 });
 
 api.interceptors.request.use(

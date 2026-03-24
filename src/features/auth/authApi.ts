@@ -1,13 +1,5 @@
 import { api } from '../../shared/api/axiosClient';
-import type {
-    LoginPayload,
-    SignUpPayload,
-    TwoFactorPayload,
-    TwoFactorResponse,
-    ForgotPasswordPayload,
-    ResetPasswordPayload,
-    LoginResponse,
-} from './types';
+import type { LoginPayload, SignUpPayload, TwoFactorPayload, TwoFactorResponse, ForgotPasswordPayload, ResetPasswordPayload, LoginResponse } from './types';
 
 export const authApi = {
     login: async (payload: LoginPayload) => {
@@ -17,14 +9,19 @@ export const authApi = {
 
     signUp: async (payload: SignUpPayload) => {
         const formData = new FormData();
-        Object.entries(payload).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                formData.append(key, value);
-            }
-        });
-        const { data } = await api.post<SignUpPayload>('/register', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
+
+        // Campos de texto — se convierten a string explícitamente
+        if (payload.name) formData.append('name', payload.name);
+        if (payload.email) formData.append('email', payload.email);
+        if (payload.password) formData.append('password', payload.password);
+        formData.append('role_id', String(payload.role_id));
+
+        // Imagen — solo si el usuario seleccionó una
+        if (payload.image instanceof File) {
+            formData.append('image', payload.image);
+        }
+
+        const { data } = await api.post<SignUpPayload>('/register', formData);
         return data;
     },
 
