@@ -28,7 +28,7 @@ const pwaInfoCardsData: InfoCard[] = [
         id: 'company-values',
         title: 'Nuestro ADN',
         highlight: 'Valores SMARTUR',
-        description: 'Transparencia, innovación responsable y turismo regenerativo para que cada experiencia genere impacto positivo.',
+        description: 'Transparencia, innovación responsable y turismo regenerativo para que cada experiencia genere impacto positiv.',
         badgeColor: 'text-purple-600 bg-purple-100 border-purple-200',
     },
     {
