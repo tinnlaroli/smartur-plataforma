@@ -14,7 +14,7 @@ const ciudades = [
     { id: 'cordoba', nombre: 'Córdoba', lat: 18.8842, lng: -96.9256, color: '#FC478E' },
     { id: 'orizaba', nombre: 'Orizaba', lat: 18.8522, lng: -97.0994, color: '#984EFD' },
     { id: 'fortin', nombre: 'Fortín de las Flores', lat: 18.9061, lng: -96.9981, color: '#4DB9CA' },
-    { id: 'ixtaczoquitlan', nombre: 'Ixtaczoquitlán', lat: 18.8167, lng: -97.0667, color: '#22C55E' },
+    { id: 'ixtaczoquitlan', nombre: 'Ixtaczoquitlán', lat: 18.8167, lng: -97.0667, color: '#a3d14f' },
     { id: 'cuitlahuac', nombre: 'Cuitláhuac', lat: 18.8131, lng: -96.7222, color: '#F97316' },
     { id: 'amatlan', nombre: 'Amatlán de los Reyes', lat: 18.8333, lng: -96.9167, color: '#EC4899' },
     { id: 'yanga', nombre: 'Yanga', lat: 18.8333, lng: -96.8, color: '#8B5CF6' },

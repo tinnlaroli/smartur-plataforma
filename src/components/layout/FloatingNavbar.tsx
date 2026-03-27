@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useLanguage, languages } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import { ExternalLink, Globe, ChevronDown, Sun, Moon, LogOut } from 'lucide-react';
+import { Globe, Sun, Moon, LogOut, Menu, X } from 'lucide-react';
 
 interface NavLink {
     label: string;
@@ -16,9 +15,6 @@ interface User {
     id?: string;
     name?: string;
     email?: string;
-    role?: string;
-    roleId?: number;
-    role_id?: number;
 }
 
 interface FloatingNavbarProps {
@@ -30,188 +26,209 @@ interface FloatingNavbarProps {
     logout: () => void;
 }
 
+const PremiumButton: React.FC<{ 
+    onClick: (e: React.MouseEvent) => void; 
+    children: React.ReactNode;
+    color?: string;
+    className?: string;
+}> = ({ onClick, children, color = 'var(--color-pink)', className = "" }) => (
+    <button 
+        onClick={onClick} 
+        className={`btn-premium group ${className}`}
+        style={{ '--bg-color': color, '--hover-text': color } as React.CSSProperties}
+    >
+        <span>
+            <span className="btn-base">{children}</span>
+            <span className="btn-hover" aria-hidden="true">{children}</span>
+        </span>
+    </button>
+);
+
 export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handleStartExperience, scrollToSection, activeSection, user, logout }) => {
     const { theme, toggleTheme } = useTheme();
-    const { lang, changeLanguage } = useLanguage();
-
-    const navRef = useRef<HTMLDivElement>(null);
-    const bgRef = useRef<HTMLDivElement>(null);
+    const { lang, changeLanguage, t } = useLanguage();
 
     const [isNavSmall, setIsNavSmall] = useState(false);
+    const [isNavHidden, setIsNavHidden] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+    
+    const lastScrollY = useRef(0);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            if (!target.closest('.language-switcher')) {
-                setLangDropdownOpen(false);
+    const handleScroll = useCallback(() => {
+        const currentY = window.scrollY;
+        
+        // Small state
+        if (currentY > 80) {
+            setIsNavSmall(true);
+        } else {
+            setIsNavSmall(false);
+        }
+
+        // Hide/Show on scroll
+        if (currentY > 400) {
+            if (currentY > lastScrollY.current) {
+                setIsNavHidden(true);
+            } else {
+                setIsNavHidden(false);
             }
-        };
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
+        } else {
+            setIsNavHidden(false);
+        }
+
+        lastScrollY.current = currentY;
     }, []);
 
     useEffect(() => {
-        const handleScroll = () => {
-            const currentY = window.scrollY;
-
-            if (currentY > 50 && !isNavSmall) {
-                setIsNavSmall(true);
-                gsap.to(navRef.current, { scale: 0.95, duration: 0.3, ease: 'power2.out' });
-                gsap.to(bgRef.current, {
-                    backgroundColor: theme === 'dark' ? 'rgba(15, 15, 18, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-                    backdropFilter: 'blur(20px)',
-                    duration: 0.3,
-                });
-            } else if (currentY <= 50 && isNavSmall) {
-                setIsNavSmall(false);
-                gsap.to(navRef.current, { scale: 1, duration: 0.3, ease: 'power2.out' });
-                gsap.to(bgRef.current, {
-                    backgroundColor: theme === 'dark' ? 'rgba(15, 15, 18, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-                    backdropFilter: 'blur(20px)',
-                    duration: 0.3,
-                });
-            }
-        };
-
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [isNavSmall, theme]);
+    }, [handleScroll]);
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+        if (!isMobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    };
+
+    const handleMobileLinkClick = (target: string) => {
+        scrollToSection(target);
+        setIsMobileMenuOpen(false);
+        document.body.style.overflow = '';
+    };
 
     return (
-        <div className="pointer-events-none fixed top-[20px] right-0 left-0 z-[100] flex justify-center px-4">
-            <div ref={navRef} className="pointer-events-auto relative w-full max-w-[1100px] overflow-visible rounded-[50px] border border-white/50 shadow-xl dark:border-white/10">
-                <div
-                    ref={bgRef}
-                    className="absolute inset-0 -z-10 rounded-[50px] transition-colors"
-                    style={{
-                        backgroundColor: theme === 'dark' ? 'rgba(15, 15, 18, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-                        backdropFilter: 'blur(20px)',
-                    }}
-                />
-
-                <div className="flex items-center justify-between px-6 py-3">
-                    <a
-                        href="#hero"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            scrollToSection('hero');
-                        }}
-                        className="group relative flex-shrink-0"
-                    >
-                        <img src="/smartur.png" alt="SMARTUR" className="h-10 w-auto object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_8px_#914ef5]" />
-                    </a>
-
-                    <nav className="hidden items-center gap-8 md:flex">
-                        {navLinks.map((item, idx) => {
-                            const isActive = activeSection === item.target;
-
-                            if (item.external) {
-                                return (
-                                    <a
-                                        key={idx}
-                                        href={item.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={`relative text-[15px] font-bold tracking-wide transition-colors duration-300 ${isActive ? 'text-[#914ef5]' : 'text-gray-800 hover:text-[#914ef5] dark:text-gray-200'} group`}
-                                    >
-                                        {item.label}
-                                        <span className="absolute -bottom-1 left-0 h-[2px] w-full origin-right scale-x-0 bg-[#914ef5] transition-transform duration-300 group-hover:origin-left group-hover:scale-x-100" />
-                                    </a>
-                                );
-                            }
-
-                            return (
-                                <button
-                                    key={idx}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        scrollToSection(item.target);
-                                    }}
-                                    className={`relative text-[15px] font-bold tracking-wide transition-colors duration-300 ${isActive ? 'text-[#914ef5]' : 'text-gray-800 hover:text-[#914ef5] dark:text-gray-200'} group`}
-                                >
-                                    {item.label}
-                                    <span
-                                        className={`absolute -bottom-1 left-0 h-[2px] w-full origin-right bg-[#914ef5] transition-transform duration-300 ${isActive ? 'origin-left scale-x-100' : 'scale-x-0 group-hover:origin-left group-hover:scale-x-100'}`}
-                                    />
-                                </button>
-                            );
-                        })}
-                    </nav>
-
-                    <div className="relative flex items-center gap-3 sm:gap-4">
-                        <a href="#" className="hidden items-center gap-1.5 text-[15px] font-black tracking-wide text-[#2bb8d6] transition-colors hover:text-[#1e9cb8] sm:flex">
-                            Business
-                            <ExternalLink className="h-4 w-4" />
+        <>
+            <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-[var(--ease-out-expo)] 
+                ${isNavHidden ? '-translate-y-full' : 'translate-y-0'} 
+                ${isNavSmall ? 'is-nav-small pt-2' : 'pt-6'}`}>
+                
+                <div className="container mx-auto px-4 max-w-[1240px]">
+                    <div className="nav-small-bg relative flex items-center justify-between px-6 py-3 rounded-[50px]">
+                        
+                        {/* Logo */}
+                        <a
+                            href="#inicio"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                scrollToSection('inicio');
+                            }}
+                            className="group relative z-[110] flex-shrink-0"
+                        >
+                            <img src="/smartur.png" alt="SMARTUR" className="h-10 w-auto transition-all duration-300 group-hover:brightness-110" />
                         </a>
 
-                        {user ? (
-                            <div className="flex items-center gap-3">
-                                <span className="hidden text-sm font-bold text-gray-700 sm:block dark:text-gray-300">{user.name || user.email?.split('@')[0] || 'User'}</span>
-                                <button onClick={logout} className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600 transition-colors hover:bg-rose-200">
-                                    <LogOut className="h-4 w-4" />
-                                </button>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={handleStartExperience}
-                                className="rounded-full bg-[#ff4d8d] px-6 py-2 font-bold tracking-wide text-white transition-all duration-300 hover:bg-[#ff4d8d]/90"
-                            >
-                                Comenzar
-                            </button>
-                        )}
-
-                        <div className="mx-1 hidden h-6 w-[1px] bg-slate-300/60 sm:block" />
-
-                        <div className="language-switcher relative hidden sm:block">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setLangDropdownOpen(!langDropdownOpen);
-                                }}
-                                className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-[14px] font-bold text-gray-800 transition-colors hover:bg-slate-200 dark:bg-zinc-800 dark:text-gray-200"
-                            >
-                                <Globe className="h-4 w-4" />
-                                <span>{lang.toUpperCase()}</span>
-                                <ChevronDown className={`h-3 w-3 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            <AnimatePresence>
-                                {langDropdownOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 5 }}
-                                        className="absolute top-[calc(100%+0.5rem)] right-0 z-50 min-w-[140px] overflow-hidden rounded-2xl border border-gray-100 bg-white py-2 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900"
-                                    >
-                                        {Object.entries(languages).map(([code, name]) => (
-                                            <button
-                                                key={code}
-                                                onClick={() => {
-                                                    changeLanguage(code);
-                                                    setLangDropdownOpen(false);
-                                                }}
-                                                className={`flex w-full items-center justify-between px-5 py-2.5 text-sm transition-colors ${code === lang ? 'bg-slate-50 font-black text-[#914ef5] dark:bg-zinc-800' : 'text-gray-700 hover:bg-slate-50 hover:text-[#914ef5] dark:text-gray-300'}`}
-                                            >
-                                                <span className="text-[10px] font-black uppercase opacity-50">{code}</span>
-                                                <span className="font-bold">{name}</span>
+                        {/* Desktop Menu */}
+                        <nav className="hidden items-center gap-8 md:flex">
+                            {navLinks.map((item, idx) => {
+                                            const isActive = activeSection === item.target;
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => scrollToSection(item.target)}
+                                                    className={`relative text-[15px] font-bold tracking-wide transition-colors duration-300 group`}
+                                                    style={{ color: isActive ? 'var(--color-pink)' : 'var(--color-text)' }}
+                                                >
+                                                    {item.label}
+                                                    <span className={`absolute -bottom-1 left-0 h-[2px] w-full transition-transform duration-300 origin-right ${isActive ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`} style={{ background: 'var(--color-pink)' }} />
+                                                </button>
+                                            );
+                                        })}
+                                    </nav>
+            
+                                    {/* Actions */}
+                                    <div className="flex items-center gap-4 z-[110]">
+                                        <div className="hidden items-center gap-3 sm:flex">
+                                            <button onClick={toggleTheme} className="control-btn p-2">
+                                                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                                             </button>
-                                        ))}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                                            <div className="language-switcher relative">
+                                                <button 
+                                                    onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                                                    className="control-btn flex items-center gap-2 px-3 py-2 text-[14px] font-bold"
+                                                >
+                                        <Globe className="h-4 w-4" />
+                                        <span>{lang.toUpperCase()}</span>
+                                    </button>
+                                    <AnimatePresence>
+                                        {langDropdownOpen && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                className="absolute top-full right-0 mt-2 rounded-xl shadow-2xl py-2 min-w-[140px]"
+                                                style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}
+                                            >
+                                                {Object.entries(languages).map(([code, name]) => (
+                                                    <button
+                                                        key={code}
+                                                        onClick={() => { changeLanguage(code); setLangDropdownOpen(false); }}
+                                                        className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold transition-colors"
+                                                        style={{ color: lang === code ? 'var(--color-pink)' : 'var(--color-text)' }}
+                                                    >
+                                                        <span>{name}</span>
+                                                        <span className="text-[10px] uppercase opacity-50">{code}</span>
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
 
-                        <button
-                            onClick={toggleTheme}
-                            className="hidden h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-gray-800 transition-colors hover:bg-slate-200 sm:flex dark:bg-zinc-800 dark:text-gray-200"
-                        >
-                            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
+                            {user ? (
+                                <button onClick={logout} className="p-2 rounded-full transition-colors" style={{ background: 'rgba(255,71,142,0.1)', color: 'var(--color-pink)' }}>
+                                    <LogOut size={18} />
+                                </button>
+                            ) : (
+                                <PremiumButton onClick={handleStartExperience} className="hidden sm:block">
+                                    {t('nav.start')}
+                                </PremiumButton>
+                            )}
+
+                            {/* Mobile Toggle */}
+                            <button 
+                                onClick={toggleMobileMenu}
+                                className="md:hidden p-2"
+                                style={{ color: 'var(--color-text)' }}
+                                aria-label="Toggle menu"
+                            >
+                                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Mobile Menu Overlay */}
+            <div className={`mobile-menu-overlay fixed inset-0 z-[90] flex flex-col items-center justify-center ${isMobileMenuOpen ? 'is-opened' : ''}`}>
+                <nav className="flex flex-col items-center gap-8">
+                    {navLinks.map((item, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => handleMobileLinkClick(item.target)}
+                            className="text-4xl font-black tracking-tighter transition-colors"
+                            style={{ 
+                                transitionDelay: `${idx * 0.1}s`,
+                                color: activeSection === item.target ? 'var(--color-pink)' : 'var(--color-text)' 
+                            }}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                    {!user && (
+                        <button 
+                            onClick={() => { handleStartExperience(); setIsMobileMenuOpen(false); document.body.style.overflow = ''; }}
+                            className="mt-4 text-2xl font-bold"
+                            style={{ color: 'var(--color-purple)' }}
+                        >
+                            {t('nav.start')}
+                        </button>
+                    )}
+                </nav>
+            </div>
+        </>
     );
 };

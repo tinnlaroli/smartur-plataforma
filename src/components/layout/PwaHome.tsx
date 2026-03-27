@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface User {
     id?: string;
@@ -20,6 +21,7 @@ interface PwaHomeProps {
 }
 
 export const PwaHome: React.FC<PwaHomeProps> = ({ isStandalonePwa, user, logout, setShowLoginModal, handleStartExperience, setShowCordobaMap, openInfoCards, bgPatron, logoArriba }) => {
+    const { t } = useLanguage();
     if (!isStandalonePwa) return null;
 
     return (
@@ -64,7 +66,7 @@ export const PwaHome: React.FC<PwaHomeProps> = ({ isStandalonePwa, user, logout,
                             onClick={logout}
                             className="rounded-full border border-gray-100 bg-white/50 px-4 py-2 text-[11px] font-black tracking-widest uppercase shadow-sm backdrop-blur-md transition hover:bg-white/80"
                         >
-                            Cerrar sesión
+                            {t('pwaHome.logoutButton')}
                         </button>
                     ) : (
                         <button
@@ -74,7 +76,7 @@ export const PwaHome: React.FC<PwaHomeProps> = ({ isStandalonePwa, user, logout,
                             }}
                             className="relative z-50 rounded-full bg-[#ff4d8d] px-5 py-2 text-[13px] font-black tracking-widest text-white uppercase shadow-lg"
                         >
-                            Iniciar sesión
+                            {t('pwaHome.loginButton')}
                         </button>
                     )}
                 </div>
@@ -93,7 +95,7 @@ export const PwaHome: React.FC<PwaHomeProps> = ({ isStandalonePwa, user, logout,
                         <button onClick={handleStartExperience} className="group w-full">
                             <div className="relative flex items-center rounded-full bg-[#ff4d8d] py-1 pr-2 pl-8 hover:bg-[#ff4d8d]/90">
                                 <span className="flex-1 py-3 text-left text-2xl leading-none font-black text-white">
-                                    ¿A dónde <br /> vamos?
+                                    {t('pwaHome.whereTop')} <br /> {t('pwaHome.whereBottom')}
                                 </span>
                                 <div className="ml-2 flex h-16 w-16 items-center justify-center rounded-full bg-white text-[#ff4d8d] shadow-sm">
                                     <MapPin className="h-8 w-8 fill-[#ff4d8d]" />
@@ -104,7 +106,7 @@ export const PwaHome: React.FC<PwaHomeProps> = ({ isStandalonePwa, user, logout,
                         <button onClick={() => setShowCordobaMap(true)} className="group w-full">
                             <div className="relative flex items-center rounded-full bg-[#ff7d1f] py-1 pr-2 pl-8 hover:bg-[#ff7d1f]/90">
                                 <span className="flex-1 py-3 text-left text-2xl leading-none font-black text-white">
-                                    Región <br /> Montañas
+                                    {t('pwaHome.regionTop')} <br /> {t('pwaHome.regionBottom')}
                                 </span>
                                 <div className="ml-2 flex h-16 w-16 items-center justify-center rounded-full bg-white text-[#ff7d1f] shadow-sm">
                                     <MapPin className="h-8 w-8 fill-[#ff7d1f]" />
@@ -115,7 +117,7 @@ export const PwaHome: React.FC<PwaHomeProps> = ({ isStandalonePwa, user, logout,
                         <button onClick={openInfoCards} className="group w-full">
                             <div className="relative flex items-center rounded-full bg-[#a3d14f] py-1 pr-2 pl-8 hover:bg-[#a3d14f]/90">
                                 <span className="flex-1 py-3 text-left text-2xl leading-none font-black text-white">
-                                    Nuestra <br /> esencia
+                                    {t('pwaHome.essenceTop')} <br /> {t('pwaHome.essenceBottom')}
                                 </span>
                                 <div className="ml-2 flex h-16 w-16 items-center justify-center rounded-full bg-white text-[#a3d14f] shadow-sm">
                                     <MapPin className="h-8 w-8 fill-[#a3d14f]" />

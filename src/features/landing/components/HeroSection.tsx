@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { initPhoneScene } from '../../../assets/3D/phone';
 import { ChevronDown, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface HeroSectionProps {
     handleStartExperience: () => void;
@@ -12,8 +13,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
     const phoneContainerRef = useRef<HTMLDivElement>(null);
     const [isRevealed, setIsRevealed] = useState(false);
 
-    const title = 'IA que guía,<br/>turismo que une.';
-    const subtitle = 'Explora las Altas Montañas de Veracruz con rutas personalizadas por inteligencia artificial.';
+    const { t } = useLanguage();
+
+    const title = t('heroSection.titleHtml');
+    const subtitle = t('heroSection.subtitle');
 
     useEffect(() => {
         const hero = heroRef.current;
@@ -67,6 +70,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 if (isMobile) {
                     tl.to(titleEl, { opacity: 1, y: 0, duration: 0.6 }, 0.1);
                 } else {
+                    // Prevent parent from hiding words that will fade in
+                    gsap.set(titleEl, { opacity: 1 });
+                    
                     // Wrap words for cascade
                     const text = titleEl.innerText;
                     const wordsArr = text.split(/(\s+)/);
@@ -75,7 +81,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                         if (w.trim()) {
                             const span = document.createElement('span');
                             span.className = 'hero-word inline-block perspective-[1000px]';
-                            span.innerText = w;
+
+                            const wl = w.toLowerCase();
+                            // Colores de "palabras destacadas" en ES/EN/FR.
+                            if (wl.includes('guía') || wl.includes('guia') || wl.includes('guides') || wl.includes('guide')) span.style.color = '#ff4d8d';
+                            if (wl.includes('turismo') || wl.includes('tourism') || wl.includes('tourisme')) span.style.color = '#4db9ca';
+
+                            if (w.includes(',')) {
+                                span.innerHTML = w.replace(',', ',<br/>');
+                            } else {
+                                span.innerText = w;
+                            }
                             titleEl.appendChild(span);
                         } else {
                             titleEl.appendChild(document.createTextNode(w));
@@ -150,7 +166,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
     }, []);
 
     return (
-        <section ref={heroRef} id="hero" className={`relative flex min-h-[100dvh] flex-col justify-center overflow-hidden bg-white ${isRevealed ? 'hero-revealed' : ''}`}>
+        <section ref={heroRef} id="hero" className={`relative flex min-h-[100dvh] flex-col justify-center overflow-hidden ${isRevealed ? 'hero-revealed' : ''}`} style={{ background: 'var(--color-bg)' }}>
             {/* Background shimmer */}
             <div
                 className="hero-shimmer pointer-events-none absolute inset-0 z-0 -translate-x-full transform opacity-0"
@@ -162,15 +178,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             <div className="relative z-10 container mx-auto w-full px-4">
                 <div className="flex flex-col items-center justify-between gap-12 py-12 md:flex-row md:py-16">
                     <div className="z-20 max-w-2xl flex-1">
-                        <h1 className="hero-title mb-6 text-5xl leading-tight font-black text-gray-900 md:text-7xl lg:text-8xl" dangerouslySetInnerHTML={{ __html: title }} />
-                        {subtitle && <p className="hero-subtitle mb-10 max-w-lg text-lg leading-relaxed text-gray-600 md:text-xl">{subtitle}</p>}
+                        <h1 className="hero-title mb-6 text-5xl leading-[1.05] font-black md:text-7xl lg:text-8xl" style={{ color: 'var(--color-text)' }} dangerouslySetInnerHTML={{ __html: title }} />
+                        {subtitle && <p className="hero-subtitle mb-10 max-w-lg text-lg leading-relaxed md:text-xl" style={{ color: 'var(--color-text-alt)' }}>{subtitle}</p>}
 
                         <div className="hero-cta relative inline-block overflow-hidden">
                             <button
                                 onClick={handleStartExperience}
                                 className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-[#ff4d8d] px-10 py-5 text-xl font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-[#ff4d8d]/90 active:scale-95"
                             >
-                                <span>Empezar aventura</span>
+                                <span>{t('heroSection.cta')}</span>
                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </button>
                         </div>
@@ -191,14 +207,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             <div
                 className="scroll-indicator absolute bottom-8 left-1/2 z-50 flex -translate-x-1/2 cursor-pointer flex-col items-center gap-2"
                 onClick={() => {
-                    const nextSection = document.getElementById('trustBar');
+                    const nextSection = document.getElementById('como-funciona');
                     if (nextSection) {
                         nextSection.scrollIntoView({ behavior: 'smooth' });
                     }
                 }}
             >
-                <span className="text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase">Descubrir</span>
-                <ChevronDown className="h-8 w-8 animate-bounce text-[#ff4d8d]" strokeWidth={2.5} />
+                <span className="text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: 'var(--color-text-alt)' }}>{t('heroSection.scrollIndicator')}</span>
+                <ChevronDown className="h-8 w-8 animate-bounce" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
             </div>
         </section>
     );

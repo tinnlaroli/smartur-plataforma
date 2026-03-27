@@ -30,7 +30,11 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
         if (token && userStr) {
             const user = JSON.parse(userStr);
             const userRole = user.role_id || (Number(user.id) === 1 ? 1 : 2);
-            navigate(userRole === 1 ? '/dashboard' : '/form');
+            if (userRole === 1) {
+                navigate('/dashboard');
+            } else {
+                navigate('/', { state: { openForm: true } });
+            }
             if (onClose) onClose();
         }
     }, [navigate, onClose]);
@@ -60,7 +64,11 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
                 localStorage.setItem('token', response.token);
                 localStorage.setItem('user', JSON.stringify(response.user));
                 const userRole = response.user.role_id || (Number(response.user.id) === 1 ? 1 : 2);
-                navigate(userRole === 1 ? '/dashboard' : '/form');
+                if (userRole === 1) {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/', { state: { openForm: true } });
+                }
                 if (onClose) onClose();
             }
 
