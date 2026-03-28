@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Template, CreateTemplateDTO, UpdateTemplateDTO } from '../types/types';
+import type { Template, CreateTemplateDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { templatesApi } from '../api/templatesApi';
 import { useToast } from '../../../shared/context/ToastContext';

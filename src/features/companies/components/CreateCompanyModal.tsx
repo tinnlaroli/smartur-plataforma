@@ -9,7 +9,6 @@ interface Props {
 }
 
 export default function CreateCompanyModal({ onClose, onSubmit }: Props) {
-    const toast = useToast();
     const [formData, setFormData] = useState<CreateCompanyDTO>({
         name: '',
         address: '',

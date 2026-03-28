@@ -41,7 +41,7 @@ export const ActionBridge: React.FC<ActionBridgeProps> = ({ handleStartExperienc
             
             {/* Business CTA (Primary) -> Styled with clear/gray colors */}
             <a 
-              href={import.meta.env.VITE_BUSINESS_URL || 'http://localhost:4321'} 
+              href={import.meta.env.VITE_BUSINESS_URL || 'https://tinnlaroli.github.io/smartur-landing/'} 
               target="_blank" 
               rel="noopener noreferrer"
               className="bridge-action group relative w-full md:w-auto min-w-[320px] shadow-xl hover:shadow-2xl p-4 rounded-[2rem] transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"

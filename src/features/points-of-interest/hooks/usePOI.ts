@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { POI, CreatePOIDTO, UpdatePOIDTO } from '../types/types';
+import type { POI, CreatePOIDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { poiApi } from '../api/poiApi';
 import { useToast } from '../../../shared/context/ToastContext';

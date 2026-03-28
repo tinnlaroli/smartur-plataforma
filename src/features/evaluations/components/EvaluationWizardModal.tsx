@@ -33,7 +33,7 @@ const STEPS = [
 
 const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, serviceName }) => {
     const toast = useToast();
-    const { getRubric, registerEvaluation, rubric, isLoading, error: apiError } = useEvaluations();
+    const { getRubric, registerEvaluation, rubric, isLoading } = useEvaluations();
     const [currentStep, setCurrentStep] = useState(0);
     const [responses, setResponses] = useState<
         Record<number, { score: number; subcriterionId: number; observations?: string }>

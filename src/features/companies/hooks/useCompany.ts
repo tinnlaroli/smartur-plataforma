@@ -68,7 +68,7 @@ export function useCompany() {
                     error.response?.data?.error ||
                     error.response?.data?.message ||
                     'Error inesperado';
-                toast.error('text-white');
+                toast.error(message);
             }
         } finally {
             setIsLoading(false);

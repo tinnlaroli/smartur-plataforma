@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Certification, CreateCertificationDTO, UpdateCertificationDTO } from '../types/types';
+import type { Certification, CreateCertificationDTO } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import { certificationApi } from '../api/certificationApi';
 import { useToast } from '../../../shared/context/ToastContext';
