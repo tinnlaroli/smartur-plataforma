@@ -15,9 +15,22 @@ export interface FormContext {
     needs_transport: boolean;
     pref_food: boolean;
     wants_tours: boolean;
-    accesibilidad: string;
+    accesibilidad: string; // 'si' | 'no' in UI
+    requiere_accesibilidad?: boolean; // mapping for AI
     detalleAcc: string;
     visitado: string;
+}
+
+export interface AIRecommendationContext {
+    presupuesto_bucket?: string;
+    edad_range?: string;
+    tiposTurismo: string[];
+    group_type?: string;
+    wants_tours: boolean;
+    needs_hotel: boolean;
+    pref_food: boolean;
+    requiere_accesibilidad: boolean;
+    pref_outdoor: boolean;
 }
 
 export interface Recommendation {
@@ -39,8 +52,7 @@ export interface RecommendationsResponse {
 export interface GetRecommendationsParams {
     userId: string;
     alpha?: number;
-    candidates?: number;
-    k_cf?: number;
-    context: Partial<FormContext>;
+    top_n?: number;
+    context: AIRecommendationContext;
     token?: string | null;
 }

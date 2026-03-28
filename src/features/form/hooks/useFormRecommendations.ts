@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { formApi } from '../api/formApi';
-import type { RecommendationsResponse, FormContext } from '../types/types';
+import type { RecommendationsResponse, GetRecommendationsParams } from '../types/types';
 
 export function useFormRecommendations() {
     const [loading, setLoading] = useState(false);
@@ -16,21 +16,7 @@ export function useFormRecommendations() {
     };
 
     const getRecommendations = useCallback(
-        async ({
-            userId,
-            alpha = 0.7,
-            candidates = 200,
-            k_cf = 20,
-            context = {},
-            token = null,
-        }: {
-            userId: string;
-            alpha?: number;
-            candidates?: number;
-            k_cf?: number;
-            context: Partial<FormContext>;
-            token?: string | null;
-        }) => {
+        async (params: GetRecommendationsParams) => {
             cancel();
             const controller = new AbortController();
             abortRef.current = controller;
@@ -39,14 +25,7 @@ export function useFormRecommendations() {
             setError(null);
 
             try {
-                const json = await formApi.getRecommendations({
-                    userId,
-                    alpha,
-                    candidates,
-                    k_cf,
-                    context,
-                    token,
-                });
+                const json = await formApi.getRecommendations(params);
                 setData(json);
                 return json;
             } catch (err: any) {

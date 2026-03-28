@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback /*, useMemo */ } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import SmartURLoader from '../../auth/components/SmartURLoader';
@@ -15,14 +15,17 @@ import { ContactForm } from '../components/ContactForm';
 import { CordobaMap } from '../components/CordobaMap';
 import { Faqs } from '../components/Faqs';
 import { Footer } from '../../../components/layout/Footer';
-import { PwaHome } from '../../../components/layout/PwaHome';
+// import { PwaHome } from '../../../components/layout/PwaHome';
 import { useAuthModal } from '../../auth/context/AuthModalContext';
 import { FormModal } from '../../form/components/FormModal';
 
 import '../styles/Landing.css';
+/* 
 import bgPatron from '../../../assets/landing/bgPatron.png';
 import logoArriba from '../../../assets/landing/logo.png';
+*/
 
+/*
 interface InfoCard {
     id: string;
     title: string;
@@ -30,6 +33,7 @@ interface InfoCard {
     description: string;
     badgeColor: string;
 }
+*/
 
 interface User {
     id?: string;
@@ -46,10 +50,13 @@ export default function Landing() {
     const { openModal } = useAuthModal();
     const [loading, setLoading] = useState(true);
     const [activeSection, setActiveSection] = useState('inicio');
-    const [isStandalonePwa, setIsStandalonePwa] = useState(false);
+    // const [isStandalonePwa, setIsStandalonePwa] = useState(false);
+    const isStandalonePwa = false; // Forzado a false para ver landing en móvil
     const [showCordobaMap, setShowCordobaMap] = useState(false);
+    /* Comentado: State para PWA
     const [focusedCard, setFocusedCard] = useState<InfoCard | null>(null);
     const [showInfoCards, setShowInfoCards] = useState(false);
+    */
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
 
     const [user, setUser] = useState<User | null>(null);
@@ -72,6 +79,7 @@ export default function Landing() {
 
     const { t } = useLanguage();
 
+    /* Comentado: infoCards para PWA
     const infoCards = useMemo<InfoCard[]>(
         () => [
             {
@@ -98,6 +106,7 @@ export default function Landing() {
         ],
         [t],
     );
+    */
 
     const navLinks = [
         { label: t('nav.home'), target: 'inicio', external: false },
@@ -130,6 +139,7 @@ export default function Landing() {
         };
     }, []);
 
+    /* Comentado para obligar a ver la landing normal en móvil
     useEffect(() => {
         const updateStandalone = () => {
             const isMobileWidth = window.innerWidth <= 768;
@@ -139,6 +149,7 @@ export default function Landing() {
         window.addEventListener('resize', updateStandalone);
         return () => window.removeEventListener('resize', updateStandalone);
     }, []);
+    */
 
     const scrollToSection = useCallback((sectionId: string) => {
         const element = document.getElementById(sectionId);
@@ -165,7 +176,7 @@ export default function Landing() {
         navigate('/');
     };
 
-    const openInfoCards = () => setShowInfoCards(true);
+    // const openInfoCards = () => setShowInfoCards(true);
 
     return (
         <div className="relative min-h-screen bg-white font-sans text-gray-800 dark:bg-[var(--color-bg)] dark:text-zinc-200">
@@ -233,6 +244,7 @@ export default function Landing() {
                 </div>
             )}
 
+            {/* Comentado: PWA Home y Modals de info PWA
             <PwaHome
                 isStandalonePwa={isStandalonePwa}
                 user={user}
@@ -245,7 +257,6 @@ export default function Landing() {
                 logoArriba={logoArriba}
             />
 
-            {/* PWA Info Cards Modals */}
             {focusedCard && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md">
                     <div className="relative w-full max-w-sm rounded-[40px] bg-white p-8 shadow-2xl dark:bg-zinc-950 dark:text-zinc-200 border border-gray-100 dark:border-zinc-800">
@@ -283,6 +294,7 @@ export default function Landing() {
                     </div>
                 </div>
             )}
+            */}
 
             <FormModal isOpen={isFormModalOpen} onClose={() => setIsFormModalOpen(false)} />
         </div>

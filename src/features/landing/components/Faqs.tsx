@@ -44,7 +44,12 @@ export const Faqs: React.FC = () => {
     };
 
     return (
-        <section id="faqs" className="py-24 md:py-36 bg-white dark:bg-[var(--color-bg)]">
+        <section id="faqs" className="relative overflow-hidden py-24 md:py-36 bg-white dark:bg-[var(--color-bg)]">
+            {/* Background Accent */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute -left-24 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full opacity-[0.04] blur-[100px]" style={{ background: 'var(--color-purple)' }} />
+            </div>
+
             <div className="container mx-auto px-4 max-w-2xl">
                 <div className="mb-16 text-center">
                     <p className="mb-3 text-xs font-black uppercase tracking-[0.25em]" style={{ color: 'var(--color-purple)' }}>

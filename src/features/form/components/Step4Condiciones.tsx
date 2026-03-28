@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { ArrowLeft, Check, MapPin, CheckCircle2, XCircle, RotateCw } from 'lucide-react';
 import { useFormRecommendations } from '../hooks/useFormRecommendations';
 import SmartURLoader from '../../auth/components/SmartURLoader';
-import type { FormContext, RecommendationsResponse } from '../types/types';
+import type { FormContext, RecommendationsResponse, AIRecommendationContext } from '../types/types';
 
 interface Step4Props {
     data: Partial<FormContext>;
@@ -69,16 +69,20 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
         };
     }, [cancel]);
 
-    const buildContext = (): Partial<FormContext> => {
+    const buildAIContext = (): AIRecommendationContext => {
         const d = data || {};
         const preferencia_lugar = d.preferencia_lugar || 'indiferente';
         const pref_outdoor = preferencia_lugar === 'aire';
 
         return {
-            ...d,
-            accesibilidad: accesibilidad === 'si' ? 'si' : 'no',
-            detalleAcc: accesibilidad === 'si' ? detalleAcc : '',
-            visitado: visitado === 'si' ? 'si' : 'no',
+            presupuesto_bucket: d.presupuesto_bucket || 'medio',
+            edad_range: d.edad_range || '35-44',
+            tiposTurismo: (d.tiposTurismo && d.tiposTurismo.length > 0) ? d.tiposTurismo : ['cultural'],
+            group_type: d.group_type || 'familia',
+            wants_tours: !!d.wants_tours,
+            needs_hotel: !!d.needs_hotel,
+            pref_food: !!d.pref_food,
+            requiere_accesibilidad: accesibilidad === 'si',
             pref_outdoor,
         };
     };
@@ -99,16 +103,15 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
             return;
         }
 
-        const context = buildContext();
-        console.log('[Step4] Enviando context al recommender:', context);
+        const aiContext = buildAIContext();
+        console.log('[Step4] Enviando context al recommender:', aiContext);
 
         try {
             const result = await getRecommendations({
                 userId: String(user.id),
-                alpha: 0.7,
-                candidates: 200,
-                k_cf: 20,
-                context,
+                alpha: 0.2, // Updated to 0.2 as per requirement
+                top_n: 5,   // Updated to 5 as per requirement
+                context: aiContext,
                 token: authToken,
             });
 

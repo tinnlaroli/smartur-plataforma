@@ -130,8 +130,10 @@ export const SmartEngine: React.FC = () => {
             </div>
 
             {/* Background Decorative Blobs */}
-            <div className="pointer-events-none absolute top-1/4 left-10 h-64 w-64 rounded-full bg-[#914ef5] opacity-10 mix-blend-multiply blur-[100px] filter" />
-            <div className="pointer-events-none absolute right-10 bottom-1/4 h-64 w-64 rounded-full bg-[#ff4d8d] opacity-10 mix-blend-multiply blur-[100px] filter" />
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute top-1/4 -left-20 h-80 w-80 rounded-full opacity-[0.05] blur-[100px]" style={{ background: 'var(--color-purple)' }} />
+                <div className="absolute bottom-1/4 -right-20 h-80 w-80 rounded-full opacity-[0.05] blur-[100px]" style={{ background: 'var(--color-pink)' }} />
+            </div>
         </section>
     );
 };

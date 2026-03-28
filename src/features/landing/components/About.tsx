@@ -118,6 +118,12 @@ export const About: React.FC = () => {
 
     return (
         <section ref={sectionRef} id="nosotros" className="sy-about relative min-h-screen py-20 bg-white dark:bg-[var(--color-bg)] flex items-center overflow-hidden">
+            {/* Background accents */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute -left-32 top-1/4 h-[500px] w-[500px] rounded-full opacity-[0.05] blur-[120px]" style={{ background: 'var(--color-purple)' }} />
+                <div className="absolute -right-32 bottom-1/4 h-[450px] w-[450px] rounded-full opacity-[0.05] blur-[100px]" style={{ background: 'var(--color-green)' }} />
+            </div>
+
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-start">
                     

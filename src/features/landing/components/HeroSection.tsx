@@ -189,6 +189,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 }}
             />
 
+            {/* Background accents */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute -left-20 top-1/4 h-[400px] w-[400px] rounded-full opacity-[0.07] blur-[100px]" style={{ background: 'var(--color-cyan)' }} />
+                <div className="absolute -right-20 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-[0.08] blur-[120px]" style={{ background: 'var(--color-pink)' }} />
+            </div>
+
             <div className="u-container container relative z-10 mx-auto w-full px-4 pt-0">
                 <div className="inner flex flex-row items-start justify-between gap-[5rem] pt-[2rem] pb-[4rem] lg:flex-row lg:items-start lg:gap-[4rem] lg:pt-[1.5rem] lg:pb-[3rem] md:flex-col md:items-start md:gap-[4rem] md:pt-[2rem] md:pb-[2rem] max-[767px]:flex-col max-[767px]:items-start max-[767px]:gap-[3rem] max-[767px]:pt-[4rem] max-[767px]:pb-[1rem]">
                     <div className="content z-20 flex-1 max-w-none md:max-w-full">

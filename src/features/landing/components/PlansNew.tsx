@@ -64,7 +64,13 @@ export const PlansNew: React.FC = () => {
     }, [isAnnual]);
 
     return (
-        <section id="pricing" className="py-20 md:py-32 bg-white">
+        <section id="pricing" className="relative overflow-hidden py-20 md:py-32 bg-white dark:bg-zinc-950">
+            {/* Background Accents */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute -top-24 right-0 h-96 w-96 rounded-full opacity-[0.03] blur-[100px]" style={{ background: 'var(--color-green)' }} />
+                <div className="absolute bottom-0 -left-24 h-96 w-96 rounded-full opacity-[0.03] blur-[120px]" style={{ background: 'var(--color-purple)' }} />
+            </div>
+
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="landing-heading text-4xl md:text-5xl font-black mb-6 text-slate-900">
