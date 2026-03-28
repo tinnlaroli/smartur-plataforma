@@ -7,6 +7,7 @@ import { ProgressIndicator } from './ProgressIndicator';
 import { RecommendationsResult } from './RecommendationsResult';
 import { X } from 'lucide-react';
 import type { FormContext, RecommendationsResponse } from '../types/types';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface FormModalProps {
     isOpen: boolean;
@@ -19,6 +20,8 @@ export function FormModal({ isOpen, onClose }: FormModalProps) {
     const [isStep4Loading, setIsStep4Loading] = useState(false);
     const [showRecommendations, setShowRecommendations] = useState(false);
     const [recommendationsData, setRecommendationsData] = useState<RecommendationsResponse | null>(null);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -67,15 +70,21 @@ export function FormModal({ isOpen, onClose }: FormModalProps) {
             />
             
             {/* Modal Card */}
-            <div className="relative w-full max-w-4xl max-h-[95vh] overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900 shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
+            <div
+                className={`relative w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-3xl shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col ${
+                    isDark ? 'border border-zinc-800 bg-zinc-900' : 'border border-zinc-200 bg-white'
+                }`}
+            >
                 <button 
                     onClick={onClose}
-                    className="absolute top-6 right-6 z-10 rounded-full p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
+                    className={`absolute top-6 right-6 z-10 rounded-full p-2 transition-colors ${
+                        isDark ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900'
+                    }`}
                 >
                     <X className="h-6 w-6" />
                 </button>
 
-                <div className="p-8 md:p-12 overflow-y-auto">
+                <div className="p-6 md:p-8 overflow-y-auto">
                     <ProgressIndicator currentStep={currentStep + 1} totalSteps={totalSteps} isStep4Loading={isStep4Loading} />
 
                     <div className="mt-8">

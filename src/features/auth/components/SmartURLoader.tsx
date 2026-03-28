@@ -8,6 +8,7 @@ import "./SmartURLoader.css";
 
 interface SmartURLoaderProps {
   onFinished?: () => void;
+  isReady?: boolean;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -164,7 +165,6 @@ const PIN_PATHS = [
   },
 ];
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
  * AVIONES DE PAPEL PRE-CALCULADOS
  * ═══════════════════════════════════════════════════════════════════════════
@@ -183,7 +183,7 @@ const PIN_PATHS = [
  * ═══════════════════════════════════════════════════════════════════════════ */
 const PRECALCULATED_PLANES = [
   // Avión 0 (naranja): escalado ×0.75, centro ≈ (46,71)
-  "M56.69,60.06 L35.69,74.51 C35.30,74.77,35.38,75.37,35.82,75.53 L39.90,76.99 L53.47,64.58 L42.75,78.01 L43.80,82.03 C43.88,82.30,44.22,82.39,44.42,82.18 L46.84,79.47 L50.25,80.68 C50.56,80.80,50.90,80.62,51.00,80.30 L56.97,60.27 C57.02,60.11,56.83,59.97,56.69,60.06 Z",
+  "M56.69,60.06 L35.69,74.51 C35.30,74.77,35.38,75.37,35.82,75.53 L39.90,76.99 L53.47,64.58 L42.75,78.01 L42.75,78.01 L43.80,82.03 C43.88,82.30,44.22,82.39,44.42,82.18 L46.84,79.47 L50.25,80.68 C50.56,80.80,50.90,80.62,51.00,80.30 L56.97,60.27 C57.02,60.11,56.83,59.97,56.69,60.06 Z",
   // Avión 1 (rosa): escalado ×0.75, centro ≈ (119,72)
   "M121.87,85.05 L110.55,62.23 C110.34,61.80,110.70,61.32,111.16,61.39 L115.44,62.11 L121.26,79.55 L118.42,62.60 L121.30,59.59 C121.50,59.39,121.84,59.49,121.91,59.76 L122.71,63.31 L126.28,63.91 C126.60,63.96,126.82,64.27,126.75,64.60 L122.22,85.01 C122.18,85.18,121.95,85.21,121.87,85.05 Z",
   // Avión 2 (verde): escalado ×0.75, centro ≈ (30,112)
@@ -220,14 +220,21 @@ const PRECALCULATED_PLANES = [
  *
  * Props:
  *   onFinished → Callback que se ejecuta al terminar toda la secuencia.
- *                Típicamente se usa para ocultar el overlay del loader.
+ *   isReady    → Señal externa para terminar la carga.
  * ═══════════════════════════════════════════════════════════════════════════ */
-export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
+export default function SmartURLoader({ onFinished, isReady = false }: SmartURLoaderProps = {}) {
   // Referencias DOM para animaciones GSAP
   const containerRef = useRef<HTMLDivElement>(null); // Contenedor principal (overlay)
   const percentRef = useRef<HTMLDivElement>(null); // Elemento del porcentaje de carga
   const logoRef = useRef<HTMLImageElement>(null); // Imagen del logo oficial
   const svgRef = useRef<SVGSVGElement>(null); // SVG que contiene los arcos y el pin
+  const isReadyRef = useRef(isReady);
+  const exitTriggered = useRef(false);
+  const onFinishedRef = useRef(onFinished);
+
+  // Sincronizar el ref con el prop para que el closure de useGSAP lo vea
+  isReadyRef.current = isReady;
+  onFinishedRef.current = onFinished;
 
   useGSAP(
     () => {
@@ -235,22 +242,19 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
       if (!root) return;
 
       // Inicializa posición del logo centrado con GSAP para evitar saltos
-      // cuando se aplica scale. xPercent/yPercent compensan el offset del
-      // posicionamiento absoluto (top:45%, left:50%).
       if (logoRef.current) {
         gsap.set(logoRef.current, { xPercent: -50, yPercent: -50 });
       }
 
       // Seleccionar elementos del DOM para animar
-      const morphEls = root.querySelectorAll(".morph-path"); // 4 paths de aviones/iconos
-      const spinnerGs = root.querySelectorAll(".arc-spinner"); // 4 grupos <g> que rotan
-      const pinEls = root.querySelectorAll(".pin-path"); // 7 piezas del marcador
+      const morphEls = root.querySelectorAll(".morph-path");
+      const spinnerGs = root.querySelectorAll(".arc-spinner");
+      const pinEls = root.querySelectorAll(".pin-path");
 
       /* ─── Rastreo del progreso de carga ──────────────────────────── */
-      const progressObj = { value: 0 }; // Objeto proxy para animar con GSAP
+      const progressObj = { value: 0 };
       let pageLoaded = false;
 
-      // Verificar si la página ya cargó o escuchar el evento 'load'
       if (document.readyState === "complete") {
         pageLoaded = true;
       } else {
@@ -260,7 +264,7 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
         window.addEventListener("load", onLoad, { once: true });
       }
 
-      /* ─── Animación de entrada + spinners (optimizada: más corta y ligera) ─── */
+      /* ─── Animación de entrada + spinners ─── */
       const spinTweens: gsap.core.Tween[] = [];
 
       spinnerGs.forEach((spinner, i) => {
@@ -277,7 +281,6 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
           duration: 0.5,
           ease: "power2.out",
           delay: i * 0.06,
-          overwrite: "auto",
         });
 
         const dir = i % 2 === 0 ? 1 : -1;
@@ -288,13 +291,9 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
           duration: speed,
           repeat: -1,
           ease: "none",
-          overwrite: "auto",
         });
         spinTweens.push(tween);
       });
-
-      /* Interpoladores Flubber y preparación del pin se hacen al iniciar la salida (lazy)
-         para no bloquear el primer frame. */
 
       /* ─── Porcentaje simulado + lógica de espera ──────────────── */
       gsap.to(progressObj, {
@@ -304,42 +303,41 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
         onUpdate: () => {
           if (percentRef.current)
             (percentRef.current as HTMLElement).innerText = `${Math.floor(progressObj.value)}%`;
+          
+          // Si ya estamos listos y el progreso es razonable, aceleramos
+          if (isReadyRef.current && progressObj.value > 60 && !exitTriggered.current) {
+              checkLoadState();
+          }
         },
         onComplete: checkLoadState,
       });
 
-      /**
-       * Revisa si la página ya terminó de cargar.
-       * Si sí → dispara la secuencia de salida.
-       * Si no → avanza lentamente de 85% a 99% mientras espera.
-       */
       function checkLoadState() {
-        if (pageLoaded) {
+        if (exitTriggered.current) return;
+
+        if (pageLoaded || isReadyRef.current) {
           triggerExitSequence();
         } else {
-          // "Crawl" lento: si la página tarda, se avanza gradualmente
           gsap.to(progressObj, {
             value: 99,
-            duration: 10, // 10 segundos para recorrer 85%→99%
-            ease: "none", // Velocidad constante
+            duration: 10,
+            ease: "none",
             onUpdate: () => {
               if (percentRef.current)
                 (percentRef.current as HTMLElement).innerText = `${Math.floor(progressObj.value)}%`;
-              // Verificar en cada frame si la página cargó
-              if (pageLoaded) triggerExitSequence();
+              if ((pageLoaded || isReadyRef.current) && !exitTriggered.current) triggerExitSequence();
             },
           });
         }
       }
 
-      /**
-       * Secuencia de salida: detiene spinners, morphea aviones a íconos,
-       * dibuja el pin, muestra el logo y desaparece el loader.
-       */
       function triggerExitSequence() {
+        if (exitTriggered.current) return;
+        exitTriggered.current = true;
+        
         gsap.killTweensOf(progressObj);
 
-        /* Construir interpoladores Flubber y preparar pin aquí (lazy) para no trabar el inicio */
+        /* Preparar interpoladores flubber */
         const interpolators: ((t: number) => string)[] = [];
         ARCS.forEach((_, i) => {
           const srcD = PRECALCULATED_PLANES[i];
@@ -367,111 +365,65 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
         });
 
         const tl = gsap.timeline();
-
-        /* ── PASO 1: Estacionar spinners (0s – 1s) ──────────────── */
-        // Cada spinner se detiene suavemente completando una rotación
-        // completa para que los íconos queden alineados correctamente.
         const parkDuration = 1.0;
 
         morphEls.forEach((_, i) => {
           const spinner = spinnerGs[i];
-          spinTweens[i].kill(); // Matar la rotación infinita
+          spinTweens[i].kill();
 
           const currentRot = gsap.getProperty(spinner, "rotation") as number;
           const dir = i % 2 === 0 ? 1 : -1;
+          const targetRot = dir > 0
+              ? Math.ceil(currentRot / 360) * 360 + 360
+              : Math.floor(currentRot / 360) * 360 - 360;
 
-          // Calcular la siguiente rotación completa (360° más allá de la actual)
-          // para que el spinner haga una última órbita suave antes de detenerse
-          const targetRot =
-            dir > 0
-              ? Math.ceil(currentRot / 360) * 360 + 360 // Horario: siguiente múltiplo + 360
-              : Math.floor(currentRot / 360) * 360 - 360; // Antihorario: anterior múltiplo - 360
-
-          tl.to(
-            spinner,
-            {
-              rotation: targetRot, // Rotación destino (alineada)
-              duration: parkDuration, // 1 segundo para estacionar
-              ease: "power2.inOut", // Suave al inicio y al final
-              x: 0, // Resetear offset X (por la animación de entrada)
-              y: 0, // Resetear offset Y
-            },
-            0, // Todos empiezan al mismo tiempo (t=0 del timeline)
-          );
+          tl.to(spinner, {
+              rotation: targetRot,
+              duration: parkDuration,
+              ease: "power2.inOut",
+              x: 0,
+              y: 0,
+            }, 0);
         });
 
-        /* ── PASO 2: Morph aviones → íconos (1s – 1.8s) ────────── */
-        const morphStart = parkDuration; // Comienza tras el estacionamiento
-
+        const morphStart = parkDuration;
         morphEls.forEach((pathEl, i) => {
-          // Proxy para animar un valor de 0→1 y usarlo con Flubber
           const proxy = { t: 0 };
-
-          tl.to(
-            proxy,
-            {
+          tl.to(proxy, {
               t: 1,
               duration: 0.8,
-              ease: "expo.out", // Rápido al inicio, suave al final
+              ease: "expo.out",
               onUpdate: () => {
-                // Actualizar el atributo "d" del path con la interpolación
                 pathEl.setAttribute("d", interpolators[i](proxy.t));
               },
               onComplete: () => {
-                // Al finalizar, fijar el path exacto del ícono original
-                // para evitar imprecisiones de punto flotante
                 pathEl.setAttribute("d", ALL_ICON_PATHS[i].join(" "));
               },
-            },
-            morphStart, // Todos los morphs inician simultáneamente
-          );
+            }, morphStart);
 
-          // Transición de color: del color del arco al color final del ícono
-          tl.to(
-            pathEl,
-            { fill: ARCS[i].fill, duration: 0.4, ease: "power1.in" },
-            morphStart + 0.3, // Inicia 0.3s después del morph
-          );
+          tl.to(pathEl, { fill: ARCS[i].fill, duration: 0.4, ease: "power1.in" }, morphStart + 0.3);
         });
 
-        /* ── PASO 3: Dibujar el pin con stroke-draw (1.5s – 2.2s) ── */
         const pinStart = morphStart + 0.5;
-
         pinEls.forEach((p, j) => {
           const el = p as SVGPathElement;
-          // Fase A: Dibujar el trazo (strokeDashoffset → 0)
-          tl.to(
-            el,
-            {
-              strokeDashoffset: 0, // Revela el trazo completamente
-              opacity: 1, // Hacer visible
+          tl.to(el, {
+              strokeDashoffset: 0,
+              opacity: 1,
               duration: 0.6,
               ease: "power2.inOut",
-            },
-            pinStart + j * 0.08, // Escalonamiento: cada pieza empieza 80ms después
-          );
+            }, pinStart + j * 0.08);
 
-          // Fase B: Rellenar con color y quitar el trazo
-          tl.to(
-            el,
-            {
-              fill: el.dataset.color, // Relleno con el color del path (data-color)
-              strokeWidth: 0, // Quitar trazo
+          tl.to(el, {
+              fill: el.dataset.color,
+              strokeWidth: 0,
               duration: 0.35,
-            },
-            pinStart + 0.3 + j * 0.08, // 0.3s después de empezar el stroke-draw
-          );
+            }, pinStart + 0.3 + j * 0.08);
         });
 
-        /* ── PASO 4: Ensamblar y salir ──────────────────────────── */
-        // El último pin termina su relleno en: pinStart + 0.3 + 6*0.08 + 0.35 ≈ pinStart + 1.13
-        // Añadimos 0.5s de pausa para apreciar el logo completo antes de salir
         const assembleStart = pinStart + 1.6;
 
-        // Sincronizar el porcentaje para llegar a 100% justo cuando termina el ensamble
-        tl.to(
-          progressObj,
-          {
+        tl.to(progressObj, {
             value: 100,
             duration: assembleStart,
             ease: "power2.inOut",
@@ -479,84 +431,39 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
               if (percentRef.current)
                 (percentRef.current as HTMLElement).innerText = `${Math.floor(progressObj.value)}%`;
             },
-          },
-          0, // Se ejecuta en paralelo desde el inicio del timeline
-        );
+          }, 0);
 
-        // Desvanecer el texto del porcentaje
         tl.to(percentRef.current, { opacity: 0, duration: 0.3 }, assembleStart);
-
-        // Desvanecer el fondo blanco para revelar la página debajo
-        tl.to(
-          ".smartur-loader-overlay",
-          {
+        tl.to(".smartur-loader-overlay", {
             backgroundColor: "rgba(255, 255, 255, 0)",
             duration: 0.8,
             ease: "power2.inOut",
-          },
-          assembleStart + 0.3,
-        );
+          }, assembleStart + 0.3);
 
-        // Reducir y desvanecer el SVG ensamblado directamente desde su tamaño actual (scale 1 → 0.8)
-        // Sin pulso intermedio para evitar saltos visuales
-        tl.to(
-          svgRef.current,
-          {
+        tl.to(svgRef.current, {
             scale: 0.8,
             opacity: 0,
             duration: 1.0,
             ease: "power2.inOut",
             onComplete: () => {
-              // Ocultar overlay y liberar la interacción con la página
               if (containerRef.current) {
                 containerRef.current.style.opacity = "0";
                 containerRef.current.style.pointerEvents = "none";
                 containerRef.current.style.display = "none";
               }
-
-              // Mantener el mismo contrato que el loader anterior:
-              // 1) disparar evento global para el Hero
-              // 2) quitar la clase is-loading del body
-              try {
-                window.dispatchEvent(new CustomEvent("smartur:loaded"));
-              } catch {
-                // ignore
-              }
-
-              try {
-                document.body.classList.remove("is-loading");
-              } catch {
-                // ignore
-              }
-
-              onFinished?.();
-            }, // Callback: señala que el loader terminó
-          },
-          assembleStart + 0.3,
-        );
+              try { window.dispatchEvent(new CustomEvent("smartur:loaded")); } catch {}
+              try { document.body.classList.remove("is-loading"); } catch {}
+              onFinishedRef.current?.();
+            },
+          }, assembleStart + 0.3);
       }
     },
-    { scope: containerRef }, // useGSAP limpia automáticamente todas las animaciones al desmontar
+    { scope: containerRef }
   );
 
-  /* ═══════════════════════════════════════════════════════════════════════
-   * RENDER
-   * ═══════════════════════════════════════════════════════════════════════
-   * Estructura del DOM:
-   *
-   *  .smartur-loader-overlay  (overlay a pantalla completa, z-index 9999)
-   *   └─ .smartur-loader-content  (contenedor centrado del loader)
-   *       ├─ <svg> .smartur-loader-svg  (viewBox: 169.42 × 218.53)
-   *       │   ├─ .pin-path × 7    (piezas del marcador de mapa)
-   *       │   └─ .arc-spinner × 4 (grupos giratorios)
-   *       │       └─ .morph-path  (avión → ícono)
-   *       ├─ <img> .loader-full-logo  (logo oficial, invisible hasta el final)
-   *       └─ .loader-percentage       (texto "0%"..."100%")
-   * ═══════════════════════════════════════════════════════════════════════ */
   return (
     <div ref={containerRef} className="smartur-loader-overlay">
       <div className="smartur-loader-content">
-        {/* SVG principal con el viewBox que contiene pin + arcos */}
         <svg
           ref={svgRef}
           viewBox="0 0 169.42 218.53"
@@ -564,7 +471,6 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
           aria-label="Cargando SMARTUR"
         >
           <g>
-            {/* Capa inferior: 7 piezas del marcador de mapa (pin shell) */}
             {PIN_PATHS.map((p, i) => (
               <path
                 key={`pin-${i}`}
@@ -573,8 +479,6 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
                 data-color={p.color}
               />
             ))}
-
-            {/* Capa superior: 4 arcos giratorios con morph (avión → ícono) */}
             {ARCS.map((a, i) => (
               <g
                 key={`arc-${i}`}
@@ -592,7 +496,6 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
           </g>
         </svg>
 
-        {/* Logo oficial: aparece al final con efecto flash-bang */}
         <img
           ref={logoRef}
           src={smarturLogo}
@@ -600,14 +503,13 @@ export default function SmartURLoader({ onFinished }: SmartURLoaderProps = {}) {
           className="loader-full-logo"
           style={{
             position: "absolute",
-            width: "clamp(160px, 35vw, 320px)", // Responsivo: mín 160px, máx 320px
-            opacity: 0, // Oculto hasta la animación final
-            top: "45%", // Ligeramente arriba del centro visual
-            left: "50%", // Centrado horizontalmente
+            width: "clamp(160px, 35vw, 320px)",
+            opacity: 0,
+            top: "45%",
+            left: "50%",
           }}
         />
 
-        {/* Porcentaje de carga: muestra 0%→100% durante la animación */}
         <div className="loader-percentage" ref={percentRef}>
           0%
         </div>

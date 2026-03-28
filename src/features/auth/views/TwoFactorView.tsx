@@ -4,7 +4,7 @@ import { Shield, ArrowLeft } from 'lucide-react';
 import { authApi } from '../authApi';
 import type { TwoFactorPayload } from '../types';
 import { useToast } from '../../../shared/context/ToastContext';
-import Loader from '../components/Loader';
+import SmartURLoader from '../components/SmartURLoader';
 import type { AuthStep } from '../context/AuthModalContext';
 
 interface TwoFactorViewProps {
@@ -20,6 +20,8 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(!email);
+    const [isReady, setIsReady] = useState(false);
+    const pendingActionRef = useRef<(() => void) | null>(null);
 
     useEffect(() => {
         if (!email) {
@@ -91,22 +93,42 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
             const apiUser = response.user;
             const userRole = Number(apiUser.role_id) || (Number(apiUser.id) === 1 ? 1 : 2);
 
-            if (userRole === 1) {
-                navigate('/dashboard', { replace: true });
-            } else {
-                navigate('/form', { replace: true });
-            }
-            if (onClose) onClose();
+            const completeAction = () => {
+                if (userRole === 1) {
+                    navigate('/dashboard', { replace: true });
+                } else {
+                    // Regresamos a la landing con el estado para abrir el modal
+                    navigate('/', { replace: true, state: { openForm: true } });
+                }
+                if (onClose) onClose();
+            };
+
+            pendingActionRef.current = completeAction;
+            setIsReady(true);
+
         } catch (error) {
             toast.error('Error de verificación', 'El código ingresado es incorrecto o ha expirado.');
-        } finally {
             setIsLoading(false);
         }
     };
 
+    const handleLoaderFinished = () => {
+        if (pendingActionRef.current) {
+            pendingActionRef.current();
+        }
+        setIsLoading(false);
+        setIsInitialLoading(false);
+        setIsReady(false);
+    };
+
     return (
         <div className="w-full">
-            {(isInitialLoading || isLoading) && <Loader isLoading={isInitialLoading || isLoading} onLoaded={() => setIsInitialLoading(false)} />}
+            {(isInitialLoading || isLoading) && (
+                <SmartURLoader
+                    isReady={isReady}
+                    onFinished={handleLoaderFinished}
+                />
+            )}
 
             <div className="mb-6 flex justify-center">
                 <div className="rounded-full bg-indigo-500/10 p-3">

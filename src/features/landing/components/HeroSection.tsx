@@ -33,6 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             const ctaEl = hero.querySelector('.hero-cta') as HTMLElement;
             const phoneContainer = phoneContainerRef.current;
             const shimmerEl = hero.querySelector('.hero-shimmer') as HTMLElement;
+            const ctaShimmerEl = hero.querySelector('.cta-shimmer') as HTMLElement | null;
             const scrollIndicatorEl = hero.querySelector('.scroll-indicator') as HTMLElement;
 
             const isMobile = window.matchMedia('(max-width: 767px)').matches;
@@ -123,6 +124,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             // CTA
             if (ctaEl) {
                 tl.to(ctaEl, { opacity: 1, scale: 1, duration: 1, ease: 'elastic.out(1, 0.5)' }, 0.7);
+                if (ctaShimmerEl) {
+                    tl.to(
+                        ctaShimmerEl,
+                        { left: '150%', duration: 0.8, ease: 'power2.inOut' },
+                        1.2,
+                    );
+                }
             }
 
             // 3D Phone
@@ -166,38 +174,75 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
     }, []);
 
     return (
-        <section ref={heroRef} id="hero" className={`relative flex min-h-[100dvh] flex-col justify-center overflow-hidden ${isRevealed ? 'hero-revealed' : ''}`} style={{ background: 'var(--color-bg)' }}>
+        <section
+            ref={heroRef}
+            id="hero"
+            className={`sy-hero-home relative flex min-h-[100dvh] flex-col justify-center overflow-hidden ${isRevealed ? 'hero-revealed' : ''}`}
+            style={{ background: 'var(--color-bg)' }}
+        >
             {/* Background shimmer */}
             <div
                 className="hero-shimmer pointer-events-none absolute inset-0 z-0 -translate-x-full transform opacity-0"
                 style={{
-                    background: 'linear-gradient(120deg, transparent 0%, rgba(152, 78, 253, 0.06) 30%, rgba(252, 71, 142, 0.08) 50%, rgba(77, 185, 202, 0.06) 70%, transparent 100%)',
+                    background:
+                        'linear-gradient(120deg, transparent 0%, rgba(var(--rgb-purple-accent), 0.06) 30%, rgba(var(--rgb-pink-primary), 0.08) 50%, rgba(var(--rgb-cyan-accent), 0.06) 70%, transparent 100%)',
                 }}
             />
 
-            <div className="relative z-10 container mx-auto w-full px-4">
-                <div className="flex flex-col items-center justify-between gap-12 py-12 md:flex-row md:py-16">
-                    <div className="z-20 max-w-2xl flex-1">
-                        <h1 className="hero-title mb-6 text-5xl leading-[1.05] font-black md:text-7xl lg:text-8xl" style={{ color: 'var(--color-text)' }} dangerouslySetInnerHTML={{ __html: title }} />
-                        {subtitle && <p className="hero-subtitle mb-10 max-w-lg text-lg leading-relaxed md:text-xl" style={{ color: 'var(--color-text-alt)' }}>{subtitle}</p>}
+            <div className="u-container container relative z-10 mx-auto w-full px-4 pt-0">
+                <div className="inner flex flex-row items-start justify-between gap-[5rem] pt-[2rem] pb-[4rem] lg:flex-row lg:items-start lg:gap-[4rem] lg:pt-[1.5rem] lg:pb-[3rem] md:flex-col md:items-start md:gap-[4rem] md:pt-[2rem] md:pb-[2rem] max-[767px]:flex-col max-[767px]:items-start max-[767px]:gap-[3rem] max-[767px]:pt-[4rem] max-[767px]:pb-[1rem]">
+                    <div className="content z-20 flex-1 max-w-none md:max-w-full">
+                        <h1
+                            className="u-heading title hero-title mb-0 font-['Outfit'] text-[8.5rem] leading-[0.95] font-black lg:text-[7.2rem] md:text-[5.5rem] max-[767px]:text-[4.5rem]"
+                            style={{ color: 'var(--color-text)' }}
+                            dangerouslySetInnerHTML={{ __html: title }}
+                        />
 
-                        <div className="hero-cta relative inline-block overflow-hidden">
+                        {subtitle ? (
+                            <p
+                                className="u-text subtitle hero-subtitle mt-[3rem] mb-0 max-w-[32em] text-[1.25rem] leading-[1.65] max-[767px]:text-[1.1rem]"
+                                style={{ color: 'var(--color-text-alt)' }}
+                            >
+                                {subtitle}
+                            </p>
+                        ) : null}
+
+                        <div className="cta-wrapper hero-cta relative inline-block overflow-hidden mt-[2.75rem]">
                             <button
                                 onClick={handleStartExperience}
-                                className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-[#ff4d8d] px-10 py-5 text-xl font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-[#ff4d8d]/90 active:scale-95"
+                                className="cta group relative inline-flex items-center justify-center gap-3 rounded-full bg-[#ff4d8d] px-10 py-5 text-xl font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-[#ff4d8d]/90 active:scale-95"
                             >
                                 <span>{t('heroSection.cta')}</span>
                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </button>
+
+                            <div
+                                className="cta-shimmer"
+                                aria-hidden="true"
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: '-100%',
+                                    width: '60%',
+                                    height: '100%',
+                                    background:
+                                        'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                                    transform: 'skewX(-20deg)',
+                                    pointerEvents: 'none',
+                                    zIndex: 5,
+                                }}
+                            />
                         </div>
                     </div>
 
                     <div
                         ref={phoneContainerRef}
-                        className="hero-video-wrap relative z-0 hidden aspect-square w-1/2 max-w-[700px] flex-shrink-0 md:flex"
+                        className="video-wrapper hero-video-wrap relative z-0 hidden aspect-square w-1/2 max-w-[700px] flex-shrink-0 md:flex"
                         style={{
-                            maskImage: 'radial-gradient(ellipse 92% 92% at center, black 40%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0) 100%)',
-                            WebkitMaskImage: 'radial-gradient(ellipse 92% 92% at center, black 40%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0) 100%)',
+                            maskImage:
+                                'radial-gradient(ellipse 92% 92% at center, black 40%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0) 100%)',
+                            WebkitMaskImage:
+                                'radial-gradient(ellipse 92% 92% at center, black 40%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0) 100%)',
                         }}
                     />
                 </div>

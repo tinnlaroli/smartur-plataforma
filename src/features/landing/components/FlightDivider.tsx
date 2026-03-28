@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { ActionBridge } from './ActionBridge';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import paperPlaneUrl from '../assets/paper-plane.json?url';
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
@@ -158,7 +159,7 @@ export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperie
                 <div ref={planeRef} id="divider-plane" className="absolute top-0 left-0 z-10 h-60 w-60 origin-center opacity-0 pointer-events-none">
                     {/* @ts-ignore */}
                     <lottie-player
-                        src="/src/features/landing/assets/paper-plane.json"
+                        src={paperPlaneUrl}
                         background="transparent"
                         speed="1"
                         loop

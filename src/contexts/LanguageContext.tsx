@@ -326,7 +326,7 @@ export const ui: Record<LanguageCode, Record<string, string>> = {
         'map.popup.subtitle': 'Altas Montañas, Veracruz',
 
         // Landing Hero / Divider / ActionBridge / About
-        'heroSection.titleHtml': 'AI that <span style="color: #ff4d8d">guides,</span><br/><span style="color: #4db9ca">tourism</span> that unites.',
+        'heroSection.titleHtml': 'AI that <span style="color: #ff4d8d">guides,</span> <span style="color: #4db9ca">tourism</span> that unites.',
         'heroSection.subtitle': 'Explore Veracruz\'s Altas Montañas with AI-crafted personalized routes.',
         'heroSection.cta': 'Start adventure',
         'heroSection.scrollIndicator': 'Discover',
@@ -517,7 +517,7 @@ export const ui: Record<LanguageCode, Record<string, string>> = {
         'map.popup.subtitle': 'Altas Montañas, Veracruz',
 
         // Landing Hero / Divider / ActionBridge / About
-        'heroSection.titleHtml': 'IA qui <span style="color: #ff4d8d">guide,</span><br/><span style="color: #4db9ca">tourisme</span> qui unit.',
+        'heroSection.titleHtml': 'IA qui <span style="color: #ff4d8d">guide,</span> <span style="color: #4db9ca">tourisme</span> qui unit.',
         'heroSection.subtitle': 'Explorez les Altas Montañas du Veracruz avec des itinéraires personnalisés conçus par IA.',
         'heroSection.cta': 'Commencer l\'aventure',
         'heroSection.scrollIndicator': 'Découvrir',

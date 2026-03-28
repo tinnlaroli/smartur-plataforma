@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ChevronRight, ChevronLeft, Mountain, Footprints, Utensils, Landmark, Home, Cloud, Sun, Trees, Zap, Building } from 'lucide-react';
 import type { FormContext } from '../types/types';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface Step2Props {
     data: Partial<FormContext>;
@@ -35,6 +36,8 @@ const lugarOptions = [
 
 export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onBack, onChange }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     useGSAP(
         () => {
@@ -74,12 +77,12 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
     return (
         <div className="step-content px-4 py-6" ref={containerRef}>
             <div className="step-header mb-8 text-center">
-                <h2 className="mb-2 text-3xl font-bold text-white">Preferencias</h2>
-                <p className="text-zinc-400">Selecciona tus intereses para personalizar las recomendaciones</p>
+                <h2 className={`mb-2 text-3xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Preferencias</h2>
+                <p className={isDark ? 'text-zinc-400' : 'text-zinc-500'}>Selecciona tus intereses para personalizar las recomendaciones</p>
             </div>
 
             <div className="form-section mb-8">
-                <label className="mb-4 block text-sm font-medium text-zinc-300">Tipos de turismo (elige al menos 1)</label>
+                <label className={`mb-4 block text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>Tipos de turismo (elige al menos 1)</label>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
                     {tiposTurismoList.map((t) => (
                         <button
@@ -89,7 +92,9 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 tiposTurismo.includes(t.value)
                                     ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                    : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                    : isDark
+                                        ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                        : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
                             }`}
                         >
                             <div className="mb-3">
@@ -102,7 +107,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
             </div>
 
             <div className="form-section mb-8">
-                <label className="mb-4 block text-sm font-medium text-zinc-300">Nivel de actividad</label>
+                <label className={`mb-4 block text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>Nivel de actividad</label>
                 <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
                     {actividadLevels.map((level) => (
                         <button
@@ -112,7 +117,9 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 actividad_level === level.value
                                     ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                    : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                    : isDark
+                                        ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                        : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
                             }`}
                         >
                             <div className="mb-3">
@@ -125,7 +132,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
             </div>
 
             <div className="form-section mb-10">
-                <label className="mb-4 block text-sm font-medium text-zinc-300">Preferencia de lugar</label>
+                <label className={`mb-4 block text-sm font-medium ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>Preferencia de lugar</label>
                 <div className="grid grid-cols-3 gap-3">
                     {lugarOptions.map((lugar) => (
                         <button
@@ -135,7 +142,9 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 preferencia_lugar === lugar.value
                                     ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                                    : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                    : isDark
+                                        ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                        : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
                             }`}
                         >
                             <div className="mb-3">
@@ -150,7 +159,11 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
             <div className="flex justify-between">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-bold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95"
+                    className={`flex items-center gap-2 rounded-xl border px-6 py-3 font-bold transition-all active:scale-95 ${
+                        isDark
+                            ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                            : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
+                    }`}
                 >
                     <ChevronLeft className="h-5 w-5" />
                     <span>Atrás</span>

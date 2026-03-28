@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Trees, Users, Accessibility, Check } from 'lucide-react';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 interface ProgressIndicatorProps {
     currentStep: number;
@@ -8,6 +9,8 @@ interface ProgressIndicatorProps {
 }
 
 export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentStep, totalSteps, isStep4Loading = false }) => {
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const steps = [
         { name: 'Perfil', icon: User },
         { name: 'Preferencias', icon: Trees },
@@ -21,13 +24,13 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentSte
         <div className="mb-10 w-full" aria-label="Progreso del formulario" role="progressbar">
             {/* Progress Bar */}
             <div className="mb-8 flex items-center gap-4">
-                <div className="h-3 flex-1 overflow-hidden rounded-full bg-zinc-800">
+                <div className={`h-3 flex-1 overflow-hidden rounded-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
                     <div
                         className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-700 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
-                <span className="min-w-[3ch] text-sm font-bold text-zinc-400">{progressPercentage}%</span>
+                <span className={`min-w-[3ch] text-sm font-bold ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{progressPercentage}%</span>
             </div>
 
             {/* Step Indicators */}
@@ -45,18 +48,24 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentSte
                                     isCompleted
                                         ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
                                         : isActive
-                                          ? 'scale-110 border-indigo-500 bg-zinc-900 text-indigo-400 shadow-lg shadow-indigo-500/10'
-                                          : 'border-zinc-800 bg-zinc-900 text-zinc-600'
+                                          ? `scale-110 border-indigo-500 ${isDark ? 'bg-zinc-900' : 'bg-white'} text-indigo-400 shadow-lg shadow-indigo-500/10`
+                                          : isDark
+                                              ? 'border-zinc-800 bg-zinc-900 text-zinc-600'
+                                              : 'border-zinc-300 bg-white text-zinc-400'
                                 }`}
                             >
                                 {isCompleted ? <Check className="h-6 w-6 stroke-[3]" /> : <step.icon className="h-6 w-6" />}
                             </div>
-                            <span className={`mt-3 text-xs font-bold tracking-tight transition-colors duration-300 ${isActive || isCompleted ? 'text-zinc-200' : 'text-zinc-600'}`}>{step.name}</span>
+                            <span className={`mt-3 text-xs font-bold tracking-tight transition-colors duration-300 ${
+                                isActive || isCompleted
+                                    ? isDark ? 'text-zinc-200' : 'text-zinc-800'
+                                    : isDark ? 'text-zinc-600' : 'text-zinc-500'
+                            }`}>{step.name}</span>
                         </div>
                     );
                 })}
                 {/* Connector line (background) */}
-                <div className="absolute top-6 right-10 left-10 -z-0 hidden h-[2px] bg-zinc-800 sm:block" />
+                <div className={`absolute top-6 right-10 left-10 -z-0 hidden h-[2px] sm:block ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
             </div>
         </div>
     );

@@ -101,14 +101,13 @@ export default function Landing() {
 
     const navLinks = [
         { label: t('nav.home'), target: 'inicio', external: false },
-        { label: t('nav.howItWorks'), target: 'como-funciona', external: false },
         { label: t('nav.region'), target: 'region', external: false },
         { label: t('nav.technology'), target: 'tecnologia', external: false },
         { label: t('nav.about'), target: 'nosotros', external: false },
         { label: t('nav.impact'), target: 'impacto', external: false },
         { label: t('nav.testimonials'), target: 'testimonios', external: false },
-        { label: t('nav.faqs'), target: 'faqs', external: false },
         { label: t('nav.contact'), target: 'contacto', external: false },
+        { label: t('nav.faqs'), target: 'faqs', external: false },
     ];
 
     useEffect(() => {

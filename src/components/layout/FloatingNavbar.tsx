@@ -3,6 +3,7 @@ import { useLanguage, languages } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, Sun, Moon, LogOut, Menu, X } from 'lucide-react';
+import logoSrc from '../../assets/landing/logo.png';
 
 interface NavLink {
     label: string;
@@ -115,10 +116,9 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                 e.preventDefault();
                                 scrollToSection('inicio');
                             }}
-                            className="group relative z-[110] flex-shrink-0"
-                        >
-                            <img src="/smartur.png" alt="SMARTUR" className="h-10 w-auto transition-all duration-300 group-hover:brightness-110" />
-                        </a>
+                            >
+                                <img src={logoSrc} alt="SMARTUR" className="h-10 w-auto transition-all duration-300 group-hover:brightness-110" />
+                            </a>
 
                         {/* Desktop Menu */}
                         <nav className="hidden items-center gap-8 md:flex">

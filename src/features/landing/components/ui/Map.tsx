@@ -345,7 +345,15 @@ export const MapControls = ({
     }
 
     return () => {
-      controls.forEach((control) => map.removeControl(control));
+      if (map && map.getContainer()) {
+        controls.forEach((control) => {
+          try {
+            map.removeControl(control);
+          } catch (e) {
+            // Silently handle cases where control might have already been removed or map is destroying
+          }
+        });
+      }
     };
   }, [map]);
 

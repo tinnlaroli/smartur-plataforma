@@ -3,7 +3,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ArrowLeft, Check, MapPin, CheckCircle2, XCircle, RotateCw } from 'lucide-react';
 import { useFormRecommendations } from '../hooks/useFormRecommendations';
-import Loader from '../../auth/components/Loader';
+import SmartURLoader from '../../auth/components/SmartURLoader';
 import type { FormContext, RecommendationsResponse } from '../types/types';
 
 interface Step4Props {
@@ -20,6 +20,8 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
     const [visitado, setVisitado] = useState<string>(data.visitado || 'no');
 
     const { loading, error: apiError, getRecommendations, cancel } = useFormRecommendations();
+    const [isReady, setIsReady] = useState(false);
+    const [pendingResult, setPendingResult] = useState<RecommendationsResponse | null>(null);
     const isSubmittingRef = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -111,21 +113,31 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
             });
 
             if (result && result.recommendations && result.recommendations.length > 0) {
-                onShowRecommendations(result);
+                setPendingResult(result);
+                setIsReady(true);
             } else if (result) {
                 throw new Error('No se encontraron recomendaciones.');
             }
         } catch (err) {
             console.error('[Step4] Error al obtener recomendaciones:', err);
         } finally {
-            isSubmittingRef.current = false;
+            // No reseteamos isSubmitting hasta que el loader termine si hubo éxito
+            if (!isReady) isSubmittingRef.current = false;
         }
     };
 
-    if (loading) {
+    const handleLoaderFinished = () => {
+        if (pendingResult) {
+            onShowRecommendations(pendingResult);
+        }
+        setIsReady(false);
+        isSubmittingRef.current = false;
+    };
+
+    if (loading || isReady) {
         return (
             <div className="flex min-h-[400px] flex-col items-center justify-center">
-                <Loader isLoading={true} onLoaded={() => {}} />
+                <SmartURLoader isReady={isReady} onFinished={handleLoaderFinished} />
                 <div className="mt-8 text-center text-white">
                     <h3 className="mb-4 text-2xl font-bold">Analizando tus preferencias...</h3>
                     <p className="text-zinc-400">Generando recomendaciones personalizadas para tu próximo viaje</p>
