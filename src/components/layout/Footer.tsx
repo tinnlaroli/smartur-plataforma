@@ -1,5 +1,5 @@
-import React from 'react';
-import { Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Instagram, Mail, Phone, MapPin, Download } from 'lucide-react';
 
 interface NavLink {
     label: string;
@@ -12,6 +12,23 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
+    const [latestVersion, setLatestVersion] = useState("v1.0.0");
+
+    useEffect(() => {
+        const fetchVersion = async () => {
+            try {
+                const response = await fetch("https://api.github.com/repos/tinnlaroli/smartur-movil/releases/latest");
+                if (response.ok) {
+                    const data = await response.json();
+                    setLatestVersion(data.tag_name);
+                }
+            } catch (e) {
+                console.error("Error fetching latest release:", e);
+            }
+        };
+        fetchVersion();
+    }, []);
+
     return (
         <div className="relative w-full overflow-hidden bg-white transition-colors duration-300 dark:bg-[var(--color-bg)]">
             {/* Main Footer */}
@@ -31,7 +48,7 @@ export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
                         </div>
 
                         {/* Links Columns */}
-                        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
                             <div>
                                 <h3 className="mb-8 text-sm font-black tracking-widest text-gray-900 uppercase dark:text-white">Accesos Rápidos</h3>
                                 <ul className="flex flex-col gap-5">
@@ -88,6 +105,20 @@ export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
                                     <Instagram className="h-6 w-6 text-gray-400 transition-colors group-hover:text-[var(--color-cyan)]" />
                                     <span className="text-sm font-bold text-gray-700 transition-colors group-hover:text-[var(--color-cyan)] dark:text-zinc-300">Instagram</span>
                                 </a>
+                            </div>
+
+                            <div>
+                                <h3 className="mb-8 text-sm font-black tracking-widest text-gray-900 uppercase dark:text-white">App Móvil</h3>
+                                <div className="flex flex-col gap-4">
+                                    <span className="text-[15px] font-bold text-gray-500 dark:text-zinc-400">Última versión: {latestVersion}</span>
+                                    <a
+                                        href="https://github.com/tinnlaroli/smartur-movil/releases/latest/download/app-release.apk"
+                                        className="group flex w-fit items-center gap-3 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/40"
+                                    >
+                                        <Download className="h-5 w-5" />
+                                        Descargar APK
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
