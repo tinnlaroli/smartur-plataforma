@@ -171,6 +171,20 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
                         </div>
                         <div className="flex items-center gap-2 text-xs">
                             <CheckCircle
+                                className={`h-3 w-3 ${/[a-z]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`}
+                            />
+                            <span
+                                className={
+                                    /[a-z]/.test(formData.newPassword)
+                                        ? 'text-zinc-300'
+                                        : 'text-zinc-500'
+                                }
+                            >
+                                Al menos una minúscula
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                            <CheckCircle
                                 className={`h-3 w-3 ${/[0-9]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`}
                             />
                             <span

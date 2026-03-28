@@ -1,4 +1,4 @@
-import { Mail, Lock, LogIn, UserPlus } from 'lucide-react';
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { LoginPayload } from '../types';
@@ -25,6 +25,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isLoginReady, setIsLoginReady] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const pendingActionRef = useRef<(() => void) | null>(null);
     const { theme } = useTheme();
     const isDark = theme === 'dark';
@@ -147,18 +148,27 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
                         <input
                             id="user-password"
                             name="password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             required
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            className={`w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none ${
+                            className={`w-full rounded-lg border py-2.5 pr-10 pl-9 text-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none ${
                                 isDark
                                     ? 'border-zinc-800 bg-zinc-950 text-white placeholder:text-zinc-500'
                                     : 'border-zinc-300 bg-white text-zinc-900 placeholder:text-zinc-400'
                             }`}
                         />
                         <Lock className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className={`absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-1 transition-colors ${
+                                isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600'
+                            }`}
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                     </div>
                 </div>
 
