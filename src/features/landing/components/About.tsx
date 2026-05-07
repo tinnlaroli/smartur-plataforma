@@ -130,12 +130,12 @@ export const About: React.FC = () => {
                     {/* Left Column */}
                     <div className="content-column">
                         <div className="section-label flex items-center gap-4 mb-8" data-reveal>
-                            <span className="label-line w-12 h-[2px] bg-purple-600"></span>
-                            <span className="label-text text-xs font-bold tracking-widest uppercase text-purple-600">{t('about.sectionLabel')}</span>
+                            <span className="label-line w-12 h-[2px]" style={{ background: 'var(--color-purple)' }}></span>
+                            <span className="label-text text-xs font-bold tracking-widest uppercase" style={{ color: 'var(--color-purple)' }}>{t('about.sectionLabel')}</span>
                         </div>
 
                         <h2 className="landing-heading text-4xl md:text-5xl lg:text-7xl font-black mb-6 leading-tight text-slate-900 dark:text-white" data-reveal>
-                            {t('about.headingPrefix')}<span className="text-purple-600">{t('about.headingHighlight')}</span>
+                            {t('about.headingPrefix')}<span style={{ color: 'var(--color-purple)' }}>{t('about.headingHighlight')}</span>
                         </h2>
 
                         <p className="text-lg md:text-xl text-slate-500 dark:text-zinc-300 mb-12 max-w-2xl leading-relaxed" data-reveal>
@@ -144,7 +144,7 @@ export const About: React.FC = () => {
 
                         {/* Award Seal */}
                         <div className="award-seal flex items-start gap-6 mb-12 p-6 rounded-2xl" 
-                            style={{ background: 'rgba(163, 209, 79, 0.05)', border: '1px solid rgba(163, 209, 79, 0.2)' }} 
+                            style={{ background: 'rgba(var(--rgb-green-accent), 0.05)', border: '1px solid rgba(var(--rgb-green-accent), 0.2)' }} 
                             data-reveal
                         >
                             <div className="seal-badge flex flex-col items-center gap-2">
@@ -165,9 +165,9 @@ export const About: React.FC = () => {
                                 <div 
                                     key={slide.id} 
                                     className={`mission-slide col-start-1 row-start-1 border-l-4 pl-6 transition-all duration-700 ease-in-out ${i === activeSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-                                    style={{ borderColor: i === 0 ? '#a3d14f' : i === 1 ? '#914ef5' : '#ff4d8d' }}
+                                    style={{ borderColor: i === 0 ? 'var(--color-green)' : i === 1 ? 'var(--color-purple)' : 'var(--color-pink)' }}
                                 >
-                                    <h3 className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: i === 0 ? '#a3d14f' : i === 1 ? '#914ef5' : '#ff4d8d' }}>
+                                    <h3 className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: i === 0 ? 'var(--color-green)' : i === 1 ? 'var(--color-purple)' : 'var(--color-pink)' }}>
                                         {t(slide.labelKey)}
                                     </h3>
                                     <p className="text-slate-700 dark:text-zinc-300 leading-relaxed font-medium">
@@ -187,7 +187,14 @@ export const About: React.FC = () => {
                                     className={`step-item relative mb-12 transition-all duration-700 ${i === activeStep ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}
                                 >
                                     {/* Dot Indicator */}
-                                    <div className={`absolute -left-[39px] top-2 w-4 h-4 rounded-full border-2 bg-white transition-all duration-300 ${i === activeStep ? 'bg-purple-600 border-purple-600 scale-125 shadow-[0_0_0_4px_rgba(147,51,234,0.2)]' : 'border-slate-300 dark:border-slate-700'}`} />
+                                    <div className="absolute -left-[39px] top-2 w-4 h-4 rounded-full border-2 bg-white transition-all duration-300" 
+                                        style={{ 
+                                            background: i === activeStep ? 'var(--color-purple)' : 'white',
+                                            borderColor: i === activeStep ? 'var(--color-purple)' : '',
+                                            boxShadow: i === activeStep ? '0 0 0 4px rgba(var(--rgb-purple-accent), 0.2)' : 'none',
+                                            transform: i === activeStep ? 'scale(1.25)' : 'none'
+                                        }} 
+                                    />
                                     
                                     <div className={`p-6 rounded-2xl border transition-all duration-500 bg-white dark:bg-zinc-900 ${i === activeStep ? 'border-purple-100 shadow-xl' : 'border-transparent'}`}>
                                         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t(item.titleKey)}</h3>

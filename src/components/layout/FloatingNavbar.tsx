@@ -27,25 +27,44 @@ interface FloatingNavbarProps {
     logout: () => void;
 }
 
-const PremiumButton: React.FC<{ 
-    onClick: (e: React.MouseEvent) => void; 
+const PremiumButton: React.FC<{
+    onClick: (e: React.MouseEvent) => void;
     children: React.ReactNode;
     color?: string;
     className?: string;
-}> = ({ onClick, children, color = 'var(--color-pink)', className = "" }) => (
-    <button 
-        onClick={onClick} 
-        className={`btn-premium group ${className}`}
-        style={{ '--bg-color': color, '--hover-text': color } as React.CSSProperties}
-    >
-        <span>
-            <span className="btn-base">{children}</span>
-            <span className="btn-hover" aria-hidden="true">{children}</span>
-        </span>
-    </button>
-);
+}> = ({
+    onClick,
+    children,
+    color = 'var(--color-orange)',
+    className = '',
+}) => (
+        <button
+            onClick={onClick}
+            className={`btn-premium group ${className}`}
+            style={
+                {
+                    '--bg-color': color,
+                    '--hover-text': color,
+                } as React.CSSProperties
+            }
+        >
+            <span>
+                <span className="btn-base">{children}</span>
+                <span className="btn-hover" aria-hidden="true">
+                    {children}
+                </span>
+            </span>
+        </button>
+    );
 
-export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handleStartExperience, scrollToSection, activeSection, user, logout }) => {
+export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({
+    navLinks,
+    handleStartExperience,
+    scrollToSection,
+    activeSection,
+    user,
+    logout,
+}) => {
     const { theme, toggleTheme } = useTheme();
     const { lang, changeLanguage, t } = useLanguage();
 
@@ -53,26 +72,16 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
     const [isNavHidden, setIsNavHidden] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [langDropdownOpen, setLangDropdownOpen] = useState(false);
-    
+
     const lastScrollY = useRef(0);
 
     const handleScroll = useCallback(() => {
         const currentY = window.scrollY;
-        
-        // Small state
-        if (currentY > 80) {
-            setIsNavSmall(true);
-        } else {
-            setIsNavSmall(false);
-        }
 
-        // Hide/Show on scroll
+        setIsNavSmall(currentY > 80);
+
         if (currentY > 400) {
-            if (currentY > lastScrollY.current) {
-                setIsNavHidden(true);
-            } else {
-                setIsNavHidden(false);
-            }
+            setIsNavHidden(currentY > lastScrollY.current);
         } else {
             setIsNavHidden(false);
         }
@@ -81,12 +90,17 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
     }, []);
 
     useEffect(() => {
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, {
+            passive: true,
+        });
+
+        return () =>
+            window.removeEventListener('scroll', handleScroll);
     }, [handleScroll]);
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
+
         if (!isMobileMenuOpen) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -96,80 +110,205 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
 
     const handleMobileLinkClick = (target: string) => {
         scrollToSection(target);
+
         setIsMobileMenuOpen(false);
         document.body.style.overflow = '';
     };
 
     return (
         <>
-            <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-[var(--ease-out-expo)] 
-                ${isNavHidden ? '-translate-y-full' : 'translate-y-0'} 
-                ${isNavSmall ? 'is-nav-small pt-2' : 'pt-6'}`}>
-                
-                <div className="container mx-auto px-4 max-w-[1240px]">
-                    <div className="nav-small-bg relative flex items-center justify-between px-6 py-3 rounded-[50px]">
-                        
+            <div
+                className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500
+    ${isNavHidden ? '-translate-y-full' : 'translate-y-0'}
+    ${isNavSmall ? 'pt-2' : 'pt-6'}`}
+            >
+                <div className="container mx-auto max-w-[1400px] px-4">
+                    <div
+                        className="relative flex items-center justify-between rounded-[50px] px-8 py-4 backdrop-blur-xl transition-all duration-300"
+                        style={{
+                            background:
+                                'rgba(var(--rgb-bg), 0.75)',
+                            border:
+                                '1px solid rgba(var(--rgb-text), 0.08)',
+                            boxShadow:
+                                '0 10px 40px rgba(0,0,0,0.06)',
+                        }}
+                    >
                         {/* Logo */}
+
                         <a
                             href="#inicio"
                             onClick={(e) => {
                                 e.preventDefault();
                                 scrollToSection('inicio');
                             }}
-                            >
-                                <img src={logoSrc} alt="SMARTUR" className="h-10 w-auto transition-all duration-300 group-hover:brightness-110" />
-                            </a>
+                            className="flex items-center"
+                        >
+                            <img
+                                src={logoSrc}
+                                alt="SMARTUR"
+                                className="h-12 w-auto transition-all duration-300"
+                            />
+                        </a>
 
                         {/* Desktop Menu */}
-                        <nav className="hidden items-center gap-8 md:flex">
+
+                        <nav className="hidden items-center gap-10 md:flex">
                             {navLinks.map((item, idx) => {
-                                            const isActive = activeSection === item.target;
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => scrollToSection(item.target)}
-                                                    className={`relative text-[15px] font-bold tracking-wide transition-colors duration-300 group`}
-                                                    style={{ color: isActive ? 'var(--color-pink)' : 'var(--color-text)' }}
-                                                >
-                                                    {item.label}
-                                                    <span className={`absolute -bottom-1 left-0 h-[2px] w-full transition-transform duration-300 origin-right ${isActive ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`} style={{ background: 'var(--color-pink)' }} />
-                                                </button>
-                                            );
-                                        })}
-                                    </nav>
-            
-                                    {/* Actions */}
-                                    <div className="flex items-center gap-4 z-[110]">
-                                        <div className="hidden items-center gap-3 sm:flex">
-                                            <button onClick={toggleTheme} className="control-btn p-2">
-                                                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                                            </button>
-                                            <div className="language-switcher relative">
-                                                <button 
-                                                    onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                                                    className="control-btn flex items-center gap-2 px-3 py-2 text-[14px] font-bold"
-                                                >
-                                        <Globe className="h-4 w-4" />
-                                        <span>{lang.toUpperCase()}</span>
+                                const isActive =
+                                    activeSection === item.target;
+
+                                return (
+                                    <button
+                                        key={idx}
+                                        onClick={() =>
+                                            scrollToSection(item.target)
+                                        }
+                                        className="group relative text-[16px] font-semibold tracking-[0.02em] transition-colors duration-300"
+                                        style={{
+                                            color: isActive
+                                                ? 'var(--color-purple)'
+                                                : 'var(--color-text)',
+                                            fontFamily:
+                                                'var(--font-family-body)',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!isActive) {
+                                                e.currentTarget.style.color =
+                                                    'var(--color-purple)';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!isActive) {
+                                                e.currentTarget.style.color =
+                                                    'var(--color-text)';
+                                            }
+                                        }}
+                                    >
+                                        {item.label}
+
+                                        <span
+                                            className={`absolute -bottom-1 left-0 h-[2px] w-full origin-right transition-transform duration-300
+                                ${isActive
+                                                    ? 'scale-x-100 origin-left'
+                                                    : 'scale-x-0 group-hover:scale-x-100 group-hover:origin-left'
+                                                }`}
+                                            style={{
+                                                background:
+                                                    'var(--color-purple)',
+                                            }}
+                                        />
                                     </button>
+                                );
+                            })}
+                        </nav>
+
+                        {/* Actions */}
+
+                        <div className="z-[110] flex items-center gap-5">
+                            <div className="hidden items-center gap-4 sm:flex">
+                                {/* Theme */}
+
+                                <button
+                                    onClick={toggleTheme}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300"
+                                    style={{
+                                        background:
+                                            'rgba(var(--rgb-text), 0.05)',
+                                        color: 'var(--color-text)',
+                                        border:
+                                            '1px solid rgba(var(--rgb-text),0.08)',
+                                    }}
+                                >
+                                    {theme === 'dark' ? (
+                                        <Sun size={19} />
+                                    ) : (
+                                        <Moon size={19} />
+                                    )}
+                                </button>
+
+                                {/* Language */}
+
+                                <div className="relative">
+                                    <button
+                                        onClick={() =>
+                                            setLangDropdownOpen(
+                                                !langDropdownOpen,
+                                            )
+                                        }
+                                        className="flex items-center gap-2 rounded-full px-5 py-3 text-[15px] font-semibold transition-all duration-300"
+                                        style={{
+                                            background:
+                                                'rgba(var(--rgb-text), 0.05)',
+                                            color: 'var(--color-text)',
+                                            border:
+                                                '1px solid rgba(var(--rgb-text),0.08)',
+                                            fontFamily:
+                                                'var(--font-family-body)',
+                                        }}
+                                    >
+                                        <Globe className="h-4 w-4" />
+
+                                        <span>
+                                            {lang.toUpperCase()}
+                                        </span>
+                                    </button>
+
                                     <AnimatePresence>
                                         {langDropdownOpen && (
-                                            <motion.div 
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: 10 }}
-                                                className="absolute top-full right-0 mt-2 rounded-xl shadow-2xl py-2 min-w-[140px]"
-                                                style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}
+                                            <motion.div
+                                                initial={{
+                                                    opacity: 0,
+                                                    y: 10,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    y: 0,
+                                                }}
+                                                exit={{
+                                                    opacity: 0,
+                                                    y: 10,
+                                                }}
+                                                className="absolute top-full right-0 mt-3 min-w-[150px] overflow-hidden rounded-2xl"
+                                                style={{
+                                                    background:
+                                                        'var(--color-bg)',
+                                                    border:
+                                                        '1px solid rgba(var(--rgb-text),0.08)',
+                                                    boxShadow:
+                                                        '0 10px 40px rgba(0,0,0,0.08)',
+                                                }}
                                             >
-                                                {Object.entries(languages).map(([code, name]) => (
+                                                {Object.entries(
+                                                    languages,
+                                                ).map(([code, name]) => (
                                                     <button
                                                         key={code}
-                                                        onClick={() => { changeLanguage(code); setLangDropdownOpen(false); }}
-                                                        className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold transition-colors"
-                                                        style={{ color: lang === code ? 'var(--color-pink)' : 'var(--color-text)' }}
+                                                        onClick={() => {
+                                                            changeLanguage(
+                                                                code,
+                                                            );
+
+                                                            setLangDropdownOpen(
+                                                                false,
+                                                            );
+                                                        }}
+                                                        className="flex w-full items-center justify-between px-4 py-3 text-sm transition-colors duration-300"
+                                                        style={{
+                                                            color:
+                                                                lang === code
+                                                                    ? 'var(--color-purple)'
+                                                                    : 'var(--color-text)',
+                                                            fontFamily:
+                                                                'var(--font-family-body)',
+                                                            fontWeight: 500,
+                                                        }}
                                                     >
                                                         <span>{name}</span>
-                                                        <span className="text-[10px] uppercase opacity-50">{code}</span>
+
+                                                        <span className="text-[10px] uppercase opacity-50">
+                                                            {code}
+                                                        </span>
                                                     </button>
                                                 ))}
                                             </motion.div>
@@ -178,51 +317,104 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                 </div>
                             </div>
 
+                            {/* CTA */}
+
                             {user ? (
-                                <button onClick={logout} className="p-2 rounded-full transition-colors" style={{ background: 'rgba(255,71,142,0.1)', color: 'var(--color-pink)' }}>
-                                    <LogOut size={18} />
+                                <button
+                                    onClick={logout}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300"
+                                    style={{
+                                        background:
+                                            'rgba(var(--rgb-pink-primary),0.12)',
+                                        color: 'var(--color-pink)',
+                                        border:
+                                            '1px solid rgba(var(--rgb-pink-primary),0.15)',
+                                    }}
+                                >
+                                    <LogOut size={19} />
                                 </button>
                             ) : (
-                                <PremiumButton onClick={handleStartExperience} className="hidden sm:block">
+                                <PremiumButton
+                                    onClick={
+                                        handleStartExperience
+                                    }
+                                    className="hidden sm:block"
+                                >
                                     {t('nav.start')}
                                 </PremiumButton>
                             )}
 
                             {/* Mobile Toggle */}
-                            <button 
+
+                            <button
                                 onClick={toggleMobileMenu}
-                                className="md:hidden p-2"
-                                style={{ color: 'var(--color-text)' }}
+                                className="md:hidden"
+                                style={{
+                                    color: 'var(--color-text)',
+                                }}
                                 aria-label="Toggle menu"
                             >
-                                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                                {isMobileMenuOpen ? (
+                                    <X size={30} />
+                                ) : (
+                                    <Menu size={30} />
+                                )}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
+            {/* Mobile Menu */}
 
-            {/* Mobile Menu Overlay */}
-            <div className={`mobile-menu-overlay fixed inset-0 z-[90] flex flex-col items-center justify-center ${isMobileMenuOpen ? 'is-opened' : ''}`}>
+            <div
+                className={`fixed inset-0 z-[90] flex flex-col items-center justify-center transition-all duration-500
+                ${isMobileMenuOpen
+                        ? 'pointer-events-auto opacity-100'
+                        : 'pointer-events-none opacity-0'
+                    }`}
+                style={{
+                    background:
+                        'rgba(var(--rgb-bg), 0.96)',
+                    backdropFilter: 'blur(20px)',
+                }}
+            >
                 <nav className="flex flex-col items-center gap-8">
                     {navLinks.map((item, idx) => (
                         <button
                             key={idx}
-                            onClick={() => handleMobileLinkClick(item.target)}
-                            className="text-4xl font-black tracking-tighter transition-colors"
-                            style={{ 
-                                transitionDelay: `${idx * 0.1}s`,
-                                color: activeSection === item.target ? 'var(--color-pink)' : 'var(--color-text)' 
+                            onClick={() =>
+                                handleMobileLinkClick(item.target)
+                            }
+                            className="text-4xl font-bold tracking-tight transition-all duration-300"
+                            style={{
+                                transitionDelay: `${idx * 0.08}s`,
+                                color:
+                                    activeSection === item.target
+                                        ? 'var(--color-pink)'
+                                        : 'var(--color-text)',
+                                fontFamily:
+                                    'var(--font-family-heading)',
                             }}
                         >
                             {item.label}
                         </button>
                     ))}
+
                     {!user && (
-                        <button 
-                            onClick={() => { handleStartExperience(); setIsMobileMenuOpen(false); document.body.style.overflow = ''; }}
-                            className="mt-4 text-2xl font-bold"
-                            style={{ color: 'var(--color-purple)' }}
+                        <button
+                            onClick={() => {
+                                handleStartExperience();
+
+                                setIsMobileMenuOpen(false);
+
+                                document.body.style.overflow = '';
+                            }}
+                            className="mt-6 text-2xl font-semibold"
+                            style={{
+                                color: 'var(--color-orange)',
+                                fontFamily:
+                                    'var(--font-family-body)',
+                            }}
                         >
                             {t('nav.start')}
                         </button>

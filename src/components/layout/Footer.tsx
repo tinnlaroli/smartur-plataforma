@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Instagram, Mail, Phone, MapPin, Download } from 'lucide-react';
+import logoCostado from '../../assets/landing/logo_costado.png';
 
 interface NavLink {
     label: string;
@@ -38,8 +39,11 @@ export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
                         {/* Branding */}
                         <div className="flex flex-col gap-8">
                             <a href="#" className="block w-48">
-                                <img src="/smartur.png" alt="SMARTUR" className="h-auto w-full object-contain dark:contrast-125" />
-                            </a>
+                                <img
+                                    src={logoCostado}
+                                    alt="SMARTUR"
+                                    className="h-auto w-full object-contain dark:contrast-125"
+                                />                            </a>
                             <p className="text-xl font-bold text-[var(--color-purple)] italic dark:text-[var(--color-purple)]">IA que guía, turismo que une</p>
                             <p className="max-w-md text-base leading-relaxed text-gray-500 dark:text-zinc-400">
                                 SMARTUR conecta a los viajeros con la esencia de Las Altas Montañas a través de tecnología innovadora y experiencias auténticas, impulsando el desarrollo local y
@@ -113,7 +117,8 @@ export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
                                     <span className="text-[15px] font-bold text-gray-500 dark:text-zinc-400">Última versión: {latestVersion}</span>
                                     <a
                                         href="https://github.com/tinnlaroli/smartur-movil/releases/latest/download/app-release.apk"
-                                        className="group flex w-fit items-center gap-3 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/40"
+                                        className="group flex w-fit items-center gap-3 rounded-2xl px-6 py-3.5 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-1"
+                                        style={{ background: 'var(--color-purple)', boxShadow: '0 10px 15px -3px rgba(var(--rgb-purple-accent), 0.3)' }}
                                     >
                                         <Download className="h-5 w-5" />
                                         Descargar APK

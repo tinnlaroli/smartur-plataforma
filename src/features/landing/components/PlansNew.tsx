@@ -74,7 +74,7 @@ export const PlansNew: React.FC = () => {
             <div className="container mx-auto px-4">
                 <div className="text-center max-w-3xl mx-auto mb-16">
                     <h2 className="landing-heading text-4xl md:text-5xl font-black mb-6 text-slate-900">
-                        Planes que <span className="text-green-600">Crecen Contigo</span>
+                        Planes que <span style={{ color: 'var(--color-green)' }}>Crecen Contigo</span>
                     </h2>
                     <p className="text-lg text-slate-500 font-medium">
                         Elige el nivel de visibilidad e inteligencia que tu negocio necesita.
@@ -86,12 +86,13 @@ export const PlansNew: React.FC = () => {
                     <span className={`text-sm font-bold ${!isAnnual ? 'text-slate-900' : 'text-slate-400'}`}>Mensual</span>
                     <button 
                         onClick={() => setIsAnnual(!isAnnual)}
-                        className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${isAnnual ? 'bg-green-600' : 'bg-slate-200'}`}
+                        className="w-14 h-8 rounded-full relative transition-colors duration-300"
+                        style={{ backgroundColor: isAnnual ? 'var(--color-green)' : 'var(--color-bg-alt)' }}
                     >
                         <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 ${isAnnual ? 'translate-x-6' : 'translate-x-0'} shadow-sm`} />
                     </button>
                     <span className={`text-sm font-bold ${isAnnual ? 'text-slate-900' : 'text-slate-400'}`}>
-                        Anual <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-[10px] rounded-full">-20%</span>
+                        Anual <span className="ml-2 px-2 py-1 text-[10px] rounded-full" style={{ background: 'rgba(var(--rgb-green-accent), 0.1)', color: 'var(--color-green)' }}>-20%</span>
                     </span>
                 </div>
 
@@ -100,9 +101,16 @@ export const PlansNew: React.FC = () => {
                     {PLANS.map((plan, i) => (
                         <div 
                             key={i}
-                            className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 flex flex-col ${plan.featured ? 'border-green-600 bg-green-50/20 shadow-xl scale-105 z-10' : 'border-slate-100 bg-white hover:border-slate-200 shadow-sm'}`}
+                            className="relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 flex flex-col"
+                            style={{ 
+                                borderColor: plan.featured ? 'var(--color-green)' : 'var(--color-border)',
+                                backgroundColor: plan.featured ? 'rgba(var(--rgb-green-accent), 0.05)' : 'var(--color-bg)',
+                                transform: plan.featured ? 'scale(1.05)' : 'none',
+                                zIndex: plan.featured ? 10 : 1,
+                                boxShadow: plan.featured ? '0 20px 40px -15px rgba(var(--rgb-green-accent), 0.15)' : 'none'
+                             }}
                         >
-                            <h3 className={`text-xl font-bold mb-2 ${plan.featured ? 'text-green-700' : 'text-slate-900'}`}>{plan.title}</h3>
+                            <h3 className="text-xl font-bold mb-2" style={{ color: plan.featured ? 'var(--color-green)' : 'var(--color-text)' }}>{plan.title}</h3>
                             <p className="text-sm text-slate-500 mb-8 leading-relaxed">{plan.description}</p>
                             
                             <div className="mb-8">
@@ -119,7 +127,7 @@ export const PlansNew: React.FC = () => {
                             <ul className="mb-10 flex-grow space-y-4">
                                 {plan.features.map((feat, fi) => (
                                     <li key={fi} className={`flex items-center gap-3 text-sm ${feat.available ? 'text-slate-700' : 'text-slate-300'}`}>
-                                        <Check size={18} className={feat.available ? 'text-green-500' : 'opacity-20'} />
+                                        <Check size={18} className={feat.available ? '' : 'opacity-20'} style={{ color: feat.available ? 'var(--color-green)' : 'inherit' }} />
                                         <span className={feat.available ? 'font-medium' : ''}>{feat.title}</span>
                                     </li>
                                 ))}

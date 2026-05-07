@@ -38,16 +38,16 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
             title: () => t('story.conflict.title'),
             text: () => t('story.conflict.text'),
             bg: 'var(--color-pink)',
-            textColor: '#fff',
-            accentColor: 'rgba(255,255,255,0.7)',
+            textColor: 'var(--color-bg)',
+            accentColor: 'rgba(var(--rgb-bg), 0.7)',
         },
         {
             id: 'guide',
             title: () => t('story.guide.title'),
             text: () => t('story.guide.text'),
             bg: 'var(--color-cyan)',
-            textColor: '#fff',
-            accentColor: 'rgba(255,255,255,0.7)',
+            textColor: 'var(--color-bg)',
+            accentColor: 'rgba(var(--rgb-bg), 0.7)',
         },
         {
             id: 'cta',
@@ -153,11 +153,11 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                             <h2
                                 className="landing-heading"
                                 style={{
-                                    fontSize: 'clamp(2.5rem, 7vw, 6.5rem)',
+                                    fontSize: 'clamp(2rem, 5.5vw, 5rem)',
                                     lineHeight: 1.1,
-                                    letterSpacing: '-0.04em',
-                                    fontWeight: 900,
-                                    textTransform: 'uppercase',
+                                    letterSpacing: '-0.03em',
+                                    fontWeight: 800,
+                                    textTransform: 'none',
                                     marginBottom: '1rem',
                                     color: section.textColor,
                                 }}
@@ -172,7 +172,7 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                                 style={{
                                     maxWidth: '40em',
                                     margin: '0 auto',
-                                    fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+                                    fontSize: 'clamp(1.15rem, 2.3vw, 1.45rem)',
                                     fontWeight: 500,
                                     lineHeight: 1.6,
                                     color: section.textColor,

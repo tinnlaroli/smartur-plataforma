@@ -10,9 +10,9 @@ export const ValuePillars: React.FC = () => {
             title: 'Sostenibilidad',
             description: 'Conectamos con áreas naturales protegidas priorizando el turismo regenerativo.',
             icon: '/leaf.png',
-            color: 'text-[#a3d14f]',
-            bgClass: 'bg-[#a3d14f]/10',
-            borderColor: 'border-[#a3d14f]/20',
+            color: 'var(--color-green)',
+            bgStyle: { backgroundColor: 'rgba(var(--rgb-green-accent), 0.1)' },
+            borderStyle: { borderColor: 'rgba(var(--rgb-green-accent), 0.2)' },
             iconWidth: 'w-10',
         },
         {
@@ -20,9 +20,9 @@ export const ValuePillars: React.FC = () => {
             title: 'Identidad',
             description: 'Resaltamos la cultura y autenticidad del paisaje de las Altas Montañas.',
             icon: '/mountain.png',
-            color: 'text-[#ff7d1f]',
-            bgClass: 'bg-[#ff7d1f]/10',
-            borderColor: 'border-[#ff7d1f]/20',
+            color: 'var(--color-orange)',
+            bgStyle: { backgroundColor: 'rgba(var(--rgb-orange-cta), 0.1)' },
+            borderStyle: { borderColor: 'rgba(var(--rgb-orange-cta), 0.2)' },
             iconWidth: 'w-12',
         },
         {
@@ -30,9 +30,9 @@ export const ValuePillars: React.FC = () => {
             title: 'Inteligencia',
             description: 'Algoritmos precisos que aprenden de ti para sugerir la experiencia perfecta.',
             icon: '/circuit.png',
-            color: 'text-[#914ef5]',
-            bgClass: 'bg-[#914ef5]/10',
-            borderColor: 'border-[#914ef5]/20',
+            color: 'var(--color-purple)',
+            bgStyle: { backgroundColor: 'rgba(var(--rgb-purple-accent), 0.1)' },
+            borderStyle: { borderColor: 'rgba(var(--rgb-purple-accent), 0.2)' },
             iconWidth: 'w-10',
         },
         {
@@ -40,9 +40,9 @@ export const ValuePillars: React.FC = () => {
             title: 'Comunidad',
             description: 'Impulso directo a la red de MiPyMEs locales y su economía circular.',
             icon: '/person.png',
-            color: 'text-[#ff4d8d]',
-            bgClass: 'bg-[#ff4d8d]/10',
-            borderColor: 'border-[#ff4d8d]/20',
+            color: 'var(--color-pink)',
+            bgStyle: { backgroundColor: 'rgba(var(--rgb-pink-primary), 0.1)' },
+            borderStyle: { borderColor: 'rgba(var(--rgb-pink-primary), 0.2)' },
             iconWidth: 'w-10',
         },
     ];
@@ -76,12 +76,13 @@ export const ValuePillars: React.FC = () => {
                     {pillars.map((pillar) => (
                         <div
                             key={pillar.id}
-                            className={`pillar-card flex flex-col rounded-[32px] border p-8 ${pillar.borderColor} ${pillar.bgClass} transition-transform duration-300 hover:-translate-y-2`}
+                            className="pillar-card flex flex-col rounded-[32px] border p-8 transition-transform duration-300 hover:-translate-y-2"
+                            style={{ ...pillar.bgStyle, ...pillar.borderStyle }}
                         >
                             <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm dark:bg-slate-900">
                                 <img src={pillar.icon} alt={pillar.title} className={`${pillar.iconWidth} h-auto object-contain dark:opacity-90`} />
                             </div>
-                            <h3 className={`mb-3 text-2xl font-bold ${pillar.color}`}>{pillar.title}</h3>
+                            <h3 className="mb-3 text-2xl font-bold" style={{ color: pillar.color }}>{pillar.title}</h3>
                             <p className="leading-relaxed font-medium text-gray-700 dark:text-slate-300">{pillar.description}</p>
                         </div>
                     ))}

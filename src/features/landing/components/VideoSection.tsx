@@ -10,16 +10,16 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Municipalities of the Altas Montañas region, Veracruz
 const MUNICIPIOS = [
-  { id: 'cordoba',    nombre: 'Córdoba',               lat: 18.8842, lng: -96.9256, color: '#FF5C9D' },
-  { id: 'orizaba',   nombre: 'Orizaba',                lat: 18.8522, lng: -97.0994, color: '#984EFD' },
-  { id: 'fortín',    nombre: 'Fortín de las Flores',   lat: 18.9061, lng: -96.9981, color: '#4DB9CA' },
-  { id: 'ixtaczq',   nombre: 'Ixtaczoquitlán',         lat: 18.8167, lng: -97.0667, color: '#a3d14f' },
-  { id: 'cuitlahuac',nombre: 'Cuitláhuac',             lat: 18.8131, lng: -96.7222, color: '#F97316' },
-  { id: 'amatlan',   nombre: 'Amatlán de los Reyes',   lat: 18.8333, lng: -96.9167, color: '#EC4899' },
-  { id: 'yanga',     nombre: 'Yanga',                  lat: 18.8333, lng: -96.8000, color: '#8B5CF6' },
-  { id: 'cotel',     nombre: 'Cotepeque',              lat: 18.9000, lng: -97.0500, color: '#14B8A6' },
-  { id: 'nogales',   nombre: 'Nogales',                lat: 18.8167, lng: -97.1667, color: '#F59E0B' },
-  { id: 'camerino',  nombre: 'Camerino Z. Mendoza',    lat: 18.9333, lng: -97.0667, color: '#6366F1' },
+  { id: 'cordoba',    nombre: 'Córdoba',               lat: 18.8842, lng: -96.9256, color: 'var(--color-pink)' },
+  { id: 'orizaba',   nombre: 'Orizaba',                lat: 18.8522, lng: -97.0994, color: 'var(--color-purple)' },
+  { id: 'fortín',    nombre: 'Fortín de las Flores',   lat: 18.9061, lng: -96.9981, color: 'var(--color-cyan)' },
+  { id: 'ixtaczq',   nombre: 'Ixtaczoquitlán',         lat: 18.8167, lng: -97.0667, color: 'var(--color-green)' },
+  { id: 'cuitlahuac',nombre: 'Cuitláhuac',             lat: 18.8131, lng: -96.7222, color: 'var(--color-orange)' },
+  { id: 'amatlan',   nombre: 'Amatlán de los Reyes',   lat: 18.8333, lng: -96.9167, color: 'var(--color-pink)' },
+  { id: 'yanga',     nombre: 'Yanga',                  lat: 18.8333, lng: -96.8000, color: 'var(--color-purple)' },
+  { id: 'cotel',     nombre: 'Cotepeque',              lat: 18.9000, lng: -97.0500, color: 'var(--color-cyan)' },
+  { id: 'nogales',   nombre: 'Nogales',                lat: 18.8167, lng: -97.1667, color: 'var(--color-green)' },
+  { id: 'camerino',  nombre: 'Camerino Z. Mendoza',    lat: 18.9333, lng: -97.0667, color: 'var(--color-purple)' },
 ];
 
 // Center of the Altas Montañas region

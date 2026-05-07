@@ -11,14 +11,14 @@ const REGION_CENTER = {
 };
 
 const ciudades = [
-    { id: 'cordoba', nombre: 'Córdoba', lat: 18.8842, lng: -96.9256, color: '#FC478E' },
-    { id: 'orizaba', nombre: 'Orizaba', lat: 18.8522, lng: -97.0994, color: '#984EFD' },
-    { id: 'fortin', nombre: 'Fortín de las Flores', lat: 18.9061, lng: -96.9981, color: '#4DB9CA' },
-    { id: 'ixtaczoquitlan', nombre: 'Ixtaczoquitlán', lat: 18.8167, lng: -97.0667, color: '#a3d14f' },
-    { id: 'cuitlahuac', nombre: 'Cuitláhuac', lat: 18.8131, lng: -96.7222, color: '#F97316' },
-    { id: 'amatlan', nombre: 'Amatlán de los Reyes', lat: 18.8333, lng: -96.9167, color: '#EC4899' },
-    { id: 'yanga', nombre: 'Yanga', lat: 18.8333, lng: -96.8, color: '#8B5CF6' },
-    { id: 'atoyac', nombre: 'Atoyac', lat: 18.9167, lng: -96.7667, color: '#06B6D4' },
+    { id: 'cordoba', nombre: 'Córdoba', lat: 18.8842, lng: -96.9256, color: 'var(--color-pink)' },
+    { id: 'orizaba', nombre: 'Orizaba', lat: 18.8522, lng: -97.0994, color: 'var(--color-purple)' },
+    { id: 'fortin', nombre: 'Fortín de las Flores', lat: 18.9061, lng: -96.9981, color: 'var(--color-cyan)' },
+    { id: 'ixtaczoquitlan', nombre: 'Ixtaczoquitlán', lat: 18.8167, lng: -97.0667, color: 'var(--color-green)' },
+    { id: 'cuitlahuac', nombre: 'Cuitláhuac', lat: 18.8131, lng: -96.7222, color: 'var(--color-orange)' },
+    { id: 'amatlan', nombre: 'Amatlán de los Reyes', lat: 18.8333, lng: -96.9167, color: 'var(--color-pink)' },
+    { id: 'yanga', nombre: 'Yanga', lat: 18.8333, lng: -96.8, color: 'var(--color-purple)' },
+    { id: 'atoyac', nombre: 'Atoyac', lat: 18.9167, lng: -96.7667, color: 'var(--color-cyan)' },
 ];
 
 const lugaresPorCiudad: Record<string, any[]> = {
@@ -212,7 +212,7 @@ export const CordobaMap: React.FC = () => {
             <div className="mx-auto max-w-7xl">
                 <div className="mb-12 text-center">
                     <h1 className="mb-4 text-4xl font-black text-gray-900 md:text-5xl">
-                        Descubre la región de <span className="text-indigo-600">Las Montañas</span>
+                        Descubre la región de <span style={{ color: 'var(--color-purple)' }}>Las Montañas</span>
                     </h1>
                     <p className="mx-auto max-w-2xl text-lg text-gray-600">Explora los lugares más fascinantes de Veracruz. Historia, cultura y naturaleza en un solo lugar.</p>
                 </div>
@@ -237,7 +237,8 @@ export const CordobaMap: React.FC = () => {
                     <div className="relative" ref={filterDropdownRef}>
                         <button
                             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                            className="flex items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3 font-bold text-white shadow-lg shadow-indigo-600/20 transition-colors hover:bg-indigo-700"
+                            className="flex items-center gap-2 rounded-2xl px-6 py-3 font-bold text-white shadow-lg transition-colors"
+                            style={{ background: 'var(--color-purple)', boxShadow: '0 10px 15px -3px rgba(var(--rgb-purple-accent), 0.2)' }}
                         >
                             <Filter className="h-5 w-5" />
                             <span>Filtrar por tipo</span>
@@ -253,7 +254,8 @@ export const CordobaMap: React.FC = () => {
                                             setFilterCategory(cat);
                                             setShowFilterDropdown(false);
                                         }}
-                                        className={`w-full px-5 py-3 text-left transition-colors hover:bg-indigo-50 ${filterCategory === cat ? 'bg-indigo-50 font-bold text-indigo-700' : 'font-medium text-gray-700'}`}
+                                        className="w-full px-5 py-3 text-left transition-colors font-medium text-gray-700"
+                                        style={filterCategory === cat ? { backgroundColor: 'rgba(var(--rgb-purple-accent), 0.05)', fontWeight: 'bold', color: 'var(--color-purple)' } : {}}
                                     >
                                         {cat}
                                     </button>
@@ -285,7 +287,8 @@ export const CordobaMap: React.FC = () => {
                                 <div
                                     key={place.id}
                                     onClick={() => setSelectedPlace(place)}
-                                    className={`cursor-pointer rounded-[32px] border-2 bg-white p-5 shadow-lg transition-all hover:scale-[1.02] ${selectedPlace?.id === place.id ? 'border-indigo-500 shadow-indigo-500/10' : 'border-transparent hover:border-indigo-100'}`}
+                                    className="cursor-pointer rounded-[32px] border-2 bg-white p-5 shadow-lg transition-all hover:scale-[1.02]"
+                                    style={{ borderColor: selectedPlace?.id === place.id ? 'var(--color-purple)' : 'transparent' }}
                                 >
                                     <div className="flex items-start gap-4">
                                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl text-white" style={{ background: ciudad?.color || '#6366f1' }}>
@@ -301,7 +304,7 @@ export const CordobaMap: React.FC = () => {
                                             </div>
                                             <div className="mb-3 flex gap-2">
                                                 <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-black tracking-wider text-gray-600 uppercase">{place.ciudad}</span>
-                                                <span className="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-black tracking-wider text-indigo-600 uppercase">{place.categoria}</span>
+                                                <span className="rounded-full px-3 py-1 text-[10px] font-black tracking-wider uppercase" style={{ background: 'rgba(var(--rgb-purple-accent), 0.05)', color: 'var(--color-purple)' }}>{place.categoria}</span>
                                             </div>
                                             <p className="mb-3 line-clamp-2 text-sm text-gray-500">{place.descripcion}</p>
                                             <div className="flex items-center gap-2 text-xs font-medium text-gray-400">
@@ -332,8 +335,8 @@ export const CordobaMap: React.FC = () => {
                         <div className="p-8 sm:p-12">
                             <h2 className="mb-4 text-4xl font-black text-gray-900">{selectedPlace.nombre}</h2>
                             <div className="mb-6 flex gap-3">
-                                <span className="rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-black tracking-[0.2em] text-white uppercase">{selectedPlace.ciudad}</span>
-                                <span className="rounded-full bg-indigo-50 px-4 py-1.5 text-xs font-black tracking-[0.2em] text-indigo-600 uppercase">{selectedPlace.categoria}</span>
+                                <span className="rounded-full px-4 py-1.5 text-xs font-black tracking-[0.2em] text-white uppercase" style={{ background: 'var(--color-purple)' }}>{selectedPlace.ciudad}</span>
+                                <span className="rounded-full px-4 py-1.5 text-xs font-black tracking-[0.2em] uppercase" style={{ background: 'rgba(var(--rgb-purple-accent), 0.05)', color: 'var(--color-purple)' }}>{selectedPlace.categoria}</span>
                             </div>
                             <p className="mb-8 text-lg leading-relaxed text-gray-600">{selectedPlace.descripcion}</p>
                             <div className="flex items-center gap-6 font-bold text-gray-400">
