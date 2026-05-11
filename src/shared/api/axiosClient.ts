@@ -1,8 +1,6 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    // En desarrollo, Vite redirige /api/v2 → https://api.smartur.dev via proxy (evita CORS)
-    // En producción apunta directamente al dominio con variable de entorno
     baseURL: import.meta.env.VITE_API_URL ?? '/api/v2',
 });
 
@@ -14,7 +12,26 @@ api.interceptors.request.use(
         }
         return config;
     },
+    (error) => Promise.reject(error),
+);
+
+api.interceptors.response.use(
+    (response) => response,
     (error) => {
+        if (error.response?.status === 401) {
+            const isAuthRoute =
+                error.config.url?.includes('/login') ||
+                error.config.url?.includes('/register') ||
+                error.config.url?.includes('/forgot') ||
+                error.config.url?.includes('/reset') ||
+                error.config.url?.includes('/two-factor');
+
+            if (!isAuthRoute) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+            }
+        }
         return Promise.reject(error);
     },
 );

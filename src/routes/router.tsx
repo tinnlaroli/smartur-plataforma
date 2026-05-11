@@ -17,6 +17,8 @@ import { CertificationsPage } from '../features/certifications/pages/Certificati
 import { POIPage } from '../features/points-of-interest/pages/POIPage';
 import { StatisticsPage } from '../features/statistics/pages/StatisticsPage';
 import { TemplatesPage } from '../features/evaluations/pages/TemplatesPage';
+import { InstrumentBuilderPage } from '../features/instrument-builder/pages/InstrumentBuilderPage';
+import { InstrumentEditorPage } from '../features/instrument-builder/pages/InstrumentEditorPage';
 
 export const router = createBrowserRouter([
     {
@@ -78,6 +80,14 @@ export const router = createBrowserRouter([
                                     {
                                         path: 'plantillas',
                                         element: <TemplatesPage />,
+                                    },
+                                    {
+                                        path: 'instrumentos',
+                                        element: <InstrumentBuilderPage />,
+                                    },
+                                    {
+                                        path: 'instrumentos/:id',
+                                        element: <InstrumentEditorPage />,
                                     },
                                     {
                                         path: '*',

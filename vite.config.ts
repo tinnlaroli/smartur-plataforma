@@ -5,12 +5,13 @@ import tailwindcss from '@tailwindcss/vite';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base: '/',
   server: {
     proxy: {
       '/api/v2': {
-        target: 'https://api-smartur.fly.dev', // URL real de Fly.io
+        target: process.env.VITE_API_URL || 'http://api:3000',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
     },
   },

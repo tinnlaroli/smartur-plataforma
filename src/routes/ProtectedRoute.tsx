@@ -1,28 +1,48 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
     allowedRoles?: number[];
 }
 
+const isTokenExpired = (token: string): boolean => {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!payload.exp) return false;
+        return Date.now() >= payload.exp * 1000;
+    } catch {
+        return true;
+    }
+};
+
 export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+    const location = useLocation();
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
 
-    if (!token) {
-        return <Navigate to="/" replace />;
+    if (!token || isTokenExpired(token)) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     if (allowedRoles) {
         if (!userStr) {
-            // If we have no user data but need to check roles, something is wrong
+            localStorage.removeItem('token');
             return <Navigate to="/" replace />;
         }
 
-        const user = JSON.parse(userStr);
+        let user;
+        try {
+            user = JSON.parse(userStr);
+        } catch {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            return <Navigate to="/" replace />;
+        }
+
         const userRole = user.role_id || (Number(user.id) === 1 ? 1 : 2);
 
         if (!allowedRoles.includes(userRole)) {
-            // Redirect to their default page instead of showing unauthorized content
             return <Navigate to={userRole === 1 ? '/dashboard' : '/form'} replace />;
         }
     }
