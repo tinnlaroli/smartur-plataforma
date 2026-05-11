@@ -1,89 +1,113 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
-import { Menu, Bell, Search, User } from 'lucide-react';
+import { Menu, Bell, Search, User, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthModal } from '../features/auth/context/AuthModalContext';
 
 export default function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const navigate = useNavigate();
+    const { openModal } = useAuthModal();
+
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    const userRole = user?.role_id || 2;
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        openModal('login');
+        navigate('/');
+    };
+
+    const getInitials = (name: string) => {
+        return name
+            .split(' ')
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    };
 
     return (
         <>
-            <div className="flex bg-zinc-50 dark:bg-[#0a0a0c] min-h-screen selection:bg-indigo-100 selection:text-indigo-700 dark:selection:bg-indigo-900/30 dark:selection:text-indigo-300">
+            <div className="flex min-h-screen bg-zinc-50 selection:bg-indigo-100 selection:text-indigo-700 dark:bg-[#0a0a0c] dark:selection:bg-indigo-900/30 dark:selection:text-indigo-300">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-                <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
-                    <header className="hidden md:flex h-16 items-center justify-between px-8 bg-white/50 dark:bg-[#0d0d0f]/50 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/50 sticky top-0 z-20">
+                <div className="flex min-w-0 flex-1 flex-col transition-all duration-300">
+                    <header className="sticky top-0 z-20 hidden h-16 items-center justify-between border-b border-zinc-200 bg-white/50 px-8 backdrop-blur-md dark:border-zinc-800/50 dark:bg-[#0d0d0f]/50 md:flex">
                         <div className="flex items-center gap-4 text-zinc-400">
-                            <div className="relative group">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors group-focus-within:text-indigo-500" />
+                            <div className="group relative">
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors group-focus-within:text-indigo-500" />
                                 <input
                                     type="text"
                                     placeholder="Buscar en Smartur..."
-                                    className="bg-zinc-100 dark:bg-zinc-900/50 border-none rounded-full py-1.5 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+                                    className="w-64 rounded-full border-none bg-zinc-100 py-1.5 pl-10 pr-4 text-sm outline-none transition-all focus:ring-2 focus:ring-indigo-500/20 dark:bg-zinc-900/50"
                                 />
                             </div>
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <button className="relative p-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors group">
-                                <Bell className="h-5 w-5 group-hover:shake" />
-                                <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#0d0d0f]"></span>
+                            <button className="group relative rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                <Bell className="h-5 w-5" />
+                                <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-rose-500 dark:border-[#0d0d0f]" />
                             </button>
-                            <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
-                            <button className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
-                                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                    Admin
-                                </span>
-                                <div className="h-8 w-8 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-sm ring-2 ring-white dark:ring-zinc-900">
-                                    <User className="h-4 w-4" />
+                            <div className="mx-1 h-8 w-px bg-zinc-200 dark:bg-zinc-800" />
+                            <div className="flex items-center gap-3 pl-2">
+                                <div className="text-right">
+                                    <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                        {user?.name || 'Usuario'}
+                                    </p>
+                                    <p className="text-xs text-zinc-400">
+                                        {userRole === 1 ? 'Administrador' : 'Usuario'}
+                                    </p>
                                 </div>
-                            </button>
+                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-sm font-bold text-white shadow-sm ring-2 ring-white dark:ring-zinc-900">
+                                    {user ? getInitials(user.name) : 'U'}
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="ml-1 rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-rose-500 dark:hover:bg-zinc-800"
+                                    title="Cerrar sesión"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
                     </header>
 
-                    <div className="md:hidden sticky top-0 z-30 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800">
-                        <div className="flex items-center h-16 px-4">
+                    <div className="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80 md:hidden">
+                        <div className="flex h-16 items-center px-4">
                             <button
                                 type="button"
-                                className="p-2 -ml-2 rounded-lg text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                className="-ml-2 rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                                 onClick={() => setSidebarOpen(true)}
                                 aria-label="Abrir menú"
                             >
                                 <Menu className="h-5 w-5" />
                             </button>
-                            <span className="ml-3 text-base font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="ml-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-base font-bold text-transparent">
                                 Smartur
                             </span>
-
                             <div className="ml-auto flex items-center gap-2">
-                                <button className="p-2 text-zinc-500">
+                                <button className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                     <Bell className="h-5 w-5" />
                                 </button>
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-xs font-bold text-white">
+                                    {user ? getInitials(user.name) : 'U'}
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-zinc-50 dark:bg-[#0a0a0c]">
-                        <div className="max-w-400 mx-auto min-h-full w-full animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+                    <main className="flex-1 overflow-y-auto bg-zinc-50 p-4 dark:bg-[#0a0a0c] sm:p-6 lg:p-8">
+                        <div className="mx-auto w-full max-w-400 min-h-full">
                             <Outlet />
                         </div>
                     </main>
                 </div>
             </div>
-
-            <style
-                dangerouslySetInnerHTML={{
-                    __html: `
-                @keyframes shake {
-                    0%, 100% { transform: rotate(0deg); }
-                    25% { transform: rotate(10deg); }
-                    75% { transform: rotate(-10deg); }
-                }
-                .shake { animation: shake 0.5s ease-in-out; }
-                .group:hover .group-hover\\:shake { animation: shake 0.5s ease-in-out; }
-            `,
-                }}
-            />
         </>
     );
 }

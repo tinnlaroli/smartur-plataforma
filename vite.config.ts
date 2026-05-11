@@ -6,12 +6,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   base: "/smartur-plataforma/",
   plugins: [react(), tailwindcss()],
+  base: '/',
   server: {
     proxy: {
       '/api/v2': {
-        target: 'https://api-smartur.fly.dev', // URL real de Fly.io
+        target: process.env.VITE_API_URL || 'http://api:3000',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
     },
   },
