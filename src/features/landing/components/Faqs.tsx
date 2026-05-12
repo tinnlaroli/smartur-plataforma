@@ -74,10 +74,12 @@ export const Faqs: React.FC = () => {
                                 {/* Plus Icon Left */}
                                 <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
                                     <span 
-                                        className={`absolute block w-full h-[2px] rounded-full bg-[#9333ea] transition-transform duration-300 ${openIndex === i ? 'rotate-45' : ''}`} 
+                                        className={`absolute block w-full h-[2px] rounded-full transition-transform duration-300 ${openIndex === i ? 'rotate-45' : ''}`} 
+                                        style={{ background: 'var(--color-purple)' }}
                                     />
                                     <span 
-                                        className={`absolute block w-full h-[2px] rounded-full bg-[#9333ea] transition-transform duration-300 ${openIndex === i ? 'rotate-[135deg]' : 'rotate-90'}`} 
+                                        className={`absolute block w-full h-[2px] rounded-full transition-transform duration-300 ${openIndex === i ? 'rotate-[135deg]' : 'rotate-90'}`} 
+                                        style={{ background: 'var(--color-purple)' }}
                                     />
                                 </div>
 
