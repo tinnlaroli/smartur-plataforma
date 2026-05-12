@@ -33,7 +33,7 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
                                     });
                                 }
                             }}
-                            className="h-4 w-4 cursor-pointer rounded border-zinc-700 bg-zinc-900 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0"
+                            className="size-4 cursor-pointer rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0"
                         />
                     </div>
                     <div className="w-16 shrink-0 text-xs font-medium tracking-wider text-zinc-400 uppercase">ID</div>
@@ -72,13 +72,13 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
             <div ref={tableRef} className="min-h-0 flex-1 overflow-y-auto">
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
                     {users.map((user) => (
-                        <div key={user.id} className="group flex items-center gap-4 px-4 py-4 transition-colors hover:bg-zinc-800/50">
+                        <div key={user.id} className="group flex items-center gap-4 p-4 transition-colors hover:bg-zinc-800/50">
                             <div className="w-8 shrink-0">
                                 <input
                                     type="checkbox"
                                     checked={selectedUsers.includes(user.id)}
                                     onChange={() => onToggle(user.id)}
-                                    className="h-4 w-4 cursor-pointer rounded border-zinc-700 bg-zinc-900 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0"
+                                    className="size-4 cursor-pointer rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0"
                                 />
                             </div>
                             <div className="w-16 shrink-0 text-sm font-medium text-zinc-100">{user.id}</div>
@@ -86,36 +86,38 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
                             {/* Foto - Centrado */}
                             <div className="flex w-16 shrink-0">
                                 {user.photo_url ? (
-                                    <img src={user.photo_url} alt={user.name} className="h-8 w-8 pr rounded-full border border-zinc-200 object-cover dark:border-zinc-700" />
+                                    <img src={user.photo_url} alt={user.name} className="size-8 rounded-full border border-zinc-200 object-cover dark:border-zinc-700" />
                                 ) : (
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
+                                    <div className="flex size-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
                                         <span className="text-[10px] font-bold uppercase">{user.name?.charAt(0) || '?'}</span>
                                     </div>
                                 )}
                             </div>
 
                             {/* Nombre */}
-                            <div
+                            <button
+                                type="button"
                                 onClick={() => onViewDetail(user.id)}
-                                className="min-w-0 flex-1 cursor-pointer truncate text-sm text-zinc-300 transition-colors hover:text-indigo-400"
+                                className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-zinc-300 transition-colors hover:text-violet-400"
                                 title={user.name}
                             >
                                 {user.name}
-                            </div>
+                            </button>
 
                             {/* Email */}
-                            <div
+                            <button
+                                type="button"
                                 onClick={() => onViewDetail(user.id)}
-                                className="min-w-0 flex-1 cursor-pointer truncate text-sm text-zinc-300 transition-colors hover:text-indigo-400"
+                                className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-zinc-300 transition-colors hover:text-violet-400"
                                 title={user.email}
                             >
                                 {user.email}
-                            </div>
+                            </button>
 
                             {/* Rol */}
                             <div className="w-32 shrink-0 text-sm">
-                                <span className={`inline-flex items-center text-xs font-medium ${user.role_id === 1 ? 'text-indigo-400' : 'text-zinc-400'}`}>
-                                    <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${user.role_id === 1 ? 'bg-indigo-400' : 'bg-zinc-500'}`} />
+                                <span className={`inline-flex items-center text-xs font-medium ${user.role_id === 1 ? 'text-violet-400' : 'text-zinc-400'}`}>
+                                    <span className={`mr-1.5 h-1.5 w-1.5 rounded-full ${user.role_id === 1 ? 'bg-violet-400' : 'bg-zinc-500'}`} />
                                     {user.role_id === 1 ? 'Administrador' : 'Usuario'}
                                 </span>
                             </div>
@@ -129,7 +131,7 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
                             </div>
 
                             {/* Registrado */}
-                            <div className="w-28 shrink-0 text-sm text-zinc-400">
+                            <div className="w-28 shrink-0 text-sm text-zinc-400" suppressHydrationWarning>
                                 {new Date(user.created_at).toLocaleDateString('es', {
                                     year: 'numeric',
                                     month: '2-digit',

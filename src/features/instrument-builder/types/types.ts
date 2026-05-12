@@ -9,15 +9,6 @@ export interface InstrumentTemplate {
     register_at: string;
 }
 
-export interface InstrumentDetail {
-    id: number;
-    name: string;
-    version: string;
-    service_type: string;
-    active: boolean;
-    creation_date: string;
-}
-
 export interface Subcriterion {
     id_subcriterion: number;
     id_criterion: number;

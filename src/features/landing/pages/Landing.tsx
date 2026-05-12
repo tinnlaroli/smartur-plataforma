@@ -75,7 +75,7 @@ export default function Landing() {
             setIsFormModalOpen(true);
             navigate(location.pathname, { replace: true, state: {} });
         }
-    }, [location.state, navigate, location.pathname]);
+    }, [location.state, location.pathname, navigate]);
 
     const { t } = useLanguage();
 
@@ -179,7 +179,7 @@ export default function Landing() {
     // const openInfoCards = () => setShowInfoCards(true);
 
     return (
-        <div className="relative min-h-screen bg-white font-sans text-gray-800 dark:bg-[var(--color-bg)] dark:text-zinc-200">
+        <div className="relative min-h-screen bg-white font-sans text-zinc-800 dark:bg-[var(--color-bg)] dark:text-[var(--color-text)]">
             {loading && <SmartURLoader onFinished={() => setLoading(false)} />}
 
             {!isStandalonePwa && (
@@ -234,7 +234,7 @@ export default function Landing() {
                 <div className="fixed inset-0 z-[1000] overflow-y-auto bg-white dark:bg-zinc-950">
                     <button
                         onClick={() => setShowCordobaMap(false)}
-                        className="fixed top-6 right-6 z-[1001] rounded-full border border-gray-100 bg-white p-4 shadow-2xl transition-colors hover:bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-200"
+                        className="fixed top-6 right-6 z-[1001] rounded-full border border-zinc-100 bg-white p-4 shadow-2xl transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-200"
                     >
                         <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
@@ -264,7 +264,7 @@ export default function Landing() {
                         <span className={`mb-6 inline-flex rounded-full border px-4 py-1.5 text-[10px] font-black tracking-widest uppercase ${focusedCard.badgeColor}`}>{focusedCard.highlight}</span>
                         <h3 className="mb-4 text-2xl leading-tight font-black text-gray-900 dark:text-zinc-100">{focusedCard.title}</h3>
                         <p className="mb-8 leading-relaxed font-medium text-gray-600 dark:text-zinc-300">{focusedCard.description}</p>
-                        <button onClick={() => setFocusedCard(null)} className="w-full rounded-full bg-[#ff4d8d] py-4 font-black text-white shadow-lg">{t('pwa.modal.understood')}</button>
+                        <button onClick={() => setFocusedCard(null)} className="w-full rounded-full bg-[var(--color-pink)] py-4 font-black text-white shadow-lg">{t('pwa.modal.understood')}</button>
                     </div>
                 </div>
             )}
@@ -274,7 +274,7 @@ export default function Landing() {
                     <div className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-[40px] border border-gray-50 bg-white shadow-2xl dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-200">
                         <button onClick={() => setShowInfoCards(false)} className="absolute top-6 right-6 z-50 font-black text-gray-400 text-2xl dark:text-zinc-500">✕</button>
                         <div className="border-b border-gray-50 p-8 pt-10 dark:border-zinc-800">
-                            <p className="mb-2 text-xs font-black tracking-[0.2em] text-[#ff4d8d] uppercase">{t('pwa.modal.aboutLabel')}</p>
+                            <p className="mb-2 text-xs font-black tracking-[0.2em] text-[var(--color-pink)] uppercase">{t('pwa.modal.aboutLabel')}</p>
                             <h3 className="mb-2 text-3xl leading-none font-black text-gray-900 dark:text-zinc-100">{t('pwa.modal.title')}</h3>
                             <p className="text-sm font-medium text-gray-400 dark:text-zinc-300">{t('pwa.modal.subtitle')}</p>
                         </div>

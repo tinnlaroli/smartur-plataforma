@@ -6,6 +6,7 @@ import type { TwoFactorPayload } from '../types';
 import { useToast } from '../../../shared/context/ToastContext';
 import SmartURLoader from '../components/SmartURLoader';
 import type { AuthStep } from '../context/AuthModalContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface TwoFactorViewProps {
     email: string;
@@ -16,10 +17,11 @@ interface TwoFactorViewProps {
 export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewProps) => {
     const toast = useToast();
     const navigate = useNavigate();
-    const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
+    const { t } = useLanguage();
+    const [otp, setOtp] = useState<string[]>(() => Array(6).fill(''));
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [isInitialLoading, setIsInitialLoading] = useState(!email);
+    const [isInitialLoading, setIsInitialLoading] = useState(() => !email);
     const [isReady, setIsReady] = useState(false);
     const pendingActionRef = useRef<(() => void) | null>(null);
 
@@ -29,7 +31,7 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
         }
     }, [email, onSwitchStep]);
 
-    const handleChange = (index: number, value: string) => {
+    const handleOtpChange = (index: number, value: string) => {
         const digit = value.replace(/\D/g, '').slice(-1);
         const newOtp = [...otp];
         newOtp[index] = digit;
@@ -87,8 +89,10 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
 
             localStorage.setItem('token', jwt);
             localStorage.setItem('user', JSON.stringify(response.user));
+            localStorage.removeItem('v1:token');
+            localStorage.removeItem('v1:user');
 
-            toast.success('¡Bienvenido!', 'Inicio de sesión exitoso');
+            toast.success(t('auth.twoFactor.success.title'), t('auth.twoFactor.success.body'));
 
             const apiUser = response.user;
             const userRole = Number(apiUser.role_id) || (Number(apiUser.id) === 1 ? 1 : 2);
@@ -97,7 +101,6 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
                 if (userRole === 1) {
                     navigate('/dashboard', { replace: true });
                 } else {
-                    // Regresamos a la landing con el estado para abrir el modal
                     navigate('/', { replace: true, state: { openForm: true } });
                 }
                 if (onClose) onClose();
@@ -107,7 +110,7 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
             setIsReady(true);
 
         } catch (error) {
-            toast.error('Error de verificación', 'El código ingresado es incorrecto o ha expirado.');
+            toast.error(t('auth.twoFactor.error.title'), t('auth.twoFactor.error.body'));
             setIsLoading(false);
         }
     };
@@ -131,27 +134,36 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
             )}
 
             <div className="mb-6 flex justify-center">
-                <div className="rounded-full bg-indigo-500/10 p-3">
-                    <Shield className="h-8 w-8 text-indigo-500" />
+                <div className="rounded-full p-3" style={{ background: 'rgba(var(--rgb-purple-accent),0.1)' }}>
+                    <Shield className="size-8" style={{ color: 'var(--color-purple)' }} />
                 </div>
             </div>
 
             <div className="mb-8 text-center">
-                <h2 className="text-2xl font-semibold text-white">Verificación de Seguridad</h2>
-                <p className="mt-2 text-sm text-zinc-400">
-                    Hemos enviado un código de 6 dígitos a <br />
-                    <span className="font-medium text-zinc-200">{email}</span>
+                <h2 className="text-2xl font-semibold" style={{ color: 'var(--color-text)' }}>
+                    {t('auth.twoFactor.title')}
+                </h2>
+                <p className="mt-2 text-sm" style={{ color: 'var(--color-text-alt)' }}>
+                    {t('auth.twoFactor.subtitle')} <br />
+                    <span className="font-medium" style={{ color: 'var(--color-text)' }}>{email}</span>
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                    <label className="block text-center text-xs font-medium tracking-wider text-zinc-400 uppercase">Código de verificación</label>
+                    <label
+                        htmlFor="otp-0"
+                        className="block text-center text-xs font-medium tracking-wider uppercase"
+                        style={{ color: 'var(--color-text-alt)' }}
+                    >
+                        {t('auth.twoFactor.label')}
+                    </label>
 
                     <div className="flex items-center justify-center gap-2">
                         {otp.map((digit, index) => (
                             <input
-                                key={index}
+                                key={`otp-${index}`}
+                                id={index === 0 ? 'otp-0' : undefined}
                                 ref={(el) => {
                                     inputsRef.current[index] = el;
                                 }}
@@ -159,27 +171,36 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
                                 inputMode="numeric"
                                 maxLength={1}
                                 value={digit}
-                                onChange={(e) => handleChange(index, e.target.value)}
+                                onChange={(e) => handleOtpChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
                                 onPaste={handlePaste}
                                 onFocus={(e) => e.target.select()}
-                                className={`h-14 w-12 rounded-lg border border-zinc-800 bg-zinc-950 text-center text-xl font-bold text-white transition-all duration-150 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none ${index === 3 ? 'ml-2' : ''} `}
+                                className={`h-14 w-12 rounded-lg border text-center text-xl font-bold transition-all duration-150 focus:outline-none ${index === 3 ? 'ml-2' : ''}`}
+                                style={{
+                                    borderColor: 'var(--color-border)',
+                                    background: 'var(--color-bg)',
+                                    color: 'var(--color-text)',
+                                }}
+                                onFocusCapture={e => (e.currentTarget.style.borderColor = 'var(--color-purple)')}
+                                onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}
                             />
                         ))}
                     </div>
                 </div>
+
                 <button
                     type="submit"
                     disabled={isLoading || token.length !== 6}
-                    className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-lg transition-all hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-lg px-4 py-3 text-sm font-medium text-white shadow-lg transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{ background: 'var(--color-purple)' }}
                 >
                     {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                            <span>Verificando...</span>
+                            <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                            <span>{t('auth.twoFactor.submitting')}</span>
                         </div>
                     ) : (
-                        <span>Verificar Código</span>
+                        <span>{t('auth.twoFactor.submit')}</span>
                     )}
                 </button>
 
@@ -187,10 +208,10 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
                     <button
                         type="button"
                         onClick={() => onSwitchStep('login')}
-                        className="mx-auto flex items-center justify-center gap-2 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+                        className="mx-auto flex items-center justify-center gap-2 text-xs transition-colors nav-item-idle"
                     >
-                        <ArrowLeft className="h-3 w-3" />
-                        Volver al inicio de sesión
+                        <ArrowLeft className="size-3" />
+                        {t('auth.twoFactor.back')}
                     </button>
                 </div>
             </form>

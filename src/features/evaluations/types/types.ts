@@ -96,39 +96,3 @@ export interface TemplateResponse {
     currentPage: number;
 }
 
-export interface Criterion {
-    id_criterion: number;
-    id_template: number;
-    name: string;
-    description?: string;
-    weight: number;
-    order_index: number;
-    active: boolean;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface CreateCriterionDTO {
-    id_template: number;
-    name: string;
-    description?: string;
-    weight: number;
-    order_index?: number;
-    active: boolean;
-}
-
-export interface UpdateCriterionDTO {
-    id_template?: number;
-    name?: string;
-    description?: string;
-    weight?: number;
-    order_index?: number;
-    active?: boolean;
-}
-
-export interface CriterionResponse {
-    criteria: Criterion[];
-    totalRecords: number;
-    totalPages: number;
-    currentPage: number;
-}

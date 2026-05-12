@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect, useRef } from 'react';
 import {
     X,
     ChevronRight,
@@ -31,31 +31,86 @@ const STEPS = [
 
 // Criterios específicos eliminados para usar rúbrica dinámica de 13 registros
 
+interface WizardState {
+    currentStep: number;
+    responses: Record<number, { score: number; subcriterionId: number; observations?: string }>;
+    generalObservations: string;
+    evidences: Array<{ id: string; url: string }>;
+}
+
+type WizardAction =
+    | { type: 'SET_STEP'; step: number }
+    | { type: 'SET_SCORE'; criterionId: number; subcriterionId: number; score: number }
+    | { type: 'SET_OBSERVATIONS'; value: string }
+    | { type: 'ADD_EVIDENCES'; urls: Array<{ id: string; url: string }> }
+    | { type: 'RESET' };
+
+function wizardReducer(state: WizardState, action: WizardAction): WizardState {
+    switch (action.type) {
+        case 'SET_STEP':
+            return { ...state, currentStep: action.step };
+        case 'SET_SCORE':
+            return {
+                ...state,
+                responses: {
+                    ...state.responses,
+                    [action.criterionId]: {
+                        ...state.responses[action.criterionId],
+                        subcriterionId: action.subcriterionId,
+                        score: action.score,
+                    },
+                },
+            };
+        case 'SET_OBSERVATIONS':
+            return { ...state, generalObservations: action.value };
+        case 'ADD_EVIDENCES':
+            return { ...state, evidences: [...state.evidences, ...action.urls] };
+        case 'RESET':
+            return initialWizardState();
+        default:
+            return state;
+    }
+}
+
+function initialWizardState(): WizardState {
+    return {
+        currentStep: 0,
+        responses: {},
+        generalObservations: '',
+        evidences: [],
+    };
+}
+
 const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, serviceName }) => {
     const toast = useToast();
     const { getRubric, registerEvaluation, rubric, isLoading } = useEvaluations();
-    const [currentStep, setCurrentStep] = useState(0);
-    const [responses, setResponses] = useState<
-        Record<number, { score: number; subcriterionId: number; observations?: string }>
-    >({});
-    const [generalObservations, setGeneralObservations] = useState('');
-    const [evidences, setEvidences] = useState<string[]>([]);
+    const [state, dispatch] = useReducer(wizardReducer, undefined, initialWizardState);
+    const { currentStep, responses, generalObservations, evidences } = state;
 
-    const [startTime] = useState<number>(Date.now());
+    const startTimeRef = useRef<number>(Date.now());
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            // We keep local URLs for preview, but we will send fake ones in JSON as requested
-            const newFiles = Array.from(e.target.files).map((f) => URL.createObjectURL(f));
-            setEvidences((prev) => [...prev, ...newFiles]);
+            const newFiles = Array.from(e.target.files).map((f) => ({
+                id: `${f.name}-${f.lastModified}-${f.size}`,
+                url: URL.createObjectURL(f),
+            }));
+            dispatch({ type: 'ADD_EVIDENCES', urls: newFiles });
         }
     };
 
     useEffect(() => {
-        if (isOpen) {
-            getRubric(1); // Assuming template 1 as requested
-        }
-    }, [isOpen]);
+        if (!isOpen) return;
+        startTimeRef.current = Date.now();
+        dispatch({ type: 'RESET' });
+        let cancelled = false;
+        getRubric(1).then(() => {
+            if (cancelled) return;
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!isOpen) return null;
 
@@ -89,10 +144,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
     };
 
     const handleScoreSelect = (criterionId: number, subId: number, score: number) => {
-        setResponses((prev) => ({
-            ...prev,
-            [criterionId]: { ...prev[criterionId], subcriterionId: subId, score },
-        }));
+        dispatch({ type: 'SET_SCORE', criterionId, subcriterionId: subId, score });
     };
 
     const handleFinish = async () => {
@@ -108,7 +160,10 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
         }
 
         const endTime = Date.now();
-        const durationMinutes = Math.max(1, Math.round((endTime - startTime) / 1000 / 60));
+        const durationMinutes = Math.max(
+            1,
+            Math.round((endTime - startTimeRef.current) / 1000 / 60)
+        );
 
         const details: EvaluationDetailDTO[] = Object.entries(responses).map(
             ([criterionId, data]) => ({
@@ -117,7 +172,8 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                 id_selected_subcriterion: data.subcriterionId,
                 observations: data.observations || '',
                 // As requested: send a single fake URL string instead of an array
-                attached_evidences: evidences.length > 0 ? 'https://via.placeholder.com/150' : '',
+                attached_evidences:
+                    evidences.length > 0 ? 'https://via.placeholder.com/150' : '',
             })
         );
 
@@ -138,7 +194,10 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
 
         const result = await registerEvaluation(payload);
         if (result) {
-            toast.success('Evaluación registrada exitosamente', '¡Gracias por completar la evaluación!');
+            toast.success(
+                'Evaluación registrada exitosamente',
+                '¡Gracias por completar la evaluación!'
+            );
             onClose();
         } else {
             toast.error('Error', 'Ocurrió un error al registrar la evaluación');
@@ -154,20 +213,20 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-8 py-5 bg-zinc-50/50 dark:bg-zinc-900/50">
                     <div>
-                        <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-3">
-                            <ClipboardList className="h-6 w-6 text-indigo-500" />
+                        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white flex items-center gap-3">
+                            <ClipboardList className="size-6 text-violet-500" />
                             Evaluación de Servicio
                         </h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                             Evaluando:{' '}
-                            <span className="font-semibold text-indigo-500">{serviceName}</span>
+                            <span className="font-semibold text-violet-500">{serviceName}</span>
                         </p>
                     </div>
                     <button
                         onClick={onClose}
                         className="rounded-full p-2 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-600 dark:hover:text-zinc-200 transition-all"
                     >
-                        <X className="h-6 w-6" />
+                        <X className="size-6" />
                     </button>
                 </div>
 
@@ -180,25 +239,25 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                             const isCompleted = currentStep > idx;
 
                             return (
-                                <div key={idx} className="flex flex-col items-center z-10 flex-1">
+                                <div key={step.title} className="flex flex-col items-center z-10 flex-1">
                                     <div
-                                        className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                                        className={`size-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                                             isActive
-                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-110'
+                                                ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/30 scale-110'
                                                 : isCompleted
                                                   ? 'bg-emerald-500 text-white'
                                                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'
                                         }`}
                                     >
                                         {isCompleted ? (
-                                            <Check className="h-5 w-5" />
+                                            <Check className="size-5" />
                                         ) : (
-                                            <Icon className="h-5 w-5" />
+                                            <Icon className="size-5" />
                                         )}
                                     </div>
                                     <span
-                                        className={`text-[10px] font-bold uppercase tracking-wider mt-2 ${
-                                            isActive ? 'text-indigo-500' : 'text-zinc-500'
+                                        className={`text-[10px] font-semibold uppercase tracking-wider mt-2 ${
+                                            isActive ? 'text-violet-500' : 'text-zinc-500'
                                         }`}
                                     >
                                         {step.title}
@@ -209,7 +268,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                         {/* Progress Line */}
                         <div className="absolute top-5 left-0 right-0 h-0.5 bg-zinc-100 dark:bg-zinc-800 -z-10 mx-10">
                             <div
-                                className="h-full bg-indigo-500 transition-all duration-500"
+                                className="h-full bg-violet-500 transition-all duration-500"
                                 style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
                             />
                         </div>
@@ -220,9 +279,9 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                     {isLoading && (
                         <div className="flex flex-col items-center justify-center h-64">
-                            <div className="h-12 w-12 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600 mb-4"></div>
+                            <div className="size-12 animate-spin rounded-full border-4 border-zinc-200 border-t-violet-600 mb-4"></div>
                             <p className="text-zinc-500 animate-pulse">
-                                Cargando rúbrica de evaluación...
+                                Cargando rúbrica de evaluación…
                             </p>
                         </div>
                     )}
@@ -232,7 +291,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                             {currentStep < 3 ? (
                                 <>
                                     <div className="mb-6">
-                                        <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                                        <h3 className="text-2xl font-semibold text-zinc-900 dark:text-white">
                                             {STEPS[currentStep].title}
                                         </h3>
                                         <p className="text-zinc-500 dark:text-zinc-400">
@@ -244,7 +303,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                                         {stepCriteria.map((criterion) => (
                                             <div key={criterion.id_criterion} className="space-y-4">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="h-8 w-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                                                    <span className="size-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 flex items-center justify-center font-semibold text-sm">
                                                         {criterion.order_index || 1}
                                                     </span>
                                                     <h4 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
@@ -272,14 +331,14 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                                                                     }
                                                                     className={`flex items-start gap-4 p-4 rounded-xl border transition-all duration-200 text-left group ${
                                                                         isSelected
-                                                                            ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 ring-1 ring-indigo-500'
+                                                                            ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-500 ring-1 ring-violet-500'
                                                                             : 'bg-white dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
                                                                     }`}
                                                                 >
                                                                     <div
-                                                                        className={`mt-1 h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                                                                        className={`mt-1 size-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                                                                             isSelected
-                                                                                ? 'border-indigo-600 bg-indigo-600'
+                                                                                ? 'border-violet-600 bg-violet-600'
                                                                                 : 'border-zinc-300 dark:border-zinc-600'
                                                                         }`}
                                                                     >
@@ -290,7 +349,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                                                                     <div>
                                                                         <div className="flex items-center gap-2 mb-1">
                                                                             <span
-                                                                                className={`text-sm font-bold ${isSelected ? 'text-indigo-600 dark:text-indigo-400' : 'text-zinc-600 dark:text-zinc-400'}`}
+                                                                                className={`text-sm font-semibold ${isSelected ? 'text-violet-600 dark:text-violet-400' : 'text-zinc-600 dark:text-zinc-400'}`}
                                                                             >
                                                                                 Puntaje:{' '}
                                                                                 {level.score}
@@ -312,47 +371,58 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                                 </>
                             ) : (
                                 <div className="space-y-6">
-                                    <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
+                                    <h3 className="text-2xl font-semibold text-zinc-900 dark:text-white">
                                         Resumen y Evidencias
                                     </h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
-                                            <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500">
+                                            <label
+                                                htmlFor="general-observations"
+                                                className="block text-xs font-semibold uppercase tracking-widest text-zinc-500"
+                                            >
                                                 Observaciones Generales
                                             </label>
                                             <textarea
+                                                id="general-observations"
                                                 value={generalObservations}
                                                 onChange={(e) =>
-                                                    setGeneralObservations(e.target.value)
+                                                    dispatch({
+                                                        type: 'SET_OBSERVATIONS',
+                                                        value: e.target.value,
+                                                    })
                                                 }
-                                                className="w-full h-40 rounded-xl border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900/50 p-4 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                                                placeholder="Escribe aquí las observaciones generales de la evaluación..."
+                                                className="w-full h-40 rounded-xl border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900/50 p-4 text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none resize-none"
+                                                placeholder="Escribe aquí las observaciones generales de la evaluación…"
                                             />
                                         </div>
 
                                         <div className="space-y-4">
-                                            <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500">
+                                            <label
+                                                htmlFor="evidence-upload"
+                                                className="block text-xs font-semibold uppercase tracking-widest text-zinc-500"
+                                            >
                                                 Evidencias Fotográficas
                                             </label>
                                             <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl p-8 flex flex-col items-center justify-center gap-3 bg-zinc-50/50 dark:bg-zinc-900/20 relative">
-                                                <Camera className="h-10 w-10 text-zinc-400" />
+                                                <Camera className="size-10 text-zinc-400" />
                                                 <p className="text-sm text-zinc-500 text-center">
                                                     Haz clic para subir fotos o arrastra los
                                                     archivos aquí
                                                 </p>
                                                 <input
+                                                    id="evidence-upload"
                                                     type="file"
                                                     multiple
                                                     onChange={handleFileUpload}
                                                     className="absolute inset-0 opacity-0 cursor-pointer"
                                                 />
                                                 <div className="flex flex-wrap gap-2 mt-2">
-                                                    {evidences.map((src, i) => (
+                                                    {evidences.map((ev) => (
                                                         <img
-                                                            key={i}
-                                                            src={src}
-                                                            className="h-12 w-12 rounded-lg object-cover border border-zinc-200"
+                                                            key={ev.id}
+                                                            src={ev.url}
+                                                            className="size-12 rounded-lg object-cover border border-zinc-200"
                                                             alt="evidencia"
                                                         />
                                                     ))}
@@ -362,11 +432,11 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                                     </div>
 
                                     <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/50 rounded-xl p-4 flex gap-3">
-                                        <div className="h-5 w-5 text-amber-500 mt-0.5">
+                                        <div className="size-5 text-amber-500 mt-0.5">
                                             <ShieldCheck />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-amber-900 dark:text-amber-400">
+                                            <p className="text-sm font-semibold text-amber-900 dark:text-amber-400">
                                                 Verificación de datos
                                             </p>
                                             <p className="text-xs text-amber-700 dark:text-amber-500">
@@ -385,15 +455,17 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                 {/* Footer */}
                 <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 px-8 py-5 bg-zinc-50/30 dark:bg-zinc-900/30">
                     <button
-                        onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
+                        onClick={() =>
+                            dispatch({ type: 'SET_STEP', step: Math.max(0, currentStep - 1) })
+                        }
                         disabled={currentStep === 0}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                             currentStep === 0
                                 ? 'text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
                                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                         }`}
                     >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className="size-4" />
                         Atrás
                     </button>
 
@@ -401,19 +473,22 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                         {!isLastStep ? (
                             <button
                                 onClick={() =>
-                                    setCurrentStep((prev) => Math.min(STEPS.length - 1, prev + 1))
+                                    dispatch({
+                                        type: 'SET_STEP',
+                                        step: Math.min(STEPS.length - 1, currentStep + 1),
+                                    })
                                 }
-                                className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all"
+                                className="flex items-center gap-2 px-8 py-2.5 bg-violet-600 text-white rounded-xl text-sm font-semibold hover:bg-violet-700 shadow-lg shadow-violet-600/20 active:scale-[0.98] transition-all"
                             >
                                 Siguiente
-                                <ChevronRight className="h-4 w-4" />
+                                <ChevronRight className="size-4" />
                             </button>
                         ) : (
                             <button
                                 onClick={handleFinish}
-                                className="flex items-center gap-2 px-10 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all"
+                                className="flex items-center gap-2 px-10 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all"
                             >
-                                <Save className="h-4 w-4" />
+                                <Save className="size-4" />
                                 Finalizar Evaluación
                             </button>
                         )}

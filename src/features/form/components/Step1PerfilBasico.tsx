@@ -11,31 +11,31 @@ interface Step1Props {
 }
 
 const edadOptions = [
-    { label: '18-25', value: '18-25' },
-    { label: '26-35', value: '26-35' },
-    { label: '36-45', value: '36-45' },
-    { label: '46-60', value: '46-60' },
-    { label: '60+', value: '60+' },
+    { label: '18-24', value: '18-24' },
+    { label: '25-34', value: '25-34' },
+    { label: '35-44', value: '35-44' },
+    { label: '45-54', value: '45-54' },
+    { label: '55+',   value: '55+' },
 ];
 
 const presupuestoOptions = [
     {
         label: 'Económico',
-        value: 'low',
+        value: 'bajo',
         range: '< $700/día',
         icon: Wallet,
         daily: 500,
     },
     {
         label: 'Moderado',
-        value: 'med',
+        value: 'medio',
         range: '$700 - $2,000/día',
         icon: DollarSign,
         daily: 1200,
     },
     {
         label: 'Premium',
-        value: 'high',
+        value: 'alto',
         range: '> $2,000/día',
         icon: Star,
         daily: 3000,
@@ -51,7 +51,7 @@ const duracionOptions = [
 
 const edadRangeToApprox = (range: string) => {
     if (!range) return null;
-    if (range === '60+') return 65;
+    if (range === '55+' || range === '60+') return 60;
     const parts = range.split('-').map(Number);
     if (parts.length !== 2 || Number.isNaN(parts[0]) || Number.isNaN(parts[1])) return null;
     return Math.round((parts[0] + parts[1]) / 2);
@@ -110,7 +110,7 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
     return (
         <div className="step-content px-4 py-6" ref={containerRef}>
             <div className="step-header mb-8 text-center">
-                <h2 className="mb-2 text-3xl font-bold text-white">¿Qué te interesa?</h2>
+                <h2 className="mb-2 text-3xl font-semibold text-white">¿Qué te interesa?</h2>
                 <p className="text-zinc-400">Selecciona tus preferencias de viaje</p>
             </div>
 
@@ -123,7 +123,7 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                             type="button"
                             onClick={() => setEdadRange(o.value)}
                             className={`rounded-xl border py-3 transition-all duration-200 ${
-                                edad_range === o.value ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                edad_range === o.value ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20' : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
                             <span className="text-sm font-semibold">{o.label}</span>
@@ -142,14 +142,14 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                             onClick={() => setPresupuestoBucket(o.value)}
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 presupuesto_bucket === o.value
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
                             <div className="mb-3">
                                 <o.icon className="h-6 w-6" />
                             </div>
-                            <div className="mb-1 font-bold">{o.label}</div>
+                            <div className="mb-1 font-semibold">{o.label}</div>
                             <div className="text-xs opacity-70">{o.range}</div>
                         </button>
                     ))}
@@ -166,14 +166,14 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                             onClick={() => setDuracionDiasRange(o.value)}
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 duracion_dias_range === o.value
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
                             <div className="mb-3">
                                 <o.icon className="h-6 w-6" />
                             </div>
-                            <div className="font-bold">{o.label}</div>
+                            <div className="font-semibold">{o.label}</div>
                         </button>
                     ))}
                 </div>
@@ -183,7 +183,7 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                 <button
                     onClick={handleNext}
                     disabled={!(edad_range && presupuesto_bucket && duracion_dias_range)}
-                    className="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <span>Continuar</span>
                     <ChevronRight className="h-5 w-5" />

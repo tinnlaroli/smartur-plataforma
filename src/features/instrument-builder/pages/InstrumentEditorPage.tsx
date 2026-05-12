@@ -17,6 +17,9 @@ const FIELD_TYPES: { value: FieldType; label: string; icon: React.ComponentType<
     { value: 'select', label: 'Select', icon: ChevronDown },
 ];
 
+const FIELD_TYPE_LABELS = new Map(FIELD_TYPES.map((ft) => [ft.value, ft.label]));
+const LEVELS_FIELD_TYPES = new Set<FieldType>(['multiple_choice', 'scale', 'checkbox', 'select']);
+
 export const InstrumentEditorPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -48,9 +51,11 @@ export const InstrumentEditorPage = () => {
             setCriteria(r.criteria || []);
         } catch {
             try {
-                const res = await instrumentApi.getCriteria(Number(id));
+                const [res, tpl] = await Promise.all([
+                    instrumentApi.getCriteria(Number(id)),
+                    instrumentApi.getTemplateById(Number(id)),
+                ]);
                 setCriteria(res);
-                const tpl = await instrumentApi.getTemplateById(Number(id));
                 setTemplateName(tpl.template.name);
                 setTemplateVersion(tpl.template.version);
                 setTemplateServiceType(tpl.template.servicio);
@@ -154,9 +159,9 @@ export const InstrumentEditorPage = () => {
         if (!id) return;
         setSaving(true);
         try {
-            for (let i = 0; i < criteria.length; i++) {
-                const c = criteria[i];
-                if (!c.name) continue;
+            await criteria.reduce(async (chain, c, i) => {
+                await chain;
+                if (!c.name) return;
 
                 let criterionId = c.id_criterion;
                 if (criterionId > 1000000 || criterionId <= 0) {
@@ -183,13 +188,13 @@ export const InstrumentEditorPage = () => {
                     });
                 }
 
-                if (c.levels && c.levels.length > 0 && ['multiple_choice', 'scale', 'checkbox', 'select'].includes(c.field_type)) {
+                if (c.levels && c.levels.length > 0 && LEVELS_FIELD_TYPES.has(c.field_type)) {
                     await instrumentApi.batchUpdateSubcriteria(
                         criterionId,
                         c.levels.map((l) => ({ description: l.description, score: l.score }))
                     );
                 }
-            }
+            }, Promise.resolve());
             toast.success('Criterios guardados', 'Todas las preguntas se guardaron correctamente');
             fetchRubric();
         } catch {
@@ -232,7 +237,7 @@ export const InstrumentEditorPage = () => {
                         <ArrowLeft className="h-4 w-4" />
                     </button>
                     <div>
-                        <h1 className="text-xl font-bold text-zinc-900 dark:text-white">
+                        <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">
                             Editor: {templateName || 'Sin nombre'}
                         </h1>
                         <p className="text-sm text-zinc-500">v{templateVersion} · {templateServiceType}</p>
@@ -319,7 +324,7 @@ export const InstrumentEditorPage = () => {
             {preview ? (
                 <div className="space-y-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Vista previa</h2>
-                    {criteria.filter((c) => c.active).length === 0 ? (
+                    {criteria.reduce((n, c) => n + (c.active ? 1 : 0), 0) === 0 ? (
                         <p className="py-8 text-center text-sm text-zinc-500">Sin preguntas activas</p>
                     ) : (
                         criteria.filter((c) => c.active).map((c, i) => (
@@ -336,7 +341,7 @@ export const InstrumentEditorPage = () => {
                                 {c.field_type === 'text' && (
                                     <input
                                         type="text"
-                                        placeholder="Respuesta de texto..."
+                                        placeholder="Respuesta de texto…"
                                         className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
                                         disabled
                                     />
@@ -383,7 +388,7 @@ export const InstrumentEditorPage = () => {
                                         className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
                                         disabled
                                     >
-                                        <option>Seleccionar...</option>
+                                        <option>Seleccionar…</option>
                                         {(c.levels || []).map((l, li) => (
                                             <option key={li}>{l.description}</option>
                                         ))}
@@ -392,7 +397,7 @@ export const InstrumentEditorPage = () => {
                                 <div className="mt-2 flex items-center gap-3 text-xs text-zinc-400">
                                     <span>Peso: {c.weight}</span>
                                     <span>·</span>
-                                    <span>Tipo: {FIELD_TYPES.find((ft) => ft.value === c.field_type)?.label}</span>
+                                    <span>Tipo: {FIELD_TYPE_LABELS.get(c.field_type)}</span>
                                 </div>
                             </div>
                         ))
@@ -452,7 +457,7 @@ export const InstrumentEditorPage = () => {
                                             type="text"
                                             value={c.name}
                                             onChange={(e) => updateCriterion(i, { name: e.target.value })}
-                                            placeholder="Escribe la pregunta..."
+                                            placeholder="Escribe la pregunta…"
                                             className="flex-1 border-0 border-b-2 border-transparent bg-transparent py-1 text-base font-medium text-zinc-900 placeholder:text-zinc-300 focus:border-indigo-500 focus:ring-0 dark:text-white dark:placeholder:text-zinc-600"
                                         />
                                         <button
@@ -524,7 +529,7 @@ export const InstrumentEditorPage = () => {
                                             />
                                         </div>
 
-                                        {['multiple_choice', 'scale', 'checkbox', 'select'].includes(c.field_type) && (
+                                        {LEVELS_FIELD_TYPES.has(c.field_type) && (
                                             <div>
                                                 <div className="mb-2 flex items-center justify-between">
                                                     <label className="text-xs font-medium text-zinc-500">Opciones / Niveles</label>

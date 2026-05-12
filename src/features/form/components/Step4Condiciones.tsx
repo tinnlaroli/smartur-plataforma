@@ -56,10 +56,8 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
     );
 
     useEffect(() => {
-        if (onLoadingChange) {
-            onLoadingChange(loading);
-        }
-    }, [loading, onLoadingChange]);
+        onLoadingChange?.(loading);
+    }, [loading]);
 
     useEffect(() => {
         return () => {
@@ -67,7 +65,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                 cancel();
             }
         };
-    }, [cancel]);
+    }, []);
 
     const buildAIContext = (): AIRecommendationContext => {
         const d = data || {};
@@ -142,7 +140,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
             <div className="flex min-h-[400px] flex-col items-center justify-center">
                 <SmartURLoader isReady={isReady} onFinished={handleLoaderFinished} />
                 <div className="mt-8 text-center text-white">
-                    <h3 className="mb-4 text-2xl font-bold">Analizando tus preferencias...</h3>
+                    <h3 className="mb-4 text-2xl font-semibold">Analizando tus preferencias…</h3>
                     <p className="text-zinc-400">Generando recomendaciones personalizadas para tu próximo viaje</p>
                 </div>
             </div>
@@ -155,14 +153,14 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10">
                     <XCircle className="h-8 w-8 text-red-500" />
                 </div>
-                <h3 className="mb-2 text-2xl font-bold text-white">Error al generar recomendaciones</h3>
+                <h3 className="mb-2 text-2xl font-semibold text-white">Error al generar recomendaciones</h3>
                 <p className="mb-8 max-w-md text-zinc-400">{apiError}</p>
                 <button
                     onClick={() => {
                         isSubmittingRef.current = false;
                         handleFinish();
                     }}
-                    className="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 font-bold text-white"
+                    className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white"
                 >
                     <RotateCw className="h-5 w-5" />
                     <span>Reintentar</span>
@@ -184,7 +182,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
     return (
         <div className="step-content px-4 py-6" ref={containerRef}>
             <div className="step-header mb-8 text-center">
-                <h2 className="mb-2 text-3xl font-bold text-white">Condiciones Especiales</h2>
+                <h2 className="mb-2 text-3xl font-semibold text-white">Condiciones Especiales</h2>
                 <p className="text-zinc-400">Ayúdanos a personalizar aún más tu experiencia</p>
             </div>
 
@@ -198,14 +196,14 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                             onClick={() => setAccesibilidad(o.value)}
                             className={`flex flex-col items-center rounded-2xl border p-5 text-center transition-all duration-200 ${
                                 accesibilidad === o.value
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
                             <div className="mb-3">
                                 <o.icon className="h-6 w-6" />
                             </div>
-                            <div className="font-bold">{o.label}</div>
+                            <div className="font-semibold">{o.label}</div>
                         </button>
                     ))}
                 </div>
@@ -214,9 +212,9 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                         <textarea
                             value={detalleAcc}
                             onChange={(e) => setDetalleAcc(e.target.value)}
-                            placeholder="Describe tu requerimiento de accesibilidad..."
+                            placeholder="Describe tu requerimiento de accesibilidad…"
                             rows={4}
-                            className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-white transition-all outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                            className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-white transition-all outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
                         />
                     </div>
                 )}
@@ -231,13 +229,13 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                             type="button"
                             onClick={() => setVisitado(o.value)}
                             className={`flex flex-col items-center rounded-2xl border p-5 text-center transition-all duration-200 ${
-                                visitado === o.value ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                visitado === o.value ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20' : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
                             <div className="mb-3">
                                 <o.icon className="h-6 w-6" />
                             </div>
-                            <div className="font-bold">{o.label}</div>
+                            <div className="font-semibold">{o.label}</div>
                         </button>
                     ))}
                 </div>
@@ -247,7 +245,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                 <button
                     onClick={onBack}
                     disabled={loading}
-                    className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-bold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95 disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95 disabled:opacity-50"
                 >
                     <ArrowLeft className="h-5 w-5" />
                     <span>Atrás</span>
@@ -255,7 +253,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                 <button
                     onClick={handleFinish}
                     disabled={loading}
-                    className="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 active:scale-95 disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:opacity-50"
                 >
                     <span>Finalizar</span>
                     <Check className="h-5 w-5" />

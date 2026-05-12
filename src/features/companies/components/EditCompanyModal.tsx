@@ -16,12 +16,12 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
         id_location: company.id_location,
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]: name === 'id_sector' || name === 'id_location' ? Number(value) : value,
-        });
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +39,7 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                     </h2>
                     <button onClick={onClose} className="text-zinc-400 hover:text-zinc-500">
                         <svg
-                            className="h-5 w-5"
+                            className="size-5"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -53,37 +53,40 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                         </svg>
                     </button>
                 </div>
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 gap-y-4 flex flex-col">
                     <div>
-                        <label className="block text-xs font-medium uppercase text-zinc-500">
+                        <label htmlFor="edit-company-name" className="block text-xs font-medium uppercase text-zinc-500">
                             Nombre
                         </label>
                         <input
+                            id="edit-company-name"
                             name="name"
                             value={formData.name}
-                            onChange={handleChange}
+                            onChange={handleFieldChange}
                             className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium uppercase text-zinc-500">
+                        <label htmlFor="edit-company-address" className="block text-xs font-medium uppercase text-zinc-500">
                             Dirección
                         </label>
                         <input
+                            id="edit-company-address"
                             name="address"
                             value={formData.address}
-                            onChange={handleChange}
+                            onChange={handleFieldChange}
                             className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium uppercase text-zinc-500">
+                        <label htmlFor="edit-company-phone" className="block text-xs font-medium uppercase text-zinc-500">
                             Teléfono
                         </label>
                         <input
+                            id="edit-company-phone"
                             name="phone"
                             value={formData.phone}
-                            onChange={handleChange}
+                            onChange={handleFieldChange}
                             className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2"
                         />
                     </div>
@@ -97,7 +100,7 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                         </button>
                         <button
                             type="submit"
-                            className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white shadow-lg"
+                            className="rounded-lg bg-violet-600 px-5 py-2 text-sm font-medium text-white shadow-lg"
                         >
                             Guardar cambios
                         </button>

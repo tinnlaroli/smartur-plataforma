@@ -41,7 +41,7 @@ export const TechnologySection: React.FC = () => {
 
                 <div className="grid gap-12 md:grid-cols-3">
                     {STEPS.map((step, i) => (
-                        <div key={i} className="step-card relative text-center">
+                        <div key={step.title} className="step-card relative text-center">
                             {/* Connecting Line (Desktop) */}
                             {i < STEPS.length - 1 && (
                                 <div className="absolute top-12 left-1/2 w-full hidden md:block" style={{ borderTop: '2px dashed var(--color-border)', zIndex: 0 }} />
@@ -57,7 +57,7 @@ export const TechnologySection: React.FC = () => {
                                 </div>
                             </div>
                             
-                            <h3 className="mb-4 text-2xl font-bold" style={{ color: 'var(--color-text)' }}>
+                            <h3 className="mb-4 text-2xl font-semibold" style={{ color: 'var(--color-text)' }}>
                                 {t(step.title)}
                             </h3>
                             <p className="text-base font-medium leading-relaxed" style={{ color: 'var(--color-text-alt)' }}>

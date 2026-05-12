@@ -41,7 +41,7 @@ export const NotFound = () => {
             <div className="mt-8 text-sm text-zinc-500">
                 <p>
                     ¿Necesitas ayuda?{' '}
-                    <Link to="/contacto" className="text-zinc-400 underline hover:text-zinc-300">
+                    <Link to="/" className="text-zinc-400 underline hover:text-zinc-300">
                         Contacta con soporte
                     </Link>
                 </p>

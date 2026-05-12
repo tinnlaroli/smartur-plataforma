@@ -28,13 +28,13 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]: name === 'role_id' ? Number(value) : value,
-        });
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -57,7 +57,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                     >
                         <span className="sr-only">Cerrar</span>
                         <svg
-                            className="h-5 w-5"
+                            className="size-5"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -70,10 +70,10 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                         </svg>
                     </button>
                 </div>
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    <div className="flex flex-col items-center justify-center space-y-3 pb-2">
+                <form onSubmit={handleSubmit} className="p-6 gap-y-5 flex flex-col">
+                    <div className="flex flex-col items-center justify-center gap-y-3 pb-2">
                         <div className="relative group">
-                            <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-colors group-hover:border-indigo-500">
+                            <div className="size-20 overflow-hidden rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-colors group-hover:border-violet-500">
                                 {previewUrl ? (
                                     <img
                                         src={previewUrl}
@@ -82,15 +82,15 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                     />
                                 ) : (
                                     <div className="flex h-full w-full items-center justify-center text-zinc-400">
-                                        <UserIcon className="h-8 w-8" />
+                                        <UserIcon className="size-8" />
                                     </div>
                                 )}
                             </div>
                             <label
                                 htmlFor="create-photo-upload"
-                                className="absolute bottom-0 right-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                                className="absolute bottom-0 right-0 flex size-7 cursor-pointer items-center justify-center rounded-full bg-violet-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                             >
-                                <Camera className="h-3.5 w-3.5" />
+                                <Camera className="size-3.5" />
                                 <input
                                     id="create-photo-upload"
                                     type="file"
@@ -105,68 +105,72 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                         </p>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="space-y-1">
+                    <div className="gap-y-4 flex flex-col">
+                        <div className="gap-y-1 flex flex-col">
                             <label
-                                htmlFor="name"
+                                htmlFor="create-user-name"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
                                 Nombre completo
                             </label>
                             <input
+                                id="create-user-name"
                                 name="name"
                                 value={formData.name}
                                 required
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
                                 placeholder="Ej. Juan Pérez" />
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="gap-y-1 flex flex-col">
                             <label
-                                htmlFor="email"
+                                htmlFor="create-user-email"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
                                 Correo electrónico
                             </label>
                             <input
+                                id="create-user-email"
                                 name="email"
                                 type="email"
                                 required
                                 value={formData.email}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
                                 placeholder="user@ejemplo.com" />
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="gap-y-1 flex flex-col">
                             <label
-                                htmlFor="password"
+                                htmlFor="create-user-password"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
                                 Contraseña
                             </label>
                             <input
+                                id="create-user-password"
                                 name="password"
                                 type="password"
                                 required
                                 value={formData.password}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
                                 placeholder="••••••••" />
                         </div>
-                        <div className="space-y-1">
+                        <div className="gap-y-1 flex flex-col">
                             <label
-                                htmlFor="role_id"
+                                htmlFor="create-user-role"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
                                 Rol
                             </label>
                             <select
+                                id="create-user-role"
                                 name="role_id"
                                 value={formData.role_id}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                             >
                                 <option value={1}>Administrador</option>
                                 <option value={2}>Usuario</option>
@@ -178,14 +182,14 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                            className="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                         >
                             Cancelar
                         </button>
 
                         <button
                             type="submit"
-                            className="transform rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-500/30 transition-all hover:scale-[1.02] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:scale-[0.98] dark:bg-indigo-500 dark:hover:bg-indigo-600"
+                            className="transform rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:scale-[1.02] hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 active:scale-[0.98] dark:bg-violet-500 dark:hover:bg-violet-600"
                         >
                             Crear usuario
                         </button>

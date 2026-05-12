@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, use, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -19,9 +19,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     useEffect(() => {
         const root = window.document.documentElement;
         root.setAttribute('data-theme', theme);
-        // Tailwind usa la clase `dark:`; nuestro toggle actual usa `data-theme`.
-        // Activar también `dark` hace que todo el landing reaccione correctamente.
-        root.classList.toggle('dark', theme === 'dark');
         localStorage.setItem('theme', theme);
     }, [theme]);
 
@@ -33,7 +30,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 };
 
 export const useTheme = () => {
-    const context = useContext(ThemeContext);
+    const context = use(ThemeContext);
     if (context === undefined) {
         throw new Error('useTheme must be used within a ThemeProvider');
     }

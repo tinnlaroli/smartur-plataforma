@@ -17,19 +17,19 @@ export default function CreateTouristServiceModal({ onClose, onSubmit }: Props) 
         active: true,
     });
 
-    const handleChange = (
+    const handleFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]:
                 name === 'id_company' || name === 'id_location'
                     ? Number(value)
                     : name === 'active'
                       ? value === 'true'
                       : value,
-        });
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -43,56 +43,59 @@ export default function CreateTouristServiceModal({ onClose, onSubmit }: Props) 
             <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <Wrench className="h-5 w-5 text-indigo-500" />
+                        <Wrench className="size-5 text-violet-500" />
                         Crear Nuevo Servicio
                     </h2>
                     <button
                         onClick={onClose}
                         className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="size-5" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 gap-y-4 flex flex-col">
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                        <label htmlFor="create-service-name" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                             Nombre del Servicio
                         </label>
                         <input
+                            id="create-service-name"
                             name="name"
                             value={formData.name}
                             required
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                            onChange={handleFieldChange}
+                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all"
                             placeholder="Ej. Tour por la ciudad"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                        <label htmlFor="create-service-description" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                             Descripción
                         </label>
                         <textarea
+                            id="create-service-description"
                             name="description"
                             value={formData.description}
-                            onChange={handleChange}
+                            onChange={handleFieldChange}
                             rows={3}
-                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"
-                            placeholder="Describe el servicio..."
+                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all resize-none"
+                            placeholder="Describe el servicio…"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                            <label htmlFor="create-service-type" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                                 Tipo de Servicio
                             </label>
                             <select
+                                id="create-service-type"
                                 name="service_type"
                                 value={formData.service_type}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all cursor-pointer"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all cursor-pointer"
                             >
                                 <option value="tour">Tour</option>
                                 <option value="hotel">Hotel</option>
@@ -101,15 +104,16 @@ export default function CreateTouristServiceModal({ onClose, onSubmit }: Props) 
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                            <label htmlFor="create-service-company" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                                 Compañía (ID)
                             </label>
                             <input
+                                id="create-service-company"
                                 name="id_company"
                                 type="number"
                                 value={formData.id_company}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all"
                             />
                         </div>
                     </div>
@@ -124,9 +128,9 @@ export default function CreateTouristServiceModal({ onClose, onSubmit }: Props) 
                         </button>
                         <button
                             type="submit"
-                            className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white shadow-lg hover:bg-indigo-700 active:scale-[0.98] transition-all flex items-center gap-2"
+                            className="rounded-lg bg-violet-600 px-5 py-2 text-sm font-medium text-white shadow-lg hover:bg-violet-700 active:scale-[0.98] transition-all flex items-center gap-2"
                         >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="size-4" />
                             Crear Servicio
                         </button>
                     </div>

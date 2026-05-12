@@ -134,31 +134,19 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                 {SECTIONS.map((section, idx) => (
                     <div
                         key={section.id}
-                        className="st-panel"
+                        className="st-panel absolute inset-0 flex flex-col items-center justify-center p-6 text-center"
                         style={{
-                            position: 'absolute',
-                            inset: 0,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: '1.5rem',
-                            textAlign: 'center',
                             background: section.bg,
                             color: section.textColor,
-                            willChange: 'clip-path',
                         }}
                     >
                         <div style={{ maxWidth: '56rem', width: '100%' }}>
                             <h2
-                                className="landing-heading"
+                                className="landing-heading mb-4 font-black uppercase"
                                 style={{
                                     fontSize: 'clamp(2.5rem, 7vw, 6.5rem)',
                                     lineHeight: 1.1,
                                     letterSpacing: '-0.04em',
-                                    fontWeight: 900,
-                                    textTransform: 'uppercase',
-                                    marginBottom: '1rem',
                                     color: section.textColor,
                                 }}
                             >
@@ -169,14 +157,11 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                                 ))}
                             </h2>
                             <p
+                                className="mx-auto max-w-[40em] font-medium opacity-85"
                                 style={{
-                                    maxWidth: '40em',
-                                    margin: '0 auto',
                                     fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-                                    fontWeight: 500,
                                     lineHeight: 1.6,
                                     color: section.textColor,
-                                    opacity: 0.85,
                                 }}
                             >
                                 {section.text()}
@@ -186,12 +171,12 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                                 <div style={{ marginTop: '3rem', display: 'inline-block' }}>
                                     <button onClick={handleStartExperience} className="btn-premium group">
                                         <span>
-                                            <span className="btn-base gap-3 px-10 py-5 text-xl font-bold"
+                                            <span className="btn-base gap-3 px-10 py-5 text-xl font-semibold"
                                                 style={{ '--bg-color': 'var(--color-purple)' } as any}>
                                                 {t('story.cta.button')}
                                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                                             </span>
-                                            <span className="btn-hover gap-3 px-10 py-5 text-xl font-bold" aria-hidden
+                                            <span className="btn-hover gap-3 px-10 py-5 text-xl font-semibold" aria-hidden
                                                 style={{ '--hover-text': 'var(--color-purple)' } as any}>
                                                 {t('story.cta.button')}
                                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />

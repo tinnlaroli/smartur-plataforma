@@ -67,7 +67,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
     return (
         <div className="step-content px-4 py-6" ref={containerRef}>
             <div className="step-header mb-8 text-center">
-                <h2 className="mb-2 text-3xl font-bold text-white">Contexto del Viaje</h2>
+                <h2 className="mb-2 text-3xl font-semibold text-white">Contexto del Viaje</h2>
                 <p className="text-zinc-400">Cuéntanos sobre tu compañía y servicios preferidos</p>
             </div>
 
@@ -80,13 +80,13 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                             onClick={() => setGroupType(c.value)}
                             type="button"
                             className={`flex flex-col items-center rounded-2xl border p-5 text-center transition-all duration-200 ${
-                                group_type === c.value ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
+                                group_type === c.value ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20' : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
                             <div className="mb-3">
                                 <c.icon className="h-8 w-8" />
                             </div>
-                            <div className="font-bold">{c.label}</div>
+                            <div className="font-semibold">{c.label}</div>
                         </button>
                     ))}
                 </div>
@@ -102,7 +102,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                             onClick={() => toggleService(s.value)}
                             className={`flex flex-col items-center rounded-2xl border p-5 text-center transition-all duration-200 ${
                                 services.includes(s.value)
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             }`}
                         >
@@ -118,7 +118,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
             <div className="flex justify-between">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-bold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95"
+                    className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95"
                 >
                     <ChevronLeft className="h-5 w-5" />
                     <span>Atrás</span>
@@ -126,7 +126,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                 <button
                     onClick={handleNext}
                     disabled={!group_type}
-                    className="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <span>Continuar</span>
                     <ChevronRight className="h-5 w-5" />

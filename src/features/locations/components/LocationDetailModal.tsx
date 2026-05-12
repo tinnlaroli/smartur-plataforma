@@ -28,21 +28,21 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
             <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-indigo-500" />
+                        <MapPin className="size-5 text-violet-500" />
                         Detalle de Ubicación
                     </h2>
                     <button
                         onClick={onClose}
                         className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="size-5" />
                     </button>
                 </div>
 
                 <div className="p-6">
                     {isLoading && (
                         <div className="flex justify-center py-8">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600 dark:border-zinc-700 dark:border-t-indigo-500"></div>
+                            <div className="size-8 animate-spin rounded-full border-4 border-zinc-200 border-t-violet-600 dark:border-zinc-700 dark:border-t-violet-500"></div>
                         </div>
                     )}
 
@@ -107,10 +107,10 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
                                 <button
                                     onClick={() => setIsEditModalOpen(true)}
                                     className="w-full inline-flex items-center justify-center gap-2 
-                                    rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white
-                                    hover:bg-indigo-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
+                                    rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-medium text-white
+                                    hover:bg-violet-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
                                 >
-                                    <UserPen className="h-4 w-4" />
+                                    <UserPen className="size-4" />
                                     <span>Editar ubicación</span>
                                 </button>
                             </div>

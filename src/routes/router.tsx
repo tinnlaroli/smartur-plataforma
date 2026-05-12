@@ -16,9 +16,10 @@ import { ActivitiesPage } from '../features/activities/pages/ActivitiesPage';
 import { CertificationsPage } from '../features/certifications/pages/CertificationsPage';
 import { POIPage } from '../features/points-of-interest/pages/POIPage';
 import { StatisticsPage } from '../features/statistics/pages/StatisticsPage';
-import { TemplatesPage } from '../features/evaluations/pages/TemplatesPage';
+import { Navigate } from 'react-router-dom';
 import { InstrumentBuilderPage } from '../features/instrument-builder/pages/InstrumentBuilderPage';
 import { InstrumentEditorPage } from '../features/instrument-builder/pages/InstrumentEditorPage';
+import { SettingsPage } from '../features/settings/pages/SettingsPage';
 
 export const router = createBrowserRouter([
     {
@@ -79,7 +80,7 @@ export const router = createBrowserRouter([
                                     },
                                     {
                                         path: 'plantillas',
-                                        element: <TemplatesPage />,
+                                        element: <Navigate to="/dashboard/instrumentos" replace />,
                                     },
                                     {
                                         path: 'instrumentos',
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
                                     {
                                         path: 'instrumentos/:id',
                                         element: <InstrumentEditorPage />,
+                                    },
+                                    {
+                                        path: 'configuracion',
+                                        element: <SettingsPage />,
                                     },
                                     {
                                         path: '*',

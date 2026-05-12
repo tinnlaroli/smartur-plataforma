@@ -28,21 +28,21 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
             <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-indigo-500" />
+                        <Building2 className="size-5 text-violet-500" />
                         Detalle de la Empresa
                     </h2>
                     <button
                         onClick={onClose}
                         className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="size-5" />
                     </button>
                 </div>
 
                 <div className="p-6">
                     {isLoading && (
                         <div className="flex justify-center py-8">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600 dark:border-zinc-700 dark:border-t-indigo-500"></div>
+                            <div className="size-8 animate-spin rounded-full border-4 border-zinc-200 border-t-violet-600 dark:border-zinc-700 dark:border-t-violet-500"></div>
                         </div>
                     )}
 
@@ -57,12 +57,12 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                     {company && !isLoading && (
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                <div className="h-12 w-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                                    <Building2 className="h-6 w-6" />
+                                <div className="size-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                                    <Building2 className="size-6" />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <h3
-                                        className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate"
+                                        className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate"
                                         title={company.name}
                                     >
                                         {company.name}
@@ -76,7 +76,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                             <div className="grid grid-cols-2 gap-y-5 gap-x-4">
                                 <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <MapPin className="h-3 w-3" />
+                                        <MapPin className="size-3" />
                                         Dirección
                                     </span>
                                     <p className="text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-50/50 dark:bg-zinc-800/30 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-800/50 leading-relaxed">
@@ -86,7 +86,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <Phone className="h-3 w-3" />
+                                        <Phone className="size-3" />
                                         Teléfono
                                     </span>
                                     <p className="text-sm font-medium text-zinc-900 dark:text-zinc-200">
@@ -96,7 +96,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <Briefcase className="h-3 w-3" />
+                                        <Briefcase className="size-3" />
                                         Sector
                                     </span>
                                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300">
@@ -106,10 +106,10 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
 
                                 <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <Calendar className="h-3 w-3" />
+                                        <Calendar className="size-3" />
                                         Fecha de Registro
                                     </span>
-                                    <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                                    <p className="text-xs text-zinc-600 dark:text-zinc-400" suppressHydrationWarning>
                                         {new Date(company.registration_date).toLocaleDateString(
                                             'es-MX',
                                             {
@@ -127,10 +127,10 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                                 <button
                                     onClick={() => setIsEditModalOpen(true)}
                                     className="w-full inline-flex items-center justify-center gap-2 
-                                    rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white
-                                    hover:bg-indigo-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
+                                    rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-medium text-white
+                                    hover:bg-violet-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
                                 >
-                                    <UserPen className="h-4 w-4" />
+                                    <UserPen className="size-4" />
                                     <span>Editar empresa</span>
                                 </button>
                             </div>

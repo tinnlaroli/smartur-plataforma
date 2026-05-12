@@ -57,7 +57,7 @@ export const ContactForm: React.FC = () => {
                     
                     {/* Left Column: Title & Label */}
                     <div className="cta-content-left reveal-fade-up">
-                        <span className="block text-sm font-black tracking-[0.2em] text-[#9333ea] uppercase mb-4">
+                        <span className="block text-sm font-black tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--color-purple)' }}>
                             {t('contact.label')}
                         </span>
                         <h2 className="landing-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-tight dark:text-white">
@@ -72,7 +72,7 @@ export const ContactForm: React.FC = () => {
                         </p>
 
                         {submitted ? (
-                            <div className="flex items-center gap-3 py-4 text-[#a3d14f] font-bold">
+                            <div className="flex items-center gap-3 py-4 font-semibold" style={{ color: 'var(--color-green)' }}>
                                 <CheckCircle className="h-6 w-6" />
                                 <span>{t('contact.success')}</span>
                                 <button 
@@ -102,11 +102,11 @@ export const ContactForm: React.FC = () => {
                                     className="btn-premium w-full sm:w-auto"
                                 >
                                     <span>
-                                        <span className="btn-base gap-2 py-3 sm:py-4 px-8 text-base font-bold whitespace-nowrap" style={{ '--bg-color': 'var(--color-pink)' } as any}>
+                                        <span className="btn-base gap-2 py-3 sm:py-4 px-8 text-base font-semibold whitespace-nowrap" style={{ '--bg-color': 'var(--color-pink)' } as any}>
                                             {submitting ? '...' : t('contact.cta.button')}
                                             <ArrowRight className="h-5 w-5" />
                                         </span>
-                                        <span className="btn-hover gap-2 py-3 sm:py-4 px-8 text-base font-bold whitespace-nowrap" aria-hidden style={{ '--hover-text': 'var(--color-pink)' } as any}>
+                                        <span className="btn-hover gap-2 py-3 sm:py-4 px-8 text-base font-semibold whitespace-nowrap" aria-hidden style={{ '--hover-text': 'var(--color-pink)' } as any}>
                                             {t('contact.cta.button')}
                                             <ArrowRight className="h-5 w-5" />
                                         </span>

@@ -1,67 +1,128 @@
 import { useCertifications } from '../hooks/useCertifications';
 import { useSearchParams } from 'react-router-dom';
 import Pagination from '../../users/components/Pagination';
+import { Award, ExternalLink, ToggleLeft, ToggleRight, ShieldCheck, ShieldOff } from 'lucide-react';
+import { CardSkeleton } from '../../../components/ui/CardSkeleton';
+import { motion } from 'framer-motion';
 
 export const CertificationsPage = () => {
     const { certifications, isLoading, totalPages, updateStatus } = useCertifications();
     const [searchParams, setSearchParams] = useSearchParams();
-    const page = Number(searchParams.get('page')) || 1;
+    const page  = Number(searchParams.get('page'))  || 1;
     const limit = Number(searchParams.get('limit')) || 10;
 
     return (
-        <div className="space-y-4">
-            <div className="sm:flex sm:items-center sm:justify-between">
+        <div className="space-y-5">
+            {/* Header */}
+            <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    style={{ background: 'var(--color-orange)' }}>
+                    <Award className="h-5 w-5 text-white" />
+                </div>
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">Certificaciones de Servicio</h1>
-                    <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Control de sellos de calidad y sostenibilidad</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
+                        Certificaciones
+                    </h1>
+                    <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
+                        Sellos de calidad y sostenibilidad
+                    </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {isLoading ? (
-                    <p className="col-span-full py-10 text-center">Cargando certificaciones...</p>
-                ) : certifications.length === 0 ? (
-                    <p className="col-span-full py-10 text-center">No hay certificaciones</p>
-                ) : (
-                    certifications.map((cert) => (
-                        <div key={cert.id} className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-[#121214]">
-                            <div className="mb-3 flex items-start justify-between">
-                                <h3 className="font-bold text-zinc-900 dark:text-white">{cert.certificationType}</h3>
-                                <span
-                                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${cert.status === 'Activo' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400'}`}
-                                >
-                                    {cert.status}
-                                </span>
-                            </div>
-                            <p className="mb-1 text-xs text-zinc-500 dark:text-zinc-400">
-                                Organización: <span className="text-zinc-700 dark:text-zinc-300">{cert.issuingOrganization}</span>
-                            </p>
-                            <p className="mb-3 text-xs text-zinc-500 dark:text-zinc-400">
-                                Expira: <span className="text-zinc-700 dark:text-zinc-300">{cert.expirationDate || 'Sin fecha'}</span>
-                            </p>
+            {/* Cards grid */}
+            {isLoading ? (
+                <CardSkeleton count={6} />
+            ) : certifications.length === 0 ? (
+                <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed" style={{ borderColor: 'var(--color-border)' }}>
+                    <Award className="h-12 w-12" style={{ color: 'var(--color-border)' }} />
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>No hay certificaciones registradas</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {certifications.map((cert, i) => {
+                        const isActive = cert.status === 'Activo';
+                        return (
+                            <motion.div
+                                key={cert.id}
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05 }}
+                                whileHover={{ y: -3, transition: { duration: 0.18 } }}
+                                className="relative overflow-hidden rounded-2xl border p-5 shadow-sm transition-shadow hover:shadow-md"
+                                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+                            >
+                                {/* accent strip */}
+                                <div
+                                    className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
+                                    style={{ background: isActive
+                                        ? 'var(--color-green)'
+                                        : 'var(--color-border)' }}
+                                />
 
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => updateStatus(cert.id, cert.status === 'Activo' ? 'Vencido' : 'Activo')}
-                                    className="flex-1 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                                >
-                                    Cambiar Estado
-                                </button>
-                                {cert.evidenceUrl && (
-                                    <a
-                                        href={cert.evidenceUrl}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50"
+                                <div className="mb-4 flex items-start justify-between pl-2">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                        style={{ background: isActive
+                                            ? 'var(--color-green)'
+                                            : 'var(--color-bg-alt)' }}>
+                                        {isActive
+                                            ? <ShieldCheck className="h-5 w-5 text-white" />
+                                            : <ShieldOff className="h-5 w-5" style={{ color: 'var(--color-text-alt)' }} />}
+                                    </div>
+                                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                                        isActive
+                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                            : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+                                    }`}>
+                                        {cert.status}
+                                    </span>
+                                </div>
+
+                                <div className="pl-2">
+                                    <h3 className="font-bold" style={{ color: 'var(--color-text)' }}>
+                                        {cert.certificationType}
+                                    </h3>
+                                    <p className="mt-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                                        <span className="font-medium">Org:</span> {cert.issuingOrganization}
+                                    </p>
+                                    <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                                        <span className="font-medium">Expira:</span> {cert.expirationDate || 'Sin fecha'}
+                                    </p>
+                                </div>
+
+                                <div className="mt-4 flex items-center gap-2 border-t pt-4 pl-2" style={{ borderColor: 'var(--color-border)' }}>
+                                    <button
+                                        onClick={() => updateStatus(cert.id, isActive ? 'Vencido' : 'Activo')}
+                                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-1.5 text-xs font-semibold transition-colors"
+                                        style={{
+                                            background: 'var(--color-bg-alt)',
+                                            color: 'var(--color-text)',
+                                        }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--rgb-text),0.08)')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--color-bg-alt)')}
                                     >
-                                        Ver Evidencia
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-                    ))
-                )}
-            </div>
+                                        {isActive
+                                            ? <><ToggleRight className="h-3.5 w-3.5 text-emerald-500" /> Desactivar</>
+                                            : <><ToggleLeft className="h-3.5 w-3.5" /> Activar</>}
+                                    </button>
+                                    {cert.evidenceUrl && (
+                                        <a
+                                            href={cert.evidenceUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors"
+                                            style={{ color: 'var(--color-purple)' }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--rgb-purple-accent),0.1)')}
+                                            onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+                                        >
+                                            <ExternalLink className="h-3.5 w-3.5" /> Evidencia
+                                        </a>
+                                    )}
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            )}
 
             <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />
         </div>

@@ -36,18 +36,18 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]:
                 name === 'role_id'
                     ? Number(value)
                     : name === 'is_active'
                       ? value === 'true'
                       : value,
-        });
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -93,10 +93,10 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                     </h2>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    <div className="flex flex-col items-center justify-center space-y-3 pb-2">
+                <form onSubmit={handleSubmit} className="p-6 gap-y-5 flex flex-col">
+                    <div className="flex flex-col items-center justify-center gap-y-3 pb-2">
                         <div className="relative group">
-                            <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-colors group-hover:border-indigo-500">
+                            <div className="size-20 overflow-hidden rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-colors group-hover:border-violet-500">
                                 {previewUrl ? (
                                     <img
                                         src={previewUrl}
@@ -105,15 +105,15 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                                     />
                                 ) : (
                                     <div className="flex h-full w-full items-center justify-center text-zinc-400">
-                                        <UserIcon className="h-8 w-8" />
+                                        <UserIcon className="size-8" />
                                     </div>
                                 )}
                             </div>
                             <label
                                 htmlFor="edit-photo-upload"
-                                className="absolute bottom-0 right-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                                className="absolute bottom-0 right-0 flex size-7 cursor-pointer items-center justify-center rounded-full bg-violet-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                             >
-                                <Camera className="h-3.5 w-3.5" />
+                                <Camera className="size-3.5" />
                                 <input
                                     id="edit-photo-upload"
                                     type="file"
@@ -128,54 +128,57 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                         </p>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    <div className="gap-y-4 flex flex-col">
+                        <div className="gap-y-1.5 flex flex-col">
+                            <label htmlFor="edit-user-name" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                 Nombre
                             </label>
                             <input
+                                id="edit-user-name"
                                 name="name"
                                 value={formData.name}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm  bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500  dark:focus:ring-indigo-400/20 dark:focus:border-indigo-400 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-colors"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm  bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500  dark:focus:ring-violet-400/20 dark:focus:border-violet-400 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-colors"
                                 placeholder="Nombre completo"
                             />
                         </div>
 
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <div className="gap-y-1.5 flex flex-col">
+                            <label htmlFor="edit-user-password" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                 Nueva contraseña
                                 <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500 ml-2">
                                     (opcional)
                                 </span>
                             </label>
                             <input
+                                id="edit-user-password"
                                 name="password"
                                 type="password"
                                 value={formData.password}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm 
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm
                                      bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100
-                                     focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 
-                                     dark:focus:ring-indigo-400/20 dark:focus:border-indigo-400
+                                     focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500
+                                     dark:focus:ring-violet-400/20 dark:focus:border-violet-400
                                      placeholder:text-zinc-400 dark:placeholder:text-zinc-500
                                      transition-colors"
                                 placeholder="Dejar vacío para no cambiar"
                             />
                         </div>
 
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <div className="gap-y-1.5 flex flex-col">
+                            <label htmlFor="edit-user-role" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                 Rol
                             </label>
                             <select
+                                id="edit-user-role"
                                 name="role_id"
                                 value={formData.role_id}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm 
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm
                                      bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100
-                                     focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 
-                                     dark:focus:ring-indigo-400/20 dark:focus:border-indigo-400
+                                     focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500
+                                     dark:focus:ring-violet-400/20 dark:focus:border-violet-400
                                      cursor-pointer transition-colors"
                             >
                                 <option value={1} className="py-2">
@@ -187,18 +190,19 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                             </select>
                         </div>
 
-                        <div className="space-y-1.5">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <div className="gap-y-1.5 flex flex-col">
+                            <label htmlFor="edit-user-status" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                                 Estado
                             </label>
                             <select
+                                id="edit-user-status"
                                 name="is_active"
                                 value={String(formData.is_active)}
-                                onChange={handleChange}
+                                onChange={handleFieldChange}
                                 className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm 
                                      bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100
-                                     focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 
-                                     dark:focus:ring-indigo-400/20 dark:focus:border-indigo-400
+                                     focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500
+                                     dark:focus:ring-violet-400/20 dark:focus:border-violet-400
                                      cursor-pointer transition-colors"
                             >
                                 <option value="true" className="py-2">
@@ -221,7 +225,7 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                    hover:bg-zinc-100 dark:hover:bg-zinc-800
                    transition-colors"
                         >
-                            <X className="h-4 w-4" />
+                            <X className="size-4" />
                             <span>Cancelar</span>
                         </button>
 
@@ -229,13 +233,13 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                             type="submit"
                             className="inline-flex items-center gap-1.5 
                    px-3 py-2 text-sm font-medium 
-                   rounded-md bg-indigo-600 dark:bg-indigo-500
+                   rounded-md bg-violet-600 dark:bg-violet-500
                    text-white
-                   hover:bg-indigo-700 dark:hover:bg-indigo-600
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500/20
+                   hover:bg-violet-700 dark:hover:bg-violet-600
+                   focus:outline-none focus:ring-2 focus:ring-violet-500/20
                    transition-colors"
                         >
-                            <Save className="h-4 w-4" />
+                            <Save className="size-4" />
                             <span>Guardar</span>
                         </button>
                     </div>

@@ -49,7 +49,7 @@ const MapContext = React.createContext<{
 } | null>(null);
 
 export function useMap() {
-  const context = React.useContext(MapContext);
+  const context = React.use(MapContext);
   if (!context) {
     throw new Error("useMap must be used within a <Map />");
   }
@@ -166,7 +166,7 @@ export const Map = React.forwardRef<MapRef, MapProps>(
 
     return (
       <div
-        className={cn("relative w-full h-full min-h-[400px] overflow-hidden rounded-lg border bg-slate-100 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800", className)}
+        className={cn("relative w-full h-full min-h-[400px] overflow-hidden rounded-lg border bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800", className)}
         ref={containerRef}
         {...props}
       >
@@ -355,7 +355,7 @@ export const MapControls = ({
         });
       }
     };
-  }, [map]);
+  }, [map, position, showZoom, showCompass, showFullscreen, showGeolocate]);
 
   return null;
 };

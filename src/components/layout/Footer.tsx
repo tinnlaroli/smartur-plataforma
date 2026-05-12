@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Instagram, Mail, Phone, MapPin, Download } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface NavLink {
     label: string;
@@ -12,122 +13,213 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
-    const [latestVersion, setLatestVersion] = useState("v1.0.0");
+    const { t } = useLanguage();
+    const [latestVersion, setLatestVersion] = useState('v1.0.0');
 
     useEffect(() => {
-        const fetchVersion = async () => {
-            try {
-                const response = await fetch("https://api.github.com/repos/tinnlaroli/smartur-movil/releases/latest");
-                if (response.ok) {
-                    const data = await response.json();
-                    setLatestVersion(data.tag_name);
-                }
-            } catch (e) {
-                console.error("Error fetching latest release:", e);
-            }
-        };
-        fetchVersion();
+        const controller = new AbortController();
+        fetch('https://api.github.com/repos/tinnlaroli/smartur-movil/releases/latest', { signal: controller.signal })
+            .then((res) => { if (res.ok) return res.json(); })
+            .then((data) => { if (data?.tag_name) setLatestVersion(data.tag_name); })
+            .catch(() => {});
+        return () => controller.abort();
     }, []);
 
+    const defaultLinks = [
+        { label: t('nav.home'), target: 'inicio' },
+        { label: t('nav.region'), target: 'region' },
+        { label: t('nav.technology'), target: 'tecnologia' },
+        { label: t('nav.about'), target: 'nosotros' },
+    ];
+
+    const links = navLinks.length > 0 ? navLinks : defaultLinks;
+
+    const scrollTo = (target: string) => {
+        const el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    };
+
     return (
-        <div className="relative w-full overflow-hidden bg-white transition-colors duration-300 dark:bg-[var(--color-bg)]">
-            {/* Main Footer */}
-            <footer className="relative w-full border-t border-gray-100 bg-white/90 pt-20 pb-12 backdrop-blur-xl transition-colors duration-300 dark:border-zinc-900 dark:bg-[rgba(var(--rgb-bg),0.92)]">
-                <div className="mx-auto max-w-[85rem] px-6 md:px-12 lg:px-16">
-                    <div className="mb-20 grid grid-cols-1 gap-16 lg:grid-cols-[1.5fr_2fr] lg:gap-20">
-                        {/* Branding */}
-                        <div className="flex flex-col gap-8">
-                            <a href="#" className="block w-48">
-                                <img src="/smartur.png" alt="SMARTUR" className="h-auto w-full object-contain dark:contrast-125" />
-                            </a>
-                            <p className="text-xl font-bold text-[var(--color-purple)] italic dark:text-[var(--color-purple)]">IA que guía, turismo que une</p>
-                            <p className="max-w-md text-base leading-relaxed text-gray-500 dark:text-zinc-400">
-                                SMARTUR conecta a los viajeros con la esencia de Las Altas Montañas a través de tecnología innovadora y experiencias auténticas, impulsando el desarrollo local y
-                                sostenible.
-                            </p>
+        <footer
+            className="relative w-full border-t"
+            style={{
+                background: 'rgba(var(--rgb-bg), 0.96)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                borderColor: 'var(--color-border)',
+            }}
+        >
+            <div className="mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 pt-16 pb-8">
+                {/* Main grid */}
+                <div className="mb-14 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_2.5fr] lg:gap-12">
+
+                    {/* Branding */}
+                    <div className="flex flex-col gap-6">
+                        <span className="block w-44">
+                            <img
+                                src="/smartur.png"
+                                alt="SMARTUR"
+                                className="h-auto w-full object-contain"
+                                style={{ filter: 'var(--logo-filter, none)' }}
+                            />
+                        </span>
+                        <p className="text-base font-semibold italic" style={{ color: 'var(--color-purple)' }}>
+                            {t('footer.slogan')}
+                        </p>
+                        <p className="max-w-xs text-sm leading-relaxed" style={{ color: 'var(--color-text-alt)' }}>
+                            {t('footer.description')}
+                        </p>
+                    </div>
+
+                    {/* Columns */}
+                    <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4">
+
+                        {/* Quick links */}
+                        <div>
+                            <h3
+                                className="mb-5 text-xs font-bold tracking-widest uppercase"
+                                style={{ color: 'var(--color-text)' }}
+                            >
+                                {t('footer.quickLinks')}
+                            </h3>
+                            <ul className="flex flex-col gap-4">
+                                {links.map((link) => (
+                                    <li key={link.target}>
+                                        <button
+                                            type="button"
+                                            onClick={() => scrollTo(link.target)}
+                                            className="text-sm font-medium transition-colors duration-200"
+                                            style={{ color: 'var(--color-text-alt)' }}
+                                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-cyan)')}
+                                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-alt)')}
+                                        >
+                                            {link.label}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
 
-                        {/* Links Columns */}
-                        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
-                            <div>
-                                <h3 className="mb-8 text-sm font-black tracking-widest text-gray-900 uppercase dark:text-white">Accesos Rápidos</h3>
-                                <ul className="flex flex-col gap-5">
-                                    {(navLinks.length > 0
-                                        ? navLinks
-                                        : [
-                                            { label: 'Inicio', target: 'hero' },
-                                            { label: '¿Cómo funciona?', target: 'smartEngine' },
-                                            { label: 'Validación', target: 'trustBar' },
-                                        ]
-                                    ).map((link: any, idx) => (
-                                        <li key={idx}>
-                                            <a
-                                                href={`#${link.target}`}
-                                                className="text-[15px] font-bold text-gray-500 transition-colors hover:text-[var(--color-cyan)] dark:text-zinc-400 dark:hover:text-[var(--color-cyan)]"
-                                            >
-                                                {link.label}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                        {/* Contact */}
+                        <div>
+                            <h3
+                                className="mb-5 text-xs font-bold tracking-widest uppercase"
+                                style={{ color: 'var(--color-text)' }}
+                            >
+                                {t('footer.contact')}
+                            </h3>
+                            <ul className="flex flex-col gap-5">
+                                <li className="flex items-start gap-3">
+                                    <Mail className="mt-0.5 size-4 flex-shrink-0" style={{ color: 'var(--color-purple)' }} />
+                                    <a
+                                        href="mailto:smarturutcv@gmail.com"
+                                        className="text-sm font-medium transition-colors duration-200"
+                                        style={{ color: 'var(--color-text-alt)' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-cyan)')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-alt)')}
+                                    >
+                                        smarturutcv@gmail.com
+                                    </a>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <Phone className="mt-0.5 size-4 flex-shrink-0" style={{ color: 'var(--color-purple)' }} />
+                                    <a
+                                        href="tel:+522711730136"
+                                        className="text-sm font-medium transition-colors duration-200"
+                                        style={{ color: 'var(--color-text-alt)' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-cyan)')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-alt)')}
+                                    >
+                                        271 173 0136
+                                    </a>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <MapPin className="mt-0.5 size-4 flex-shrink-0" style={{ color: 'var(--color-purple)' }} />
+                                    <span className="text-sm font-medium leading-snug" style={{ color: 'var(--color-text-alt)' }}>
+                                        Av. Universidad 350,<br />94910 Cuitláhuac, Ver.
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
 
-                            <div>
-                                <h3 className="mb-8 text-sm font-black tracking-widest text-gray-900 uppercase dark:text-white">Contacto</h3>
-                                <ul className="flex flex-col gap-6">
-                                    <li className="flex items-center gap-4">
-                                        <Mail className="h-5 w-5 text-[var(--color-purple)]" />
-                                        <a href="mailto:smarturutcv@gmail.com" className="text-[15px] font-bold text-gray-500 hover:text-[var(--color-cyan)] dark:text-zinc-400">
-                                            smarturutcv@gmail.com
-                                        </a>
-                                    </li>
-                                    <li className="flex items-center gap-4">
-                                        <Phone className="h-5 w-5 text-[var(--color-purple)]" />
-                                        <a href="tel:+522711730136" className="text-[15px] font-bold text-gray-500 hover:text-[var(--color-cyan)] dark:text-zinc-400">
-                                            271 173 0136
-                                        </a>
-                                    </li>
-                                    <li className="flex items-start gap-4">
-                                        <MapPin className="mt-0.5 h-5 w-5 text-[var(--color-purple)]" />
-                                        <span className="text-[15px] font-bold text-gray-500 dark:text-zinc-400">Avenida Universidad 350, 94910 Cuitláhuac, Ver.</span>
-                                    </li>
-                                </ul>
-                            </div>
+                        {/* Social */}
+                        <div className="lg:pl-8">
+                            <h3
+                                className="mb-5 text-xs font-bold tracking-widest uppercase"
+                                style={{ color: 'var(--color-text)' }}
+                            >
+                                {t('footer.social')}
+                            </h3>
+                            <a
+                                href="https://www.instagram.com/smar_tur"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-all duration-300 hover:-translate-y-0.5"
+                                style={{
+                                    background: 'var(--color-bg-alt)',
+                                    borderColor: 'var(--color-border)',
+                                    color: 'var(--color-text-alt)',
+                                }}
+                                onMouseEnter={e => {
+                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--color-cyan)';
+                                    (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-cyan)';
+                                }}
+                                onMouseLeave={e => {
+                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--color-border)';
+                                    (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-text-alt)';
+                                }}
+                            >
+                                <Instagram className="size-6 flex-shrink-0" />
+                                <span className="text-sm font-semibold">Instagram</span>
+                            </a>
+                        </div>
 
-                            <div>
-                                <h3 className="mb-8 text-sm font-black tracking-widest text-gray-900 uppercase dark:text-white">Síguenos</h3>
+                        {/* App */}
+                        <div className="lg:pl-8">
+                            <h3
+                                className="mb-5 text-xs font-bold tracking-widest uppercase"
+                                style={{ color: 'var(--color-text)' }}
+                            >
+                                {t('footer.mobileApp')}
+                            </h3>
+                            <div className="flex flex-col gap-4">
+                                <span className="text-xs font-medium" style={{ color: 'var(--color-text-alt)' }}>
+                                    {t('footer.mobileApp.version')}: {latestVersion}
+                                </span>
                                 <a
-                                    href="https://www.instagram.com/smar_tur"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group flex items-center gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-cyan)] hover:shadow-xl dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-[var(--color-cyan)]"
+                                    href="https://github.com/tinnlaroli/smartur-movil/releases/latest/download/app-release.apk"
+                                    className="group inline-flex w-fit items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+                                    style={{
+                                        background: 'var(--color-purple)',
+                                        boxShadow: '0 8px 20px rgba(var(--rgb-purple-accent), 0.28)',
+                                    }}
+                                    onMouseEnter={e => {
+                                        (e.currentTarget as HTMLAnchorElement).style.opacity = '0.88';
+                                        (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 12px 24px rgba(var(--rgb-purple-accent), 0.38)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        (e.currentTarget as HTMLAnchorElement).style.opacity = '1';
+                                        (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 20px rgba(var(--rgb-purple-accent), 0.28)';
+                                    }}
                                 >
-                                    <Instagram className="h-6 w-6 text-gray-400 transition-colors group-hover:text-[var(--color-cyan)]" />
-                                    <span className="text-sm font-bold text-gray-700 transition-colors group-hover:text-[var(--color-cyan)] dark:text-zinc-300">Instagram</span>
+                                    <Download className="size-4" />
+                                    {t('footer.mobileApp.download')}
                                 </a>
                             </div>
-
-                            <div>
-                                <h3 className="mb-8 text-sm font-black tracking-widest text-gray-900 uppercase dark:text-white">App Móvil</h3>
-                                <div className="flex flex-col gap-4">
-                                    <span className="text-[15px] font-bold text-gray-500 dark:text-zinc-400">Última versión: {latestVersion}</span>
-                                    <a
-                                        href="https://github.com/tinnlaroli/smartur-movil/releases/latest/download/app-release.apk"
-                                        className="group flex w-fit items-center gap-3 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/40"
-                                    >
-                                        <Download className="h-5 w-5" />
-                                        Descargar APK
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     </div>
-
-                    <div className="flex flex-col items-center justify-center border-t border-gray-100 pt-10 md:flex-row dark:border-zinc-900">
-                        <p className="mb-6 text-sm font-bold text-gray-500 md:mb-0 dark:text-zinc-500">© {new Date().getFullYear()} SMARTUR. Todos los derechos reservados.</p>
-                    </div>
                 </div>
-            </footer>
-        </div>
+
+                {/* Copyright */}
+                <div
+                    className="flex flex-col items-center justify-center border-t pt-8 md:flex-row"
+                    style={{ borderColor: 'var(--color-border)' }}
+                >
+                    <p className="text-xs font-medium" style={{ color: 'var(--color-text-alt)' }}>
+                        © <span suppressHydrationWarning>{new Date().getFullYear()}</span> SMARTUR. {t('footer.copyright')}
+                    </p>
+                </div>
+            </div>
+        </footer>
     );
 };

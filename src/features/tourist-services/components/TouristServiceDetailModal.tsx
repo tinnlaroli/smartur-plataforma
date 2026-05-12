@@ -36,21 +36,21 @@ const TouristServiceDetailModal: React.FC<Props> = ({
             <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
-                        <Wrench className="h-5 w-5 text-indigo-500" />
+                        <Wrench className="size-5 text-violet-500" />
                         Detalle del Servicio
                     </h2>
                     <button
                         onClick={onClose}
                         className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="size-5" />
                     </button>
                 </div>
 
                 <div className="p-6">
                     {isLoading && (
                         <div className="flex justify-center py-8">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-200 border-t-indigo-600 dark:border-zinc-700 dark:border-t-indigo-500"></div>
+                            <div className="size-8 animate-spin rounded-full border-4 border-zinc-200 border-t-violet-600 dark:border-zinc-700 dark:border-t-violet-500"></div>
                         </div>
                     )}
 
@@ -65,12 +65,12 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                     {service && !isLoading && (
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                <div className="h-12 w-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                                    <Tag className="h-6 w-6" />
+                                <div className="size-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                                    <Tag className="size-6" />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <h3
-                                        className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate"
+                                        className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate"
                                         title={service.name}
                                     >
                                         {service.name}
@@ -79,8 +79,8 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                         Servicio ID: {service.id}
                                         {service.total_score !== undefined &&
                                             service.total_score !== null && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold text-indigo-500 border border-indigo-500/20">
-                                                    <Award className="h-3 w-3" />
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold text-violet-500 border border-violet-500/20">
+                                                    <Award className="size-3" />
                                                     Puntaje:{' '}
                                                     {Number(service.total_score).toFixed(1)}
                                                 </span>
@@ -110,7 +110,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <Activity className="h-3 w-3" />
+                                        <Activity className="size-3" />
                                         Estado
                                     </span>
                                     <div>
@@ -128,7 +128,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
 
                                 <div className="pt-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <Building2 className="h-3 w-3" />
+                                        <Building2 className="size-3" />
                                         Compañía
                                     </span>
                                     <p className="text-xs text-zinc-600 dark:text-zinc-400">
@@ -138,7 +138,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
 
                                 <div className="pt-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        <MapPin className="h-3 w-3" />
+                                        <MapPin className="size-3" />
                                         Ubicación
                                     </span>
                                     <p className="text-xs text-zinc-600 dark:text-zinc-400">
@@ -158,7 +158,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                         rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white
                                         hover:bg-emerald-700 shadow-sm transition-all duration-200 active:scale-[0.98] font-bold"
                                     >
-                                        <Activity className="h-4 w-4" />
+                                        <Activity className="size-4" />
                                         <span>Ver Resultados de Evaluación</span>
                                     </button>
                                 )}
@@ -166,10 +166,10 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                 <button
                                     onClick={() => setIsEditModalOpen(true)}
                                     className="w-full inline-flex items-center justify-center gap-2 
-                                    rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white
-                                    hover:bg-indigo-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
+                                    rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-medium text-white
+                                    hover:bg-violet-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
                                 >
-                                    <UserPen className="h-4 w-4" />
+                                    <UserPen className="size-4" />
                                     <span>Editar servicio</span>
                                 </button>
                             </div>

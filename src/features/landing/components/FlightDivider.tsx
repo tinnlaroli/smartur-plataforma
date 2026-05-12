@@ -104,9 +104,9 @@ export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperie
                     {text.map((line, i) => (
                         <div key={i} className={`flex space-x-2 md:space-x-4 ${i === 1 ? "mt-2 md:mt-4" : ""}`}>
                             {line.split(" ").map((word, wi) => (
-                                <span key={wi} className="inline-block whitespace-nowrap">
+                                <span key={`${i}-${wi}`} className="inline-block whitespace-nowrap">
                                     {word.split("").map((char, ci) => (
-                                        <span key={ci} className="relative z-20 inline-block text-4xl font-black tracking-tighter text-[#fc478e] uppercase drop-shadow-sm md:text-5xl lg:text-6xl">
+                                        <span key={`${i}-${wi}-${ci}`} className="relative z-20 inline-block text-4xl font-black tracking-tighter text-[var(--color-pink)] uppercase drop-shadow-sm md:text-5xl lg:text-6xl">
                                             {char}
                                         </span>
                                     ))}
@@ -145,7 +145,7 @@ export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperie
                     <path
                         ref={trailRef}
                         id="flight-trail"
-                        stroke="#4DB9CA"
+                        stroke="var(--color-cyan)"
                         strokeWidth="5"
                         strokeDasharray="10 10"
                         strokeLinecap="round"

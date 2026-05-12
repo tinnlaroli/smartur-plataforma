@@ -41,7 +41,7 @@ export const Testimonials: React.FC = () => {
                 <div className="grid gap-6 md:grid-cols-3">
                     {TESTIMONIAL_KEYS.map((item, i) => (
                         <article
-                            key={i}
+                            key={item.name}
                             className="testimonial-card group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-500 hover:-translate-y-1"
                             style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}
                         >

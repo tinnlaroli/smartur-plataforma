@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import React, { createContext, use, useState, type ReactNode } from 'react';
 
 export type AuthStep = 'login' | 'signup' | 'forgotPassword' | 'twoFactor' | 'resetPassword';
 
@@ -43,7 +43,7 @@ export const AuthModalProvider: React.FC<{ children: ReactNode }> = ({ children 
 };
 
 export const useAuthModal = () => {
-    const context = useContext(AuthModalContext);
+    const context = use(AuthModalContext);
     if (context === undefined) {
         throw new Error('useAuthModal must be used within an AuthModalProvider');
     }

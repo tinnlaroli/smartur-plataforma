@@ -42,7 +42,7 @@ export default function CompanyTable({
                                     });
                                 }
                             }}
-                            className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer"
+                            className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
                         />
                     </div>
                     <div className="w-16 flex-shrink-0 text-xs font-medium uppercase tracking-wider text-zinc-400">
@@ -91,14 +91,14 @@ export default function CompanyTable({
                     {companies.map((company) => (
                         <div
                             key={company.id}
-                            className="flex items-center px-4 py-4 gap-4 transition-colors hover:bg-zinc-800/50 group"
+                            className="flex items-center p-4 gap-4 transition-colors hover:bg-zinc-800/50 group"
                         >
                             <div className="w-8 flex-shrink-0">
                                 <input
                                     type="checkbox"
                                     checked={selectedCompanies.includes(company.id)}
                                     onChange={() => onToggle(company.id)}
-                                    className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer"
+                                    className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
                                 />
                             </div>
 
@@ -106,13 +106,14 @@ export default function CompanyTable({
                                 {company.id}
                             </div>
 
-                            <div
+                            <button
+                                type="button"
                                 onClick={() => onViewDetail(company.id)}
-                                className="flex-1 min-w-[200px] text-sm text-zinc-300 truncate cursor-pointer hover:text-indigo-400 transition-colors"
+                                className="flex-1 min-w-[200px] text-left text-sm text-zinc-300 truncate cursor-pointer hover:text-violet-400 transition-colors"
                                 title={company.name}
                             >
                                 {company.name}
-                            </div>
+                            </button>
 
                             <div
                                 className="flex-[1.5] min-w-[250px] text-sm text-zinc-300 truncate"
@@ -129,7 +130,7 @@ export default function CompanyTable({
                                 Sector {company.id_sector}
                             </div>
 
-                            <div className="w-28 flex-shrink-0 text-sm text-zinc-400">
+                            <div className="w-28 flex-shrink-0 text-sm text-zinc-400" suppressHydrationWarning>
                                 {new Date(company.registration_date).toLocaleDateString('es', {
                                     year: 'numeric',
                                     month: '2-digit',

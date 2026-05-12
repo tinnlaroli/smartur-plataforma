@@ -38,7 +38,7 @@ export default function TouristServiceTable({
                                     });
                                 }
                             }}
-                            className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-indigo-500 cursor-pointer"
+                            className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                         />
                     </div>
                     <div className="w-16 flex-shrink-0 text-xs font-medium uppercase text-zinc-400">
@@ -74,18 +74,19 @@ export default function TouristServiceTable({
                                     type="checkbox"
                                     checked={selectedServices.includes(service.id)}
                                     onChange={() => onToggle(service.id)}
-                                    className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-indigo-500 cursor-pointer"
+                                    className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                                 />
                             </div>
                             <div className="w-16 flex-shrink-0 text-sm font-medium text-zinc-100">
                                 {service.id}
                             </div>
-                            <div
+                            <button
+                                type="button"
                                 onClick={() => onViewDetail(service.id)}
-                                className="flex-1 min-w-[200px] text-sm text-zinc-300 truncate cursor-pointer hover:text-indigo-400"
+                                className="flex-1 min-w-[200px] text-left text-sm text-zinc-300 truncate cursor-pointer hover:text-violet-400"
                             >
                                 {service.name}
-                            </div>
+                            </button>
                             <div className="flex-[1.5] min-w-[250px] text-sm text-zinc-300 truncate">
                                 {service.description}
                             </div>
@@ -105,10 +106,10 @@ export default function TouristServiceTable({
                             <div className="w-24 flex-shrink-0 flex justify-end gap-2">
                                 <button
                                     onClick={() => onViewDetail(service.id)}
-                                    className="p-1.5 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                                    className="p-1.5 text-zinc-400 hover:text-violet-400 hover:bg-violet-500/10 rounded-lg transition-colors"
                                     title="Ver detalle"
                                 >
-                                    <Eye className="h-4 w-4" />
+                                    <Eye className="size-4" />
                                 </button>
                                 {service.service_type === 'restaurant' && (
                                     <button
@@ -116,7 +117,7 @@ export default function TouristServiceTable({
                                         className="p-1.5 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
                                         title="Evaluar Servicio"
                                     >
-                                        <ClipboardCheck className="h-4 w-4" />
+                                        <ClipboardCheck className="size-4" />
                                     </button>
                                 )}
                             </div>

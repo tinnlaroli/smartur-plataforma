@@ -62,8 +62,8 @@ export const Faqs: React.FC = () => {
 
                 <div className="faqs-container">
                     {FAQ_KEYS.map((faq, i) => (
-                        <div 
-                            key={i} 
+                        <div
+                            key={faq.q}
                             className={`faq-item py-6 transition-all duration-300 border-t border-[rgba(30,30,35,0.1)] dark:border-[rgba(230,230,238,0.1)] ${i === FAQ_KEYS.length - 1 ? 'border-b' : ''}`}
                         >
                             <button

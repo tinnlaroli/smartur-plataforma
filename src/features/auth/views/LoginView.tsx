@@ -1,5 +1,5 @@
 import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { LoginPayload } from '../types';
 import { authApi } from '../authApi';
@@ -7,6 +7,7 @@ import { useToast } from '../../../shared/context/ToastContext';
 import SmartURLoader from '../components/SmartURLoader';
 import { useAuthModal, type AuthStep } from '../context/AuthModalContext';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface LoginViewProps {
     onSwitchStep: (step: AuthStep) => void;
@@ -17,6 +18,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
     const navigate = useNavigate();
     const { setStep } = useAuthModal();
     const toast = useToast();
+    const { t } = useLanguage();
 
     const [formData, setFormData] = useState<LoginPayload>({
         email: '',
@@ -30,22 +32,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        const userStr = localStorage.getItem('user');
-        if (token && userStr) {
-            const user = JSON.parse(userStr);
-            const userRole = user.role_id || (Number(user.id) === 1 ? 1 : 2);
-            if (userRole === 1) {
-                navigate('/dashboard');
-            } else {
-                navigate('/', { state: { openForm: true } });
-            }
-            if (onClose) onClose();
-        }
-    }, [navigate, onClose]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -61,17 +48,18 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
             const response = await authApi.login(formData);
             if (response.requiresVerification === true) {
                 setStep('twoFactor', response.email);
-                toast.success('Código enviado a tu correo electrónico', 'Revisa tu bandeja de entrada para verificar tu cuenta');
+                toast.success(t('auth.login.success.title'), t('auth.login.success.body'));
                 return;
             }
-            
-            // If no verification required, authApi likely already handled token storage or we need to handle it here if it returns user
+
             if (response.token && response.user) {
                 localStorage.setItem('token', response.token);
                 localStorage.setItem('user', JSON.stringify(response.user));
-                
+                localStorage.removeItem('v1:token');
+                localStorage.removeItem('v1:user');
+
                 const userRole = response.user.role_id || (Number(response.user.id) === 1 ? 1 : 2);
-                
+
                 const completeAction = () => {
                     if (userRole === 1) {
                         navigate('/dashboard');
@@ -86,7 +74,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
             }
 
         } catch (error) {
-            toast.error('Algo salió mal', 'No se pudo iniciar sesión');
+            toast.error(t('auth.login.error.title'), t('auth.login.error.body'));
             setIsLoading(false);
         }
     };
@@ -112,14 +100,14 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
             </div>
 
             <div className="mb-8 text-center">
-                <h2 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Bienvenido</h2>
-                <p className={`mt-1 text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Inicia sesión para continuar</p>
+                <h2 className={`text-2xl font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('auth.login.title')}</h2>
+                <p className={`mt-1 text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{t('auth.login.subtitle')}</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-5">
                 <div className="space-y-1.5">
                     <label htmlFor="user-email" className={`text-xs font-medium tracking-wider uppercase ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                        Correo electrónico
+                        {t('auth.login.email.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -128,21 +116,21 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
                             type="email"
                             required
                             value={formData.email}
-                            onChange={handleChange}
-                            placeholder="correo@ejemplo.com"
-                            className={`w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none ${
+                            onChange={handleFieldChange}
+                            placeholder={t('auth.login.email.placeholder')}
+                            className={`w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm transition-colors focus:border-[var(--color-purple)] focus:ring-1 focus:ring-[var(--color-purple)] focus:outline-none ${
                                 isDark
                                     ? 'border-zinc-800 bg-zinc-950 text-white placeholder:text-zinc-500'
                                     : 'border-zinc-300 bg-white text-zinc-900 placeholder:text-zinc-400'
                             }`}
                         />
-                        <Mail className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
+                        <Mail className={`absolute top-1/2 left-3 size-4 -translate-y-1/2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
                     </div>
                 </div>
 
                 <div className="space-y-1.5">
                     <label htmlFor="user-password" className={`text-xs font-medium tracking-wider uppercase ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                        Contraseña
+                        {t('auth.login.password.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -151,15 +139,15 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
                             type={showPassword ? 'text' : 'password'}
                             required
                             value={formData.password}
-                            onChange={handleChange}
-                            placeholder="••••••••"
-                            className={`w-full rounded-lg border py-2.5 pr-10 pl-9 text-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none ${
+                            onChange={handleFieldChange}
+                            placeholder="………………"
+                            className={`w-full rounded-lg border py-2.5 pr-10 pl-9 text-sm transition-colors focus:border-[var(--color-purple)] focus:ring-1 focus:ring-[var(--color-purple)] focus:outline-none ${
                                 isDark
                                     ? 'border-zinc-800 bg-zinc-950 text-white placeholder:text-zinc-500'
                                     : 'border-zinc-300 bg-white text-zinc-900 placeholder:text-zinc-400'
                             }`}
                         />
-                        <Lock className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
+                        <Lock className={`absolute top-1/2 left-3 size-4 -translate-y-1/2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
@@ -167,37 +155,37 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
                                 isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600'
                             }`}
                         >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                         </button>
                     </div>
                 </div>
 
                 <div className="flex justify-end">
-                    <button 
+                    <button
                         type="button"
-                        onClick={() => onSwitchStep('forgotPassword')} 
-                        className="flex items-center gap-1 text-xs text-indigo-400 transition-colors hover:text-indigo-300"
+                        onClick={() => onSwitchStep('forgotPassword')}
+                        className="flex items-center gap-1 text-xs text-[var(--color-purple)] transition-colors hover:opacity-80"
                     >
-                        ¿Olvidaste tu contraseña?
+                        {t('auth.login.forgot')}
                     </button>
                 </div>
 
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className={`w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+                    className={`w-full rounded-lg bg-[var(--color-purple)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 focus:ring-2 focus:ring-[var(--color-purple)] focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
                         isDark ? 'focus:ring-offset-zinc-900' : 'focus:ring-offset-white'
                     }`}
                 >
                     {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                            <span>Iniciando sesión...</span>
+                            <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                            <span>{t('auth.login.submitting')}</span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-center gap-2">
-                            <LogIn className="h-4 w-4" />
-                            <span>Iniciar Sesión</span>
+                            <LogIn className="size-4" />
+                            <span>{t('auth.login.submit')}</span>
                         </div>
                     )}
                 </button>
@@ -207,21 +195,21 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
                         <div className={`w-full border-t ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                        <span className={`${isDark ? 'bg-zinc-900 text-zinc-500' : 'bg-white text-zinc-500'} px-4`}>¿Primera vez?</span>
+                        <span className={`${isDark ? 'bg-zinc-900 text-zinc-500' : 'bg-white text-zinc-500'} px-4`}>{t('auth.login.first_time')}</span>
                     </div>
                 </div>
 
                 <button
                     type="button"
                     onClick={() => onSwitchStep('signup')}
-                    className={`flex w-full items-center justify-center gap-2 rounded-lg border bg-transparent px-4 py-2.5 text-sm font-medium transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none ${
+                    className={`flex w-full items-center justify-center gap-2 rounded-lg border bg-transparent px-4 py-2.5 text-sm font-medium transition-colors focus:ring-2 focus:ring-[var(--color-purple)] focus:ring-offset-2 focus:outline-none ${
                         isDark
                             ? 'border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white focus:ring-offset-zinc-900'
                             : 'border-zinc-300 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 focus:ring-offset-white'
                     }`}
                 >
-                    <UserPlus className="h-4 w-4" />
-                    <span>Crear cuenta nueva</span>
+                    <UserPlus className="size-4" />
+                    <span>{t('auth.login.create')}</span>
                 </button>
             </form>
         </div>

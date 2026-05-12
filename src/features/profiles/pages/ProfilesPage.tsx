@@ -1,61 +1,113 @@
 import { useProfiles } from '../hooks/useProfiles';
 import { useSearchParams } from 'react-router-dom';
 import Pagination from '../../users/components/Pagination';
+import { UserCircle, Luggage, Heart, Leaf } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { TableBodyRows } from '../../../components/ui/TableSkeleton';
+
+const Badge = ({ text, color }: { text: string; color: string }) => (
+    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>{text}</span>
+);
+
+const TH = ({ children }: { children: React.ReactNode }) => (
+    <th className="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-alt)' }}>
+        {children}
+    </th>
+);
+
+const TD = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+    <td className={`px-5 py-3.5 text-sm ${className}`} style={{ color: 'var(--color-text-alt)' }}>
+        {children}
+    </td>
+);
 
 export const ProfilesPage = () => {
     const { profiles, isLoading, totalPages } = useProfiles();
     const [searchParams, setSearchParams] = useSearchParams();
-    const page = Number(searchParams.get('page')) || 1;
+    const page  = Number(searchParams.get('page'))  || 1;
     const limit = Number(searchParams.get('limit')) || 10;
 
     return (
-        <div className="space-y-4">
-            <div className="sm:flex sm:items-center sm:justify-between">
+        <div className="space-y-5">
+            {/* Header */}
+            <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    style={{ background: 'var(--color-purple)' }}>
+                    <UserCircle className="h-5 w-5 text-white" />
+                </div>
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">Perfiles de Viajero</h1>
-                    <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Gestión de intereses y preferencias de usuarios</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
+                        Perfiles de Viajero
+                    </h1>
+                    <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
+                        Intereses y preferencias de los usuarios
+                    </p>
                 </div>
             </div>
 
-            <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#121214]">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
-                        <thead className="bg-[#f9fafb] dark:bg-[#121214]">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-zinc-500 uppercase">ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-zinc-500 uppercase">User ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-zinc-500 uppercase">Tipo Viaje</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-zinc-500 uppercase">Intereses</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-zinc-500 uppercase">Sostenibilidad</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-200 bg-white dark:divide-zinc-800 dark:bg-[#121214]">
-                            {isLoading ? (
+            {/* Table */}
+            <div className="overflow-hidden rounded-2xl border shadow-sm" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
+                {profiles.length === 0 && !isLoading ? (
+                    <div className="flex h-64 flex-col items-center justify-center gap-3">
+                        <UserCircle className="h-12 w-12" style={{ color: 'var(--color-border)' }} />
+                        <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>No hay perfiles registrados</p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full">
+                            <thead style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-alt)' }}>
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-4 text-center">
-                                        Cargando...
-                                    </td>
+                                    <TH>#</TH>
+                                    <TH>Usuario</TH>
+                                    <TH><span className="flex items-center gap-1.5"><Luggage className="h-3.5 w-3.5" />Tipo de Viaje</span></TH>
+                                    <TH><span className="flex items-center gap-1.5"><Heart className="h-3.5 w-3.5" />Intereses</span></TH>
+                                    <TH><span className="flex items-center gap-1.5"><Leaf className="h-3.5 w-3.5" />Sostenibilidad</span></TH>
                                 </tr>
-                            ) : profiles.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-4 text-center">
-                                        No hay perfiles registrados
-                                    </td>
-                                </tr>
-                            ) : (
-                                profiles.map((profile) => (
-                                    <tr key={profile.id}>
-                                        <td className="px-6 py-4 text-sm whitespace-nowrap text-zinc-900 dark:text-white">{profile.id}</td>
-                                        <td className="px-6 py-4 text-sm whitespace-nowrap text-zinc-500 dark:text-zinc-400">{profile.user_id}</td>
-                                        <td className="px-6 py-4 text-sm whitespace-nowrap text-zinc-500 dark:text-zinc-400">{profile.travel_type || 'N/A'}</td>
-                                        <td className="max-w-xs truncate px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">{profile.interests || 'N/A'}</td>
-                                        <td className="px-6 py-4 text-sm whitespace-nowrap text-zinc-500 dark:text-zinc-400">{profile.sustainable_preferences || 'N/A'}</td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {isLoading ? (
+                                    <TableBodyRows rows={9} colWidths={['w-7', 'w-20', 'w-24', 'flex-1', 'w-24']} />
+                                ) : profiles.map((profile, i) => (
+                                    <motion.tr
+                                        key={profile.id}
+                                        initial={{ opacity: 0, y: 6 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.03 }}
+                                        className="transition-colors"
+                                        style={{ borderBottom: '1px solid var(--color-border)' }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--rgb-text),0.03)')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+                                    >
+                                        <TD>
+                                            <span className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-white"
+                                                style={{ background: 'var(--color-purple)' }}>
+                                                {profile.id}
+                                            </span>
+                                        </TD>
+                                        <TD>
+                                            <span className="font-medium" style={{ color: 'var(--color-text)' }}>
+                                                ID {profile.user_id}
+                                            </span>
+                                        </TD>
+                                        <TD>
+                                            {profile.travel_type
+                                                ? <Badge text={profile.travel_type} color="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300" />
+                                                : <span className="text-xs text-zinc-400">N/A</span>}
+                                        </TD>
+                                        <TD className="max-w-xs">
+                                            <p className="truncate">{profile.interests || 'N/A'}</p>
+                                        </TD>
+                                        <TD>
+                                            {profile.sustainable_preferences
+                                                ? <Badge text={profile.sustainable_preferences} color="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" />
+                                                : <span className="text-xs text-zinc-400">N/A</span>}
+                                        </TD>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />

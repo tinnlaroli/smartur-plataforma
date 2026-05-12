@@ -34,13 +34,14 @@ export interface AIRecommendationContext {
 }
 
 export interface Recommendation {
-    item_id: number;
+    item_id: string;
     title: string;
     description?: string;
     category?: string;
     score: number;
     pred_cf: number;
     pred_rf: number;
+    kind?: string;
 }
 
 export interface RecommendationsResponse {

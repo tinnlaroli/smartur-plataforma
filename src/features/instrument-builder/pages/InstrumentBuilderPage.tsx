@@ -40,7 +40,7 @@ export const InstrumentBuilderPage = () => {
                 active: newTemplate.active,
             });
             setShowCreate(false);
-            setNewTemplate({ name: '', version: '1.0.0', service_type: '', active: true });
+            setNewTemplate((prev) => ({ ...prev, name: '', version: '1.0.0', service_type: '', active: true }));
             fetchTemplates();
         } catch {
             setError('Error al crear el instrumento');
@@ -73,10 +73,10 @@ export const InstrumentBuilderPage = () => {
     );
 
     return (
-        <div className="min-h-full">
+        <div className="min-h-full" suppressHydrationWarning>
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                    <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">
                         Constructor de Instrumentos
                     </h1>
                     <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -104,7 +104,7 @@ export const InstrumentBuilderPage = () => {
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <input
                     type="text"
-                    placeholder="Buscar instrumentos..."
+                    placeholder="Buscar instrumentos…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full rounded-xl border border-zinc-200 bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
@@ -160,7 +160,7 @@ export const InstrumentBuilderPage = () => {
                             </p>
                             <p className="mt-1 text-xs text-zinc-400">v{t.version}</p>
 
-                            <p className="mt-2 text-xs text-zinc-400">
+                            <p className="mt-2 text-xs text-zinc-400" suppressHydrationWarning>
                                 Creado: {new Date(t.register_at).toLocaleDateString('es-MX')}
                             </p>
 
@@ -197,9 +197,9 @@ export const InstrumentBuilderPage = () => {
 
             {showCreate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
+                    <button type="button" aria-label="Cerrar" className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-default" onClick={() => setShowCreate(false)} />
                     <div className="relative w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
-                        <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Nuevo Instrumento</h2>
+                        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Nuevo Instrumento</h2>
                         <p className="mt-1 text-sm text-zinc-500">Define las propiedades básicas</p>
                         <div className="mt-6 space-y-4">
                             <div>
@@ -207,7 +207,7 @@ export const InstrumentBuilderPage = () => {
                                 <input
                                     type="text"
                                     value={newTemplate.name}
-                                    onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
+                                    onChange={(e) => setNewTemplate((prev) => ({ ...prev, name: e.target.value }))}
                                     placeholder="Ej: Evaluación Hotelera 2024"
                                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                                 />
@@ -217,7 +217,7 @@ export const InstrumentBuilderPage = () => {
                                 <input
                                     type="text"
                                     value={newTemplate.version}
-                                    onChange={(e) => setNewTemplate({ ...newTemplate, version: e.target.value })}
+                                    onChange={(e) => setNewTemplate((prev) => ({ ...prev, version: e.target.value }))}
                                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                                 />
                             </div>
@@ -225,10 +225,10 @@ export const InstrumentBuilderPage = () => {
                                 <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Tipo de Servicio</label>
                                 <select
                                     value={newTemplate.service_type}
-                                    onChange={(e) => setNewTemplate({ ...newTemplate, service_type: e.target.value })}
+                                    onChange={(e) => setNewTemplate((prev) => ({ ...prev, service_type: e.target.value }))}
                                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                                 >
-                                    <option value="">Seleccionar...</option>
+                                    <option value="">Seleccionar…</option>
                                     <option value="Hotel">Hotel</option>
                                     <option value="Restaurante">Restaurante</option>
                                     <option value="Tour">Tour</option>
@@ -242,7 +242,7 @@ export const InstrumentBuilderPage = () => {
                                     type="checkbox"
                                     id="new-active"
                                     checked={newTemplate.active}
-                                    onChange={(e) => setNewTemplate({ ...newTemplate, active: e.target.checked })}
+                                    onChange={(e) => setNewTemplate((prev) => ({ ...prev, active: e.target.checked }))}
                                     className="rounded border-zinc-300 text-indigo-600 dark:border-zinc-600"
                                 />
                                 <label htmlFor="new-active" className="text-sm text-zinc-700 dark:text-zinc-300">Activo</label>
@@ -252,7 +252,7 @@ export const InstrumentBuilderPage = () => {
                             <button onClick={() => setShowCreate(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
                                 Cancelar
                             </button>
-                            <button onClick={handleCreate} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500">
+                            <button onClick={handleCreate} className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500">
                                 Crear
                             </button>
                         </div>

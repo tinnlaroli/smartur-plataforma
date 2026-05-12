@@ -36,7 +36,7 @@ export default function LocationTable({
                                     });
                                 }
                             }}
-                            className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-indigo-500 cursor-pointer"
+                            className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                         />
                     </div>
                     <div className="w-16 flex-shrink-0 text-xs font-medium uppercase text-zinc-400">
@@ -72,18 +72,19 @@ export default function LocationTable({
                                     type="checkbox"
                                     checked={selectedLocations.includes(loc.id)}
                                     onChange={() => onToggle(loc.id)}
-                                    className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-indigo-500 cursor-pointer"
+                                    className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                                 />
                             </div>
                             <div className="w-16 flex-shrink-0 text-sm font-medium text-zinc-100">
                                 {loc.id}
                             </div>
-                            <div
+                            <button
+                                type="button"
                                 onClick={() => onViewDetail(loc.id)}
-                                className="flex-1 min-w-[200px] text-sm text-zinc-300 truncate cursor-pointer hover:text-indigo-400"
+                                className="flex-1 min-w-[200px] text-left text-sm text-zinc-300 truncate cursor-pointer hover:text-violet-400"
                             >
                                 {loc.name}
-                            </div>
+                            </button>
                             <div className="w-32 flex-shrink-0 text-sm text-zinc-400">
                                 {loc.state}
                             </div>

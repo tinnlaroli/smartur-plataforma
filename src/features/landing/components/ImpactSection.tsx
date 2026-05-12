@@ -81,7 +81,7 @@ export const ImpactSection: React.FC = () => {
                 <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                     {STAT_KEYS.map((stat, i) => (
                         <div
-                            key={i}
+                            key={stat.num}
                             className="impact-card relative overflow-hidden rounded-[2rem] p-8"
                             style={{ border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}
                         >

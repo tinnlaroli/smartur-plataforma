@@ -8,6 +8,38 @@ interface HeroSectionProps {
     handleStartExperience: () => void;
 }
 
+/**
+ * Converts a string containing <span style="color:X">text</span> and <br/> segments
+ * into React elements, avoiding dangerouslySetInnerHTML.
+ */
+function renderTitle(raw: string): React.ReactNode {
+    const parts: React.ReactNode[] = [];
+    const tokenRe = /(<span\s+style="color:\s*([^"]+)">([^<]*)<\/span>|<br\s*\/?>)/g;
+    let last = 0;
+    let match: RegExpExecArray | null;
+    let idx = 0;
+    while ((match = tokenRe.exec(raw)) !== null) {
+        if (match.index > last) {
+            parts.push(raw.slice(last, match.index));
+        }
+        if (match[0].startsWith('<br')) {
+            parts.push(<br key={`br-${idx}`} />);
+        } else {
+            parts.push(
+                <span key={idx} style={{ color: match[2].trim() }}>
+                    {match[3]}
+                </span>,
+            );
+        }
+        idx += 1;
+        last = tokenRe.lastIndex;
+    }
+    if (last < raw.length) {
+        parts.push(raw.slice(last));
+    }
+    return parts;
+}
+
 export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience }) => {
     const heroRef = useRef<HTMLDivElement>(null);
     const phoneContainerRef = useRef<HTMLDivElement>(null);
@@ -85,8 +117,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
 
                             const wl = w.toLowerCase();
                             // Colores de "palabras destacadas" en ES/EN/FR.
-                            if (wl.includes('guía') || wl.includes('guia') || wl.includes('guides') || wl.includes('guide')) span.style.color = '#ff4d8d';
-                            if (wl.includes('turismo') || wl.includes('tourism') || wl.includes('tourisme')) span.style.color = '#4db9ca';
+                            if (wl.includes('guía') || wl.includes('guia') || wl.includes('guides') || wl.includes('guide')) span.style.color = 'var(--color-pink)';
+                            if (wl.includes('turismo') || wl.includes('tourism') || wl.includes('tourisme')) span.style.color = 'var(--color-cyan)';
 
                             if (w.includes(',')) {
                                 span.innerHTML = w.replace(',', ',<br/>');
@@ -156,7 +188,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
         };
 
         // Global listener for site load - Fallback since we don't have the custom event yet
-        setTimeout(animateHero, 1000);
+        const heroTimer = setTimeout(animateHero, 1000);
 
         // Initialize 3D on Desktop only
         let cleanup3D: (() => void) | undefined;
@@ -169,6 +201,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
         }
 
         return () => {
+            clearTimeout(heroTimer);
             if (cleanup3D) cleanup3D();
         };
     }, []);
@@ -195,48 +228,38 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 <div className="absolute -right-20 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-[0.08] blur-[120px]" style={{ background: 'var(--color-pink)' }} />
             </div>
 
-            <div className="u-container container relative z-10 mx-auto w-full px-4 pt-0">
-                <div className="inner flex flex-row items-start justify-between gap-[5rem] pt-[2rem] pb-[4rem] lg:flex-row lg:items-start lg:gap-[4rem] lg:pt-[1.5rem] lg:pb-[3rem] md:flex-col md:items-start md:gap-[4rem] md:pt-[2rem] md:pb-[2rem] max-[767px]:flex-col max-[767px]:items-start max-[767px]:gap-[3rem] max-[767px]:pt-[4rem] max-[767px]:pb-[1rem]">
+            <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 md:px-10 lg:px-16 pt-0">
+                <div className="inner flex flex-row items-start justify-between gap-[4rem] pt-[2rem] pb-[3.5rem] lg:flex-row lg:items-start lg:gap-[3rem] lg:pt-[1.5rem] lg:pb-[3rem] md:flex-col md:items-start md:gap-[3rem] md:pt-[2rem] md:pb-[2rem] max-[767px]:flex-col max-[767px]:items-start max-[767px]:gap-[2rem] max-[767px]:pt-[3.5rem] max-[767px]:pb-[1rem]">
                     <div className="content z-20 flex-1 max-w-none md:max-w-full">
                         <h1
-                            className="u-heading title hero-title mb-0 font-['Outfit'] text-[8.5rem] leading-[0.95] font-black lg:text-[7.2rem] md:text-[5.5rem] max-[767px]:text-[4.5rem]"
+                            className="u-heading title hero-title mb-0 font-['Outfit'] text-[5.5rem] leading-[0.92] font-black lg:text-[4.8rem] md:text-[3.8rem] max-[767px]:text-[2.8rem]"
                             style={{ color: 'var(--color-text)' }}
-                            dangerouslySetInnerHTML={{ __html: title }}
-                        />
+                        >
+                            {renderTitle(title)}
+                        </h1>
 
                         {subtitle ? (
                             <p
-                                className="u-text subtitle hero-subtitle mt-[3rem] mb-0 max-w-[32em] text-[1.25rem] leading-[1.65] max-[767px]:text-[1.1rem]"
+                                className="u-text subtitle hero-subtitle mt-[2rem] mb-0 max-w-[36em] text-[1.1rem] leading-[1.7] max-[767px]:text-[1rem]"
                                 style={{ color: 'var(--color-text-alt)' }}
                             >
                                 {subtitle}
                             </p>
                         ) : null}
 
-                        <div className="cta-wrapper hero-cta relative inline-block overflow-hidden mt-[2.75rem]">
+                        <div className="cta-wrapper hero-cta relative inline-block overflow-hidden mt-[2rem]">
                             <button
                                 onClick={handleStartExperience}
-                                className="cta group relative inline-flex items-center justify-center gap-3 rounded-full bg-[#ff4d8d] px-10 py-5 text-xl font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-[#ff4d8d]/90 active:scale-95"
+                            className="cta group relative inline-flex items-center justify-center gap-3 rounded-full bg-[var(--color-pink)] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 active:scale-95"
                             >
                                 <span>{t('heroSection.cta')}</span>
                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                             </button>
 
                             <div
-                                className="cta-shimmer"
+                                className="cta-shimmer pointer-events-none absolute top-0 left-[-100%] z-[5] h-full w-[60%] -skew-x-[20deg]"
                                 aria-hidden="true"
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: '-100%',
-                                    width: '60%',
-                                    height: '100%',
-                                    background:
-                                        'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-                                    transform: 'skewX(-20deg)',
-                                    pointerEvents: 'none',
-                                    zIndex: 5,
-                                }}
+                                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }}
                             />
                         </div>
                     </div>
@@ -255,8 +278,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             </div>
 
             {/* Scroll Indicator */}
-            <div
-                className="scroll-indicator absolute bottom-8 left-1/2 z-50 flex -translate-x-1/2 cursor-pointer flex-col items-center gap-2"
+            <button
+                type="button"
+                className="scroll-indicator absolute bottom-8 left-1/2 z-50 flex -translate-x-1/2 cursor-pointer flex-col items-center gap-2 border-none bg-transparent p-0"
                 onClick={() => {
                     const nextSection = document.getElementById('como-funciona');
                     if (nextSection) {
@@ -264,9 +288,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                     }
                 }}
             >
-                <span className="text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: 'var(--color-text-alt)' }}>{t('heroSection.scrollIndicator')}</span>
-                <ChevronDown className="h-8 w-8 animate-bounce" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
-            </div>
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--color-text-alt)' }}>{t('heroSection.scrollIndicator')}</span>
+                <ChevronDown className="h-8 w-8" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
+            </button>
         </section>
     );
 };

@@ -1,5 +1,65 @@
+@import "./styles/tokens.css";
 @import "tailwindcss";
 
-/* Tailwind v4: habilitar `dark:` con la clase `.dark` en <html>.
-   ThemeContext ya alterna esa clase. */
-@custom-variant dark (&:where(.dark, .dark *));
+/* Dark mode via `data-theme="dark"` attribute on <html> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Base styles */
+html {
+  transition:
+    background-color 0.3s var(--ease-out-cubic),
+    color 0.3s var(--ease-out-cubic);
+}
+
+html,
+body {
+  margin: 0;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: currentcolor;
+  text-decoration: none;
+}
+
+button {
+  color: currentcolor;
+  cursor: pointer;
+}
+
+/* Sidebar nav item states using design tokens */
+.nav-item-active {
+  background: rgba(var(--rgb-purple-accent), 0.12);
+  color: var(--color-purple);
+  box-shadow: 0 1px 3px rgba(var(--rgb-purple-accent), 0.1);
+}
+
+.nav-item-idle {
+  color: var(--color-text-alt);
+}
+
+.nav-item-idle:hover {
+  background: rgba(var(--rgb-text), 0.05);
+  color: var(--color-text);
+}
+
+.control-btn {
+  background: rgba(var(--rgb-text), 0.06);
+  border-radius: 12px;
+  transition: background 0.3s ease;
+  color: var(--color-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.control-btn:hover {
+  background: rgba(var(--rgb-text), 0.12);
+}

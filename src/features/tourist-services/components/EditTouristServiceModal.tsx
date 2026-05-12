@@ -16,14 +16,14 @@ export default function EditTouristServiceModal({ onClose, onSubmit, service }: 
         active: service.active,
     });
 
-    const handleChange = (
+    const handleFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]: name === 'active' ? value === 'true' : value,
-        });
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -43,47 +43,50 @@ export default function EditTouristServiceModal({ onClose, onSubmit, service }: 
                         onClick={onClose}
                         className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="size-5" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 gap-y-4 flex flex-col">
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                        <label htmlFor="edit-service-name" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                             Nombre del Servicio
                         </label>
                         <input
+                            id="edit-service-name"
                             name="name"
                             value={formData.name}
                             required
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                            onChange={handleFieldChange}
+                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                        <label htmlFor="edit-service-description" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                             Descripción
                         </label>
                         <textarea
+                            id="edit-service-description"
                             name="description"
                             value={formData.description}
-                            onChange={handleChange}
+                            onChange={handleFieldChange}
                             rows={3}
-                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"
+                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all resize-none"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                            <label htmlFor="edit-service-type" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                                 Tipo
                             </label>
                             <select
+                                id="edit-service-type"
                                 name="service_type"
                                 value={formData.service_type}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all cursor-pointer"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all cursor-pointer"
                             >
                                 <option value="tour">Tour</option>
                                 <option value="hotel">Hotel</option>
@@ -93,14 +96,15 @@ export default function EditTouristServiceModal({ onClose, onSubmit, service }: 
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
+                            <label htmlFor="edit-service-active" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 mb-1.5">
                                 Estado
                             </label>
                             <select
+                                id="edit-service-active"
                                 name="active"
                                 value={String(formData.active)}
-                                onChange={handleChange}
-                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition-all cursor-pointer"
+                                onChange={handleFieldChange}
+                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-white px-4 py-2 focus:ring-2 focus:ring-violet-500 outline-none transition-all cursor-pointer"
                             >
                                 <option value="true">Activo</option>
                                 <option value="false">Inactivo</option>
@@ -118,9 +122,9 @@ export default function EditTouristServiceModal({ onClose, onSubmit, service }: 
                         </button>
                         <button
                             type="submit"
-                            className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white shadow-lg hover:bg-indigo-700 active:scale-[0.98] transition-all flex items-center gap-2"
+                            className="rounded-lg bg-violet-600 px-5 py-2 text-sm font-medium text-white shadow-lg hover:bg-violet-700 active:scale-[0.98] transition-all flex items-center gap-2"
                         >
-                            <Save className="h-4 w-4" />
+                            <Save className="size-4" />
                             Guardar cambios
                         </button>
                     </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react';
+import React, { createContext, use, useState, useCallback, useRef, type ReactNode } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
 
 // --- Tipos ---
@@ -23,37 +23,37 @@ const notificationStyles = {
     success: {
         container: 'bg-zinc-950 border-l-4 border-l-green-500',
         title: 'text-white font-medium',
-        description: 'text-gray-300 text-sm',
+        description: 'text-zinc-300 text-sm',
         icon: CheckCircle,
         iconColor: 'text-green-500',
-        closeButton: 'text-gray-500 hover:text-gray-300',
+        closeButton: 'text-zinc-500 hover:text-zinc-300',
         shadow: 'shadow-xl',
     },
     error: {
         container: 'bg-neutral-950 border-l-4 border-l-red-500',
         title: 'text-white font-medium',
-        description: 'text-gray-300 text-sm',
+        description: 'text-zinc-300 text-sm',
         icon: XCircle,
         iconColor: 'text-red-500',
-        closeButton: 'text-gray-500 hover:text-gray-300',
+        closeButton: 'text-zinc-500 hover:text-zinc-300',
         shadow: 'shadow-xl',
     },
     info: {
         container: 'bg-zinc-950 border-l-4 border-l-blue-500',
         title: 'text-white font-medium',
-        description: 'text-gray-300 text-sm',
+        description: 'text-zinc-300 text-sm',
         icon: Info,
         iconColor: 'text-blue-500',
-        closeButton: 'text-gray-500 hover:text-gray-300',
+        closeButton: 'text-zinc-500 hover:text-zinc-300',
         shadow: 'shadow-xl',
     },
     warning: {
         container: 'bg-zinc-950 border-l-4 border-l-yellow-500',
         title: 'text-white font-medium',
-        description: 'text-gray-300 text-sm',
+        description: 'text-zinc-300 text-sm',
         icon: AlertCircle,
         iconColor: 'text-yellow-500',
-        closeButton: 'text-gray-500 hover:text-gray-300',
+        closeButton: 'text-zinc-500 hover:text-zinc-300',
         shadow: 'shadow-xl',
     },
 };
@@ -82,7 +82,7 @@ const NotificationItem: React.FC<{ toast: Toast; onClose: (id: string) => void }
             {/* Botón cerrar */}
             <button
                 onClick={() => onClose(toast.id)}
-                className={`flex-shrink-0 rounded-lg p-1 transition-colors ${style.closeButton} focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none ${toast.type === 'success' ? 'focus:ring-green-500' : ''} ${toast.type === 'error' ? 'focus:ring-red-500' : ''} ${toast.type === 'info' ? 'focus:ring-blue-500' : ''} ${toast.type === 'warning' ? 'focus:ring-yellow-500' : ''} `}
+                className={`flex-shrink-0 rounded-lg p-1 transition-colors ${style.closeButton} focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none ${toast.type === 'success' ? 'focus:ring-green-500' : ''} ${toast.type === 'error' ? 'focus:ring-red-500' : ''} ${toast.type === 'info' ? 'focus:ring-blue-500' : ''} ${toast.type === 'warning' ? 'focus:ring-yellow-500' : ''} `}
                 aria-label="Cerrar notificación"
             >
                 <X className="h-4 w-4" aria-hidden="true" />
@@ -135,7 +135,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 }
 
 export function useToast() {
-    const ctx = useContext(ToastContext);
+    const ctx = use(ToastContext);
     if (!ctx) throw new Error('useToast debe usarse dentro de ToastProvider');
     return ctx;
 }

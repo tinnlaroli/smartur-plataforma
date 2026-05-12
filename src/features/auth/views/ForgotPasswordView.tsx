@@ -4,6 +4,7 @@ import { authApi } from '../authApi';
 import { Mail, ArrowLeft, Send } from 'lucide-react';
 import { useToast } from '../../../shared/context/ToastContext';
 import type { AuthStep } from '../context/AuthModalContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface ForgotPasswordViewProps {
     onSwitchStep: (step: AuthStep, email?: string) => void;
@@ -11,13 +12,14 @@ interface ForgotPasswordViewProps {
 
 export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) => {
     const toast = useToast();
+    const { t } = useLanguage();
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState<ForgotPasswordPayload>({
         email: '',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -31,10 +33,10 @@ export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) =>
 
         try {
             await authApi.forgotPassword(formData);
-            toast.success('Correo enviado', 'Revisa tu correo para restablecer tu contraseña');
+            toast.success(t('auth.forgot.success.title'), t('auth.forgot.success.body'));
             onSwitchStep('resetPassword', formData.email);
         } catch (error) {
-            toast.error('Error', 'Algo salió mal al enviar el código');
+            toast.error(t('auth.forgot.error.title'), t('auth.forgot.error.body'));
         } finally {
             setIsLoading(false);
         }
@@ -46,23 +48,22 @@ export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) =>
                 onClick={() => onSwitchStep('login')}
                 className="group mb-6 flex items-center gap-1 text-xs text-zinc-400 transition-colors hover:text-zinc-300"
             >
-                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
-                <span>Volver al inicio de sesión</span>
+                <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+                <span>{t('auth.forgot.back')}</span>
             </button>
 
             <div className="mb-6 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/10">
-                    <Mail className="h-6 w-6 text-indigo-400" />
+                <div className="flex size-12 items-center justify-center rounded-full bg-[rgba(var(--rgb-purple-accent),0.1)]">
+                    <Mail className="size-6 text-[var(--color-purple)]" />
                 </div>
             </div>
 
             <div className="mb-8 text-center">
-                <h2 className="text-2xl font-semibold text-white">
-                    ¿Olvidaste tu contraseña?
+                <h2 className="text-2xl font-semibold text-[var(--color-text)]">
+                    {t('auth.forgot.title')}
                 </h2>
-                <p className="mt-2 text-sm text-zinc-400">
-                    No te preocupes, te enviaremos un código de verificación a tu correo
-                    electrónico para restablecerla.
+                <p className="mt-2 text-sm text-[var(--color-text-alt)]">
+                    {t('auth.forgot.subtitle')}
                 </p>
             </div>
 
@@ -70,9 +71,9 @@ export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) =>
                 <div className="space-y-1.5">
                     <label
                         htmlFor="user-email"
-                        className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
+                        className="text-xs font-medium tracking-wider text-[var(--color-text-alt)] uppercase"
                     >
-                        Correo electrónico
+                        {t('auth.forgot.email.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -81,44 +82,44 @@ export const ForgotPasswordView = ({ onSwitchStep }: ForgotPasswordViewProps) =>
                             type="email"
                             required
                             value={formData.email}
-                            onChange={handleChange}
-                            placeholder="correo@ejemplo.com"
-                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                            onChange={handleFieldChange}
+                            placeholder={t('auth.forgot.email.placeholder')}
+                            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] py-2.5 pr-4 pl-9 text-sm text-[var(--color-text)] transition-colors placeholder:text-[var(--color-text-alt)] focus:border-[var(--color-purple)] focus:ring-1 focus:ring-[var(--color-purple)] focus:outline-none"
                         />
-                        <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                        <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--color-text-alt)]" />
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">
-                        Te enviaremos un código de verificación a este correo
+                    <p className="mt-1 text-xs text-[var(--color-text-alt)]">
+                        {t('auth.forgot.email.hint')}
                     </p>
                 </div>
 
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-lg bg-[var(--color-purple)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 focus:ring-2 focus:ring-[var(--color-purple)] focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                            <span>Enviando código...</span>
+                            <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                            <span>{t('auth.forgot.submitting')}</span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-center gap-2">
-                            <Send className="h-4 w-4" />
-                            <span>Enviar código</span>
+                            <Send className="size-4" />
+                            <span>{t('auth.forgot.submit')}</span>
                         </div>
                     )}
                 </button>
 
                 <div className="mt-4 text-center">
-                    <p className="text-xs text-zinc-500">
-                        ¿No tienes una cuenta?{' '}
+                    <p className="text-xs text-[var(--color-text-alt)]">
+                        {t('auth.forgot.no_account')}{' '}
                         <button
                             type="button"
                             onClick={() => onSwitchStep('signup')}
-                            className="font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                            className="font-medium text-[var(--color-purple)] transition-colors hover:opacity-80"
                         >
-                            Regístrate aquí
+                            {t('auth.forgot.register')}
                         </button>
                     </p>
                 </div>

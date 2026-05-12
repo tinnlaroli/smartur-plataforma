@@ -91,7 +91,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             onClick={() => toggleTipo(t.value)}
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 tiposTurismo.includes(t.value)
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : isDark
                                         ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                                         : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
@@ -100,7 +100,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             <div className="mb-3">
                                 <t.icon className="h-6 w-6" />
                             </div>
-                            <div className="text-sm font-bold tracking-tight">{t.label}</div>
+                            <div className="text-sm font-semibold tracking-tight">{t.label}</div>
                         </button>
                     ))}
                 </div>
@@ -116,7 +116,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             onClick={() => setActividad(level.value)}
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 actividad_level === level.value
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : isDark
                                         ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                                         : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
@@ -141,7 +141,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             onClick={() => setPreferenciaLugar(lugar.value)}
                             className={`flex flex-col items-center rounded-2xl border p-4 text-center transition-all duration-200 ${
                                 preferencia_lugar === lugar.value
-                                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                    ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                     : isDark
                                         ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                                         : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
@@ -159,7 +159,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
             <div className="flex justify-between">
                 <button
                     onClick={onBack}
-                    className={`flex items-center gap-2 rounded-xl border px-6 py-3 font-bold transition-all active:scale-95 ${
+                    className={`flex items-center gap-2 rounded-xl border px-6 py-3 font-semibold transition-all active:scale-95 ${
                         isDark
                             ? 'border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700'
                             : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
@@ -171,7 +171,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                 <button
                     onClick={handleNext}
                     disabled={!tiposTurismo.length}
-                    className="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <span>Continuar</span>
                     <ChevronRight className="h-5 w-5" />

@@ -4,6 +4,7 @@ import type { ResetPasswordPayload } from '../types';
 import { KeyRound, Lock, ArrowLeft, CheckCircle } from 'lucide-react';
 import { useToast } from '../../../shared/context/ToastContext';
 import type { AuthStep } from '../context/AuthModalContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface ResetPasswordViewProps {
     email: string;
@@ -12,6 +13,7 @@ interface ResetPasswordViewProps {
 
 export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProps) => {
     const toast = useToast();
+    const { t } = useLanguage();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -27,7 +29,7 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
         }
     }, [email, onSwitchStep]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -41,10 +43,10 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
 
         try {
             await authApi.resetPassword(formData);
-            toast.success('¡Contraseña actualizada!', 'Ahora puedes iniciar sesión');
+            toast.success(t('auth.resetPassword.success.title'), t('auth.resetPassword.success.body'));
             setTimeout(() => onSwitchStep('login'), 2000);
         } catch (error) {
-            toast.error('Error', 'Algo salió mal al restablecer tu contraseña');
+            toast.error(t('auth.resetPassword.error.title'), t('auth.resetPassword.error.body'));
         } finally {
             setIsLoading(false);
         }
@@ -56,26 +58,26 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
         <div className="w-full">
             <button
                 onClick={() => onSwitchStep('forgotPassword')}
-                className="group mb-6 flex items-center gap-1 text-xs text-zinc-400 transition-colors hover:text-zinc-300"
+                className="group mb-6 flex items-center gap-1 text-xs transition-colors nav-item-idle"
             >
-                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
-                <span>Volver</span>
+                <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+                <span>{t('auth.resetPassword.back')}</span>
             </button>
 
             <div className="mb-6 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/10">
-                    <KeyRound className="h-6 w-6 text-indigo-400" />
+                <div className="flex size-12 items-center justify-center rounded-full" style={{ background: 'rgba(var(--rgb-purple-accent),0.1)' }}>
+                    <KeyRound className="size-6" style={{ color: 'var(--color-purple)' }} />
                 </div>
             </div>
 
             <div className="mb-8 text-center">
-                <h2 className="text-2xl font-semibold text-white">
-                    Restablecer contraseña
+                <h2 className="text-2xl font-semibold" style={{ color: 'var(--color-text)' }}>
+                    {t('auth.resetPassword.title')}
                 </h2>
-                <p className="mt-2 text-sm text-zinc-400">
-                    Ingresa el código que enviamos a{' '}
-                    <span className="font-medium text-indigo-400">{formData.email}</span> y
-                    tu nueva contraseña
+                <p className="mt-2 text-sm" style={{ color: 'var(--color-text-alt)' }}>
+                    {t('auth.resetPassword.subtitle.prefix')}{' '}
+                    <span className="font-medium" style={{ color: 'var(--color-purple)' }}>{formData.email}</span>{' '}
+                    {t('auth.resetPassword.subtitle.suffix')}
                 </p>
             </div>
 
@@ -83,9 +85,10 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
                 <div className="space-y-1.5">
                     <label
                         htmlFor="token"
-                        className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
+                        className="text-xs font-medium tracking-wider uppercase"
+                        style={{ color: 'var(--color-text-alt)' }}
                     >
-                        Código de verificación
+                        {t('auth.resetPassword.token.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -94,23 +97,31 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
                             name="token"
                             required
                             value={formData.token}
-                            onChange={handleChange}
-                            placeholder="Ej. 123456"
-                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                            onChange={handleFieldChange}
+                            placeholder={t('auth.resetPassword.token.placeholder')}
+                            className="w-full rounded-lg border py-2.5 pr-4 pl-9 text-sm transition-colors focus:outline-none"
+                            style={{
+                                borderColor: 'var(--color-border)',
+                                background: 'var(--color-bg)',
+                                color: 'var(--color-text)',
+                            }}
+                            onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-purple)')}
+                            onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}
                         />
-                        <KeyRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                        <KeyRound className="absolute top-1/2 left-3 size-4 -translate-y-1/2" style={{ color: 'var(--color-text-alt)' }} />
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">
-                        Revisa tu bandeja de entrada
+                    <p className="mt-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                        {t('auth.resetPassword.token.hint')}
                     </p>
                 </div>
 
                 <div className="space-y-1.5">
                     <label
                         htmlFor="newPassword"
-                        className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
+                        className="text-xs font-medium tracking-wider uppercase"
+                        style={{ color: 'var(--color-text-alt)' }}
                     >
-                        Nueva contraseña
+                        {t('auth.resetPassword.password.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -119,82 +130,60 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
                             name="newPassword"
                             required
                             value={formData.newPassword}
-                            onChange={handleChange}
-                            placeholder="••••••••"
+                            onChange={handleFieldChange}
+                            placeholder="………………"
                             minLength={8}
-                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                            className="w-full rounded-lg border py-2.5 pr-16 pl-9 text-sm transition-colors focus:outline-none"
+                            style={{
+                                borderColor: 'var(--color-border)',
+                                background: 'var(--color-bg)',
+                                color: 'var(--color-text)',
+                            }}
+                            onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-purple)')}
+                            onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}
                         />
-                        <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                        <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2" style={{ color: 'var(--color-text-alt)' }} />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-indigo-400 hover:text-indigo-300"
+                            className="absolute top-1/2 right-3 -translate-y-1/2 text-xs transition-colors"
+                            style={{ color: 'var(--color-purple)' }}
                         >
-                            {showPassword ? 'Ocultar' : 'Mostrar'}
+                            {showPassword ? t('auth.resetPassword.password.hide') : t('auth.resetPassword.password.show')}
                         </button>
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">Mínimo 8 caracteres</p>
+                    <p className="mt-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                        {t('auth.resetPassword.password.hint')}
+                    </p>
                 </div>
 
                 {formData.newPassword && (
-                    <div className="space-y-1.5 rounded-lg border border-zinc-800 bg-zinc-950/50 p-3">
-                        <p className="mb-2 text-xs font-medium text-zinc-400">
-                            La contraseña debe tener:
+                    <div className="space-y-1.5 rounded-lg border p-3" style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg)' }}>
+                        <p className="mb-2 text-xs font-medium" style={{ color: 'var(--color-text-alt)' }}>
+                            {t('auth.resetPassword.requirements')}
                         </p>
                         <div className="flex items-center gap-2 text-xs">
-                            <CheckCircle
-                                className={`h-3 w-3 ${formData.newPassword.length >= 8 ? 'text-emerald-400' : 'text-zinc-600'}`}
-                            />
-                            <span
-                                className={
-                                    formData.newPassword.length >= 8
-                                        ? 'text-zinc-300'
-                                        : 'text-zinc-500'
-                                }
-                            >
-                                Mínimo 8 caracteres
+                            <CheckCircle className={`size-3 ${formData.newPassword.length >= 8 ? 'text-emerald-400' : 'text-zinc-600'}`} />
+                            <span className={formData.newPassword.length >= 8 ? 'text-emerald-400' : ''} style={formData.newPassword.length >= 8 ? {} : { color: 'var(--color-text-alt)' }}>
+                                {t('auth.resetPassword.min')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                            <CheckCircle
-                                className={`h-3 w-3 ${/[A-Z]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`}
-                            />
-                            <span
-                                className={
-                                    /[A-Z]/.test(formData.newPassword)
-                                        ? 'text-zinc-300'
-                                        : 'text-zinc-500'
-                                }
-                            >
-                                Al menos una mayúscula
+                            <CheckCircle className={`size-3 ${/[A-Z]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`} />
+                            <span className={/[A-Z]/.test(formData.newPassword) ? 'text-emerald-400' : ''} style={/[A-Z]/.test(formData.newPassword) ? {} : { color: 'var(--color-text-alt)' }}>
+                                {t('auth.resetPassword.uppercase')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                            <CheckCircle
-                                className={`h-3 w-3 ${/[a-z]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`}
-                            />
-                            <span
-                                className={
-                                    /[a-z]/.test(formData.newPassword)
-                                        ? 'text-zinc-300'
-                                        : 'text-zinc-500'
-                                }
-                            >
-                                Al menos una minúscula
+                            <CheckCircle className={`size-3 ${/[a-z]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`} />
+                            <span className={/[a-z]/.test(formData.newPassword) ? 'text-emerald-400' : ''} style={/[a-z]/.test(formData.newPassword) ? {} : { color: 'var(--color-text-alt)' }}>
+                                {t('auth.resetPassword.lowercase')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                            <CheckCircle
-                                className={`h-3 w-3 ${/[0-9]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`}
-                            />
-                            <span
-                                className={
-                                    /[0-9]/.test(formData.newPassword)
-                                        ? 'text-zinc-300'
-                                        : 'text-zinc-500'
-                                }
-                            >
-                                Al menos un número
+                            <CheckCircle className={`size-3 ${/[0-9]/.test(formData.newPassword) ? 'text-emerald-400' : 'text-zinc-600'}`} />
+                            <span className={/[0-9]/.test(formData.newPassword) ? 'text-emerald-400' : ''} style={/[0-9]/.test(formData.newPassword) ? {} : { color: 'var(--color-text-alt)' }}>
+                                {t('auth.resetPassword.number')}
                             </span>
                         </div>
                     </div>
@@ -203,17 +192,18 @@ export const ResetPasswordView = ({ email, onSwitchStep }: ResetPasswordViewProp
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{ background: 'var(--color-purple)' }}
                 >
                     {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                            <span>Actualizando...</span>
+                            <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                            <span>{t('auth.resetPassword.submitting')}</span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-center gap-2">
-                            <Lock className="h-4 w-4" />
-                            <span>Actualizar contraseña</span>
+                            <Lock className="size-4" />
+                            <span>{t('auth.resetPassword.submit')}</span>
                         </div>
                     )}
                 </button>

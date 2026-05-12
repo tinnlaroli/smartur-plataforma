@@ -11,14 +11,14 @@ const REGION_CENTER = {
 };
 
 const ciudades = [
-    { id: 'cordoba', nombre: 'Córdoba', lat: 18.8842, lng: -96.9256, color: '#FC478E' },
-    { id: 'orizaba', nombre: 'Orizaba', lat: 18.8522, lng: -97.0994, color: '#984EFD' },
-    { id: 'fortin', nombre: 'Fortín de las Flores', lat: 18.9061, lng: -96.9981, color: '#4DB9CA' },
-    { id: 'ixtaczoquitlan', nombre: 'Ixtaczoquitlán', lat: 18.8167, lng: -97.0667, color: '#a3d14f' },
-    { id: 'cuitlahuac', nombre: 'Cuitláhuac', lat: 18.8131, lng: -96.7222, color: '#F97316' },
-    { id: 'amatlan', nombre: 'Amatlán de los Reyes', lat: 18.8333, lng: -96.9167, color: '#EC4899' },
-    { id: 'yanga', nombre: 'Yanga', lat: 18.8333, lng: -96.8, color: '#8B5CF6' },
-    { id: 'atoyac', nombre: 'Atoyac', lat: 18.9167, lng: -96.7667, color: '#06B6D4' },
+    { id: 'cordoba', nombre: 'Córdoba', lat: 18.8842, lng: -96.9256, color: 'var(--color-pink)' },
+    { id: 'orizaba', nombre: 'Orizaba', lat: 18.8522, lng: -97.0994, color: 'var(--color-purple)' },
+    { id: 'fortin', nombre: 'Fortín de las Flores', lat: 18.9061, lng: -96.9981, color: 'var(--color-cyan)' },
+    { id: 'ixtaczoquitlan', nombre: 'Ixtaczoquitlán', lat: 18.8167, lng: -97.0667, color: 'var(--color-green)' },
+    { id: 'cuitlahuac', nombre: 'Cuitláhuac', lat: 18.8131, lng: -96.7222, color: 'var(--color-orange)' },
+    { id: 'amatlan', nombre: 'Amatlán de los Reyes', lat: 18.8333, lng: -96.9167, color: 'var(--color-pink)' },
+    { id: 'yanga', nombre: 'Yanga', lat: 18.8333, lng: -96.8, color: 'var(--color-purple)' },
+    { id: 'atoyac', nombre: 'Atoyac', lat: 18.9167, lng: -96.7667, color: 'var(--color-cyan)' },
 ];
 
 const lugaresPorCiudad: Record<string, any[]> = {
@@ -175,7 +175,7 @@ export const CordobaMap: React.FC = () => {
 
         filteredPlaces.forEach((place) => {
             const ciudad = ciudades.find((c) => c.nombre === place.ciudad);
-            const placeColor = ciudad?.color || '#FC478E';
+            const placeColor = ciudad?.color || 'var(--color-pink)';
 
             const customIcon = L.divIcon({
                 className: 'place-marker',
@@ -211,10 +211,10 @@ export const CordobaMap: React.FC = () => {
         <div className="min-h-screen bg-white px-4 py-12">
             <div className="mx-auto max-w-7xl">
                 <div className="mb-12 text-center">
-                    <h1 className="mb-4 text-4xl font-black text-gray-900 md:text-5xl">
-                        Descubre la región de <span className="text-indigo-600">Las Montañas</span>
+                    <h1 className="mb-4 text-4xl font-black text-zinc-900 md:text-5xl">
+                        Descubre la región de <span className="text-violet-600">Las Montañas</span>
                     </h1>
-                    <p className="mx-auto max-w-2xl text-lg text-gray-600">Explora los lugares más fascinantes de Veracruz. Historia, cultura y naturaleza en un solo lugar.</p>
+                    <p className="mx-auto max-w-2xl text-lg text-zinc-600">Explora los lugares más fascinantes de Veracruz. Historia, cultura y naturaleza en un solo lugar.</p>
                 </div>
 
                 <div className="relative z-10 mb-12 flex flex-wrap items-center justify-center gap-4">
@@ -222,7 +222,7 @@ export const CordobaMap: React.FC = () => {
                         <select
                             value={filterCity}
                             onChange={(e) => setFilterCity(e.target.value)}
-                            className="cursor-pointer appearance-none rounded-2xl border-2 border-indigo-100 bg-white px-6 py-3 pr-12 font-bold text-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                            className="cursor-pointer appearance-none rounded-2xl border-2 border-violet-100 bg-white px-6 py-3 pr-12 font-semibold text-zinc-700 shadow-sm focus:ring-2 focus:ring-violet-500 focus:outline-none"
                         >
                             <option value="Todas">Todas las ciudades</option>
                             {ciudades.map((ciudad) => (
@@ -231,13 +231,13 @@ export const CordobaMap: React.FC = () => {
                                 </option>
                             ))}
                         </select>
-                        <ChevronDown className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-indigo-500" />
+                        <ChevronDown className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-violet-500" />
                     </div>
 
                     <div className="relative" ref={filterDropdownRef}>
                         <button
                             onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                            className="flex items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3 font-bold text-white shadow-lg shadow-indigo-600/20 transition-colors hover:bg-indigo-700"
+                            className="flex items-center gap-2 rounded-2xl bg-violet-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-600/20 transition-colors hover:bg-violet-700"
                         >
                             <Filter className="h-5 w-5" />
                             <span>Filtrar por tipo</span>
@@ -245,7 +245,7 @@ export const CordobaMap: React.FC = () => {
                         </button>
 
                         {showFilterDropdown && (
-                            <div className="absolute top-full left-0 z-[100] mt-3 max-h-[350px] min-w-[220px] overflow-x-hidden overflow-y-auto rounded-2xl border border-gray-100 bg-white py-3 shadow-xl">
+                            <div className="absolute top-full left-0 z-[100] mt-3 max-h-[350px] min-w-[220px] overflow-x-hidden overflow-y-auto rounded-2xl border border-zinc-100 bg-white py-3 shadow-xl">
                                 {categorias.map((cat) => (
                                     <button
                                         key={cat}
@@ -253,7 +253,7 @@ export const CordobaMap: React.FC = () => {
                                             setFilterCategory(cat);
                                             setShowFilterDropdown(false);
                                         }}
-                                        className={`w-full px-5 py-3 text-left transition-colors hover:bg-indigo-50 ${filterCategory === cat ? 'bg-indigo-50 font-bold text-indigo-700' : 'font-medium text-gray-700'}`}
+                                        className={`w-full px-5 py-3 text-left transition-colors hover:bg-violet-50 ${filterCategory === cat ? 'bg-violet-50 font-semibold text-violet-700' : 'font-medium text-zinc-700'}`}
                                     >
                                         {cat}
                                     </button>
@@ -265,52 +265,53 @@ export const CordobaMap: React.FC = () => {
 
                 <div className="grid gap-10 lg:grid-cols-3">
                     <div className="relative lg:col-span-2">
-                        <div className="h-[600px] overflow-hidden rounded-[40px] border border-gray-100 bg-white p-2 shadow-2xl">
+                        <div className="h-[600px] overflow-hidden rounded-[40px] border border-zinc-100 bg-white p-2 shadow-2xl">
                             <div id="altas-montanas-map" className="z-0 h-full w-full rounded-[32px]" />
                             {!mapLoaded && (
                                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 backdrop-blur-sm">
                                     <div className="flex flex-col items-center gap-4">
-                                        <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
-                                        <p className="font-bold text-gray-600">Cargando mapa interactivo...</p>
+                                        <div className="h-12 w-12 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
+                                        <p className="font-semibold text-zinc-600">Cargando mapa interactivo…</p>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <div className="scrollbar-thin scrollbar-thumb-indigo-200 max-h-[600px] space-y-6 overflow-y-auto pr-4">
+                    <div className="scrollbar-thin scrollbar-thumb-violet-200 max-h-[600px] space-y-6 overflow-y-auto pr-4">
                         {filteredPlaces.map((place) => {
                             const ciudad = ciudades.find((c) => c.nombre === place.ciudad);
                             return (
-                                <div
+                                <button
                                     key={place.id}
+                                    type="button"
                                     onClick={() => setSelectedPlace(place)}
-                                    className={`cursor-pointer rounded-[32px] border-2 bg-white p-5 shadow-lg transition-all hover:scale-[1.02] ${selectedPlace?.id === place.id ? 'border-indigo-500 shadow-indigo-500/10' : 'border-transparent hover:border-indigo-100'}`}
+                                    className={`w-full text-left rounded-[32px] border-2 bg-white p-5 shadow-lg transition-all hover:scale-[1.02] ${selectedPlace?.id === place.id ? 'border-violet-500 shadow-violet-500/10' : 'border-transparent hover:border-violet-100'}`}
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl text-white" style={{ background: ciudad?.color || '#6366f1' }}>
+                                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl text-white" style={{ background: ciudad?.color || 'var(--color-purple)' }}>
                                             <MapPin />
                                         </div>
                                         <div className="flex-1">
                                             <div className="mb-2 flex items-center justify-between">
-                                                <h3 className="leading-tight font-bold text-gray-900">{place.nombre}</h3>
+                                                <h3 className="leading-tight font-semibold text-zinc-900">{place.nombre}</h3>
                                                 <div className="flex items-center gap-1 text-yellow-500">
                                                     <Star className="h-4 w-4 fill-yellow-500" />
-                                                    <span className="text-sm font-bold">{place.rating}</span>
+                                                    <span className="text-sm font-semibold">{place.rating}</span>
                                                 </div>
                                             </div>
                                             <div className="mb-3 flex gap-2">
-                                                <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-black tracking-wider text-gray-600 uppercase">{place.ciudad}</span>
-                                                <span className="rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-black tracking-wider text-indigo-600 uppercase">{place.categoria}</span>
+                                                <span className="rounded-full bg-zinc-100 px-3 py-1 text-[10px] font-black tracking-wider text-zinc-600 uppercase">{place.ciudad}</span>
+                                                <span className="rounded-full bg-violet-50 px-3 py-1 text-[10px] font-black tracking-wider text-violet-600 uppercase">{place.categoria}</span>
                                             </div>
-                                            <p className="mb-3 line-clamp-2 text-sm text-gray-500">{place.descripcion}</p>
-                                            <div className="flex items-center gap-2 text-xs font-medium text-gray-400">
+                                            <p className="mb-3 line-clamp-2 text-sm text-zinc-500">{place.descripcion}</p>
+                                            <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
                                                 <Clock className="h-3.5 w-3.5" />
                                                 <span>{place.horario}</span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </button>
                             );
                         })}
                     </div>
@@ -330,15 +331,15 @@ export const CordobaMap: React.FC = () => {
                             </button>
                         </div>
                         <div className="p-8 sm:p-12">
-                            <h2 className="mb-4 text-4xl font-black text-gray-900">{selectedPlace.nombre}</h2>
+                            <h2 className="mb-4 text-4xl font-black text-zinc-900">{selectedPlace.nombre}</h2>
                             <div className="mb-6 flex gap-3">
-                                <span className="rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-black tracking-[0.2em] text-white uppercase">{selectedPlace.ciudad}</span>
-                                <span className="rounded-full bg-indigo-50 px-4 py-1.5 text-xs font-black tracking-[0.2em] text-indigo-600 uppercase">{selectedPlace.categoria}</span>
+                                <span className="rounded-full bg-violet-600 px-4 py-1.5 text-xs font-black tracking-[0.2em] text-white uppercase">{selectedPlace.ciudad}</span>
+                                <span className="rounded-full bg-violet-50 px-4 py-1.5 text-xs font-black tracking-[0.2em] text-violet-600 uppercase">{selectedPlace.categoria}</span>
                             </div>
-                            <p className="mb-8 text-lg leading-relaxed text-gray-600">{selectedPlace.descripcion}</p>
-                            <div className="flex items-center gap-6 font-bold text-gray-400">
+                            <p className="mb-8 text-lg leading-relaxed text-zinc-600">{selectedPlace.descripcion}</p>
+                            <div className="flex items-center gap-6 font-semibold text-zinc-400">
                                 <div className="flex items-center gap-2">
-                                    <Clock className="h-5 w-5 text-indigo-500" />
+                                    <Clock className="h-5 w-5 text-violet-500" />
                                     <span>{selectedPlace.horario}</span>
                                 </div>
                                 <div className="flex items-center gap-2">

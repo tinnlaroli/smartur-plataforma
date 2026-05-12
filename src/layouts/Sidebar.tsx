@@ -1,244 +1,309 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { X, Users, Building2, Wrench, Settings, MapPin, ChevronLeft, ChevronRight, Home, LogOut, UserCircle, Activity, Award, Star, BarChart3, FileText, Sun, Moon, LogIn } from 'lucide-react';
+import {
+    X, Users, Building2, Wrench, Settings, MapPin,
+    ChevronLeft, ChevronRight, Home, LogOut, UserCircle,
+    Activity, Award, Star, BarChart3, FileText,
+} from 'lucide-react';
 import { useState } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useAuthModal } from '../features/auth/context/AuthModalContext';
 
-interface SidebarProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
+interface SidebarProps { isOpen: boolean; onClose: () => void; }
 
 interface MenuItem {
-    id: string;
-    label: string;
+    id: string; label: string;
     icon: React.ComponentType<{ className?: string }>;
-    path: string;
-    end?: boolean;
-    roles: number[];
+    path: string; end?: boolean; roles: number[];
 }
+
+const MENU_GROUPS = [
+    {
+        label: 'Principal',
+        items: ['home'],
+    },
+    {
+        label: 'Gestión',
+        items: ['users', 'companies', 'services', 'locations', 'profiles', 'activities', 'certifications', 'poi'],
+    },
+    {
+        label: 'Reportes',
+        items: ['stats', 'instruments'],
+    },
+    {
+        label: 'Sistema',
+        items: ['settings'],
+    },
+];
+
+const getInitials = (name: string) =>
+    name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const navigate = useNavigate();
-    const { theme, toggleTheme } = useTheme();
     const { openModal } = useAuthModal();
+    const { t } = useLanguage();
 
     const userStr = localStorage.getItem('user');
     const user = userStr ? JSON.parse(userStr) : null;
     const userRole = user?.role_id || 2;
 
-    const menuItems: MenuItem[] = [
-        { id: 'home', label: 'Inicio', icon: Home, path: '/dashboard', end: true, roles: [1] },
-        { id: 'users', label: 'Usuarios', icon: Users, path: '/dashboard/usuarios', roles: [1] },
-        { id: 'companies', label: 'Compañías', icon: Building2, path: '/dashboard/companias', roles: [1] },
-        { id: 'services', label: 'Servicios', icon: Wrench, path: '/dashboard/servicios', roles: [1] },
-        { id: 'locations', label: 'Ubicaciones', icon: MapPin, path: '/dashboard/ubicaciones', roles: [1] },
-        { id: 'profiles', label: 'Perfiles', icon: UserCircle, path: '/dashboard/perfiles', roles: [1] },
-        { id: 'activities', label: 'Actividades', icon: Activity, path: '/dashboard/actividades', roles: [1] },
-        { id: 'certifications', label: 'Certificaciones', icon: Award, path: '/dashboard/certificaciones', roles: [1] },
-        { id: 'poi', label: 'POI', icon: Star, path: '/dashboard/poi', roles: [1] },
-        { id: 'stats', label: 'Estadísticas', icon: BarChart3, path: '/dashboard/estadisticas', roles: [1] },
-        { id: 'templates', label: 'Plantillas', icon: FileText, path: '/dashboard/plantillas', roles: [1] },
-        { id: 'instruments', label: 'Instrumentos', icon: FileText, path: '/dashboard/instrumentos', roles: [1] },
-        { id: 'settings', label: 'Configuración', icon: Settings, path: '/dashboard/configuracion', roles: [1] },
+    const allItems: MenuItem[] = [
+        { id: 'home',           label: t('sidebar.home'),           icon: Home,       path: '/dashboard',                 end: true, roles: [1] },
+        { id: 'users',          label: t('sidebar.users'),          icon: Users,      path: '/dashboard/usuarios',                   roles: [1] },
+        { id: 'companies',      label: t('sidebar.companies'),      icon: Building2,  path: '/dashboard/companias',                  roles: [1] },
+        { id: 'services',       label: t('sidebar.services'),       icon: Wrench,     path: '/dashboard/servicios',                  roles: [1] },
+        { id: 'locations',      label: t('sidebar.locations'),      icon: MapPin,     path: '/dashboard/ubicaciones',                roles: [1] },
+        { id: 'profiles',       label: t('sidebar.profiles'),       icon: UserCircle, path: '/dashboard/perfiles',                   roles: [1] },
+        { id: 'activities',     label: t('sidebar.activities'),     icon: Activity,   path: '/dashboard/actividades',                roles: [1] },
+        { id: 'certifications', label: t('sidebar.certifications'), icon: Award,      path: '/dashboard/certificaciones',            roles: [1] },
+        { id: 'poi',            label: t('sidebar.poi'),            icon: Star,       path: '/dashboard/poi',                        roles: [1] },
+        { id: 'stats',          label: t('sidebar.stats'),          icon: BarChart3,  path: '/dashboard/estadisticas',               roles: [1] },
+        { id: 'instruments',    label: t('sidebar.instruments'),    icon: FileText,   path: '/dashboard/instrumentos',               roles: [1] },
+        { id: 'settings',       label: t('sidebar.settings'),       icon: Settings,   path: '/dashboard/configuracion',              roles: [1] },
     ];
 
-    const filteredItems = menuItems.filter((item) => item.roles.includes(userRole));
+    const itemMap = Object.fromEntries(allItems.map((i) => [i.id, i]));
+    const filteredGroups = MENU_GROUPS.map((g) => ({
+        ...g,
+        items: g.items.map((id) => itemMap[id]).filter((i) => i && i.roles.includes(userRole)),
+    })).filter((g) => g.items.length > 0);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         openModal('login');
         navigate('/');
-        if (onClose) onClose();
-    };
-
-    const toggleCollapse = () => {
-        setIsCollapsed(!isCollapsed);
-    };
-
-    const getInitials = (name: string) => {
-        return name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
+        onClose();
     };
 
     return (
         <>
-            {isOpen && (
-                <div
-                    className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
-                    onClick={onClose}
-                    aria-hidden="true"
-                />
-            )}
+            {/* Mobile overlay */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
+                        onClick={onClose}
+                    />
+                )}
+            </AnimatePresence>
 
             <aside
-                className={`fixed inset-y-0 left-0 z-50 flex transform flex-col border-r bg-white shadow-sm transition-all duration-300 ease-in-out md:static md:translate-x-0 dark:border-zinc-800 dark:bg-[#0d0d0f] ${
+                className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r transition-all duration-300 ease-in-out md:static md:translate-x-0 ${
                     isOpen ? 'translate-x-0' : '-translate-x-full'
-                } ${isCollapsed ? 'w-20' : 'w-64'}`}
+                } ${isCollapsed ? 'w-[72px]' : 'w-64'}`}
+                style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
             >
+                {/* ── Logo area ── */}
                 <div
-                    className={`flex h-16 flex-shrink-0 items-center border-b px-4 transition-all duration-300 dark:border-zinc-800 ${
-                        isCollapsed ? 'justify-center' : 'justify-between'
+                    className={`relative flex h-16 shrink-0 items-center border-b transition-all duration-300 ${
+                        isCollapsed ? 'justify-center px-4' : 'justify-between px-5'
                     }`}
+                    style={{ borderColor: 'var(--color-border)' }}
                 >
-                    <div className="flex items-center overflow-hidden">
-                        <img
-                            src={isCollapsed ? '/image.png' : '/smartur.png'}
-                            alt="Smartur"
-                            className={`object-contain transition-all duration-500 ${
-                                isCollapsed ? 'h-10 w-10' : 'h-24 w-auto'
-                            }`}
-                        />
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <button
-                            type="button"
-                            onClick={toggleCollapse}
-                            className={`rounded-lg p-1.5 text-zinc-400 transition-all hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 ${
-                                isCollapsed
-                                    ? 'absolute -right-3 top-6 z-10 rounded-full border bg-white p-1 shadow-md dark:border-zinc-800 dark:bg-[#0d0d0f]'
-                                    : 'hidden md:flex'
-                            }`}
-                            title={isCollapsed ? 'Expandir' : 'Contraer'}
-                        >
-                            {isCollapsed ? (
-                                <ChevronRight className="h-4 w-4" />
-                            ) : (
-                                <ChevronLeft className="h-4 w-4" />
-                            )}
-                        </button>
-                        <button
-                            type="button"
-                            className="rounded-lg p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 md:hidden dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-                            onClick={onClose}
-                        >
-                            <X className="h-5 w-5" />
-                        </button>
-                    </div>
+                    <AnimatePresence mode="wait">
+                        {isCollapsed ? (
+                            <motion.img
+                                key="icon"
+                                src="/image.png"
+                                alt="Smartur"
+                                initial={{ opacity: 0, scale: 0.7 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.7 }}
+                                transition={{ duration: 0.2 }}
+                                className="h-9 w-9 object-contain"
+                            />
+                        ) : (
+                            <motion.img
+                                key="logo"
+                                src="/smartur.png"
+                                alt="Smartur"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="h-20 w-auto object-contain"
+                            />
+                        )}
+                    </AnimatePresence>
+
+                    {/* collapse button — desktop */}
+                    <button
+                        type="button"
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+                        className={`absolute -right-3.5 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full border p-1 shadow-md transition-colors hover:scale-110 md:flex`}
+                        style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)', color: 'var(--color-text-alt)' }}
+                    >
+                        {isCollapsed
+                            ? <ChevronRight className="size-3.5" />
+                            : <ChevronLeft className="size-3.5" />}
+                    </button>
+
+                    {/* close button — mobile */}
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-lg p-1.5 transition-colors nav-item-idle md:hidden"
+                    >
+                        <X className="size-5" />
+                    </button>
                 </div>
 
-                <nav className="flex-1 space-y-1 overflow-y-auto p-2">
-                    {filteredItems.map((item, index) => (
-                        <NavLink
-                            key={item.id}
-                            to={item.path}
-                            onClick={onClose}
-                            end={item.end}
-                            className={({ isActive }) =>
-                                `relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-200 ${
-                                    isCollapsed ? 'mx-1 justify-center' : ''
-                                } ${
-                                    isActive
-                                        ? 'bg-indigo-50 text-indigo-600 shadow-sm dark:bg-indigo-950/40 dark:text-indigo-400'
-                                        : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200'
-                                } group active:scale-[0.98]`
-                            }
-                            style={{ animationDelay: `${index * 50}ms` }}
-                            title={isCollapsed ? item.label : ''}
-                        >
-                            {({ isActive }) => (
-                                <>
-                                    <item.icon
-                                        className={`h-5 w-5 flex-shrink-0 transition-transform duration-300 ${
-                                            isActive ? 'scale-110' : 'group-hover:scale-110'
-                                        }`}
-                                    />
-                                    <span
-                                        className={`overflow-hidden whitespace-nowrap font-medium transition-all duration-300 ${
-                                            isCollapsed
-                                                ? 'absolute w-0 opacity-0'
-                                                : 'w-auto opacity-100'
-                                        }`}
+                {/* ── Nav ── */}
+                <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3">
+                    {filteredGroups.map((group, gi) => (
+                        <div key={group.label} className={gi > 0 ? 'mt-4' : ''}>
+                            {/* Group label */}
+                            <AnimatePresence>
+                                {!isCollapsed && (
+                                    <motion.p
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="mb-1 px-4 text-[10px] font-bold uppercase tracking-widest"
+                                        style={{ color: 'var(--color-text-alt)' }}
                                     >
-                                        {item.label}
-                                    </span>
-                                    {isActive && !isCollapsed && (
-                                        <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-600 dark:bg-indigo-400" />
-                                    )}
-                                    {isActive && isCollapsed && (
-                                        <span className="absolute right-0 h-8 w-1 rounded-l-full bg-indigo-600 dark:bg-indigo-400" />
-                                    )}
-                                </>
-                            )}
-                        </NavLink>
+                                        {group.label}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+
+                            <div className={`space-y-0.5 ${isCollapsed ? 'px-2' : 'px-2'}`}>
+                                {group.items.map((item, idx) => (
+                                    <motion.div
+                                        key={item.id}
+                                        initial={{ opacity: 0, x: -12 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: gi * 0.04 + idx * 0.03, duration: 0.3 }}
+                                    >
+                                        <NavLink
+                                            to={item.path}
+                                            onClick={onClose}
+                                            end={item.end}
+                                            title={isCollapsed ? item.label : ''}
+                                            className={({ isActive }) =>
+                                                `group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.97] ${
+                                                    isCollapsed ? 'justify-center' : ''
+                                                } ${isActive ? 'nav-item-active' : 'nav-item-idle'}`
+                                            }
+                                        >
+                                            {({ isActive }) => (
+                                                <>
+                                                    {/* icon */}
+                                                    <item.icon
+                                                        className={`size-[18px] shrink-0 transition-all duration-200 ${
+                                                            isActive
+                                                                ? 'scale-110'
+                                                                : 'group-hover:scale-110'
+                                                        }`}
+                                                    />
+
+                                                    {/* label */}
+                                                    <span
+                                                        className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
+                                                            isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
+                                                        }`}
+                                                    >
+                                                        {item.label}
+                                                    </span>
+
+                                                    {/* active indicator */}
+                                                    {isActive && !isCollapsed && (
+                                                        <motion.span
+                                                            layoutId="active-dot"
+                                                            className="ml-auto h-1.5 w-1.5 rounded-full"
+                                                            style={{ background: 'var(--color-purple)' }}
+                                                        />
+                                                    )}
+                                                    {isActive && isCollapsed && (
+                                                        <span
+                                                            className="absolute right-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-l-full"
+                                                            style={{ background: 'var(--color-purple)' }}
+                                                        />
+                                                    )}
+                                                </>
+                                            )}
+                                        </NavLink>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </nav>
 
-                <div className="flex-shrink-0 space-y-2 border-t p-2 dark:border-zinc-800">
-                    <button
-                        onClick={toggleTheme}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-500 transition-all hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-200 ${
-                            isCollapsed ? 'justify-center' : ''
-                        }`}
-                        title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
-                    >
-                        {theme === 'dark' ? (
-                            <Sun className="h-5 w-5 flex-shrink-0" />
-                        ) : (
-                            <Moon className="h-5 w-5 flex-shrink-0" />
-                        )}
-                        <span
-                            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
-                                isCollapsed ? 'absolute w-0 opacity-0' : 'w-auto opacity-100'
-                            }`}
-                        >
-                            {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
-                        </span>
-                    </button>
-
+                {/* ── Footer ── */}
+                <div
+                    className="shrink-0 space-y-1 border-t p-2"
+                    style={{ borderColor: 'var(--color-border)' }}
+                >
+                    {/* Logout */}
                     <button
                         onClick={handleLogout}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-rose-500 transition-all duration-200 hover:bg-rose-50 hover:text-rose-600 dark:text-rose-400 dark:hover:bg-rose-950/30 ${
+                        title={isCollapsed ? t('sidebar.logout') : ''}
+                        className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all active:scale-[0.97] ${
                             isCollapsed ? 'justify-center' : ''
-                        } group active:scale-[0.98]`}
-                        title={isCollapsed ? 'Cerrar sesión' : ''}
+                        }`}
+                        style={{ color: 'var(--color-pink)' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--rgb-pink-primary),0.10)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = '')}
                     >
-                        <LogOut className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
-                        <span
-                            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
-                                isCollapsed ? 'absolute w-0 opacity-0' : 'w-auto opacity-100'
-                            }`}
-                        >
-                            Cerrar sesión
+                        <LogOut className="size-[18px] shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
+                        <span className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                            {t('sidebar.logout')}
                         </span>
                     </button>
 
-                    {isCollapsed ? (
-                        <div className="flex justify-center">
-                            <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-white shadow-lg transition-transform hover:rotate-6">
-                                <span className="text-sm font-bold">
+                    {/* User card */}
+                    <div className="pt-1">
+                        {isCollapsed ? (
+                            <div className="flex justify-center">
+                                <div
+                                    className="flex size-10 cursor-default items-center justify-center rounded-xl text-sm font-bold text-white shadow-md transition-transform hover:scale-105"
+                                    style={{ background: 'linear-gradient(135deg, var(--color-purple), var(--color-pink))' }}
+                                    title={user?.name ?? ''}
+                                >
                                     {user ? getInitials(user.name) : 'U'}
-                                </span>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="rounded-xl border bg-zinc-50 px-3 py-3 dark:border-zinc-800/50 dark:bg-zinc-900/50">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 text-white shadow-sm">
-                                    <span className="text-sm font-bold">
-                                        {user ? getInitials(user.name) : 'U'}
-                                    </span>
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                                        {user?.name || 'Usuario'}
-                                    </p>
-                                    <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-                                        {user?.email || ''}
-                                    </p>
-                                    <span className="mt-0.5 inline-block rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-medium text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
-                                        {userRole === 1 ? 'Administrador' : 'Usuario'}
-                                    </span>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        ) : (
+                            <div
+                                className="rounded-xl border p-3"
+                                style={{ background: 'var(--color-bg-alt)', borderColor: 'var(--color-border)' }}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="relative shrink-0">
+                                        <div
+                                            className="flex size-9 items-center justify-center rounded-lg text-sm font-bold text-white shadow"
+                                            style={{ background: 'linear-gradient(135deg, var(--color-purple), var(--color-pink))' }}
+                                        >
+                                            {user ? getInitials(user.name) : 'U'}
+                                        </div>
+                                        {/* online dot */}
+                                        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-400 dark:border-zinc-900" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+                                            {user?.name || t('sidebar.user')}
+                                        </p>
+                                        <p className="truncate text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                                            {user?.email || ''}
+                                        </p>
+                                    </div>
+                                    <span
+                                        className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
+                                        style={{ background: 'var(--color-purple)' }}
+                                    >
+                                        {userRole === 1 ? t('sidebar.admin') : t('sidebar.user')}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </aside>
         </>

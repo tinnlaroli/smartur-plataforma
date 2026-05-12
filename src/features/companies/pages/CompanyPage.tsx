@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { useCompany } from '../hooks/useCompany';
 import Pagination from '../components/Pagination';
 import { useSearchParams } from 'react-router-dom';
@@ -6,126 +6,126 @@ import CreateCompanyModal from '../components/CreateCompanyModal';
 import CompanyDetailModal from '../components/CompanyDetailModal';
 import CompanyTable from '../components/CompanyTable';
 import SearchInput from '../components/SearchInput';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Building2, Plus, AlertCircle } from 'lucide-react';
+import { TableSkeleton } from '../../../components/ui/TableSkeleton';
+import { motion, AnimatePresence } from 'framer-motion';
+
+type ModalState = { isCreateOpen: boolean; isDetailOpen: boolean; selectedId: number | null };
+type ModalAction =
+    | { type: 'OPEN_CREATE' } | { type: 'CLOSE_CREATE' }
+    | { type: 'OPEN_DETAIL'; id: number } | { type: 'CLOSE_DETAIL' };
+
+const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
+    switch (action.type) {
+        case 'OPEN_CREATE':  return { ...state, isCreateOpen: true };
+        case 'CLOSE_CREATE': return { ...state, isCreateOpen: false };
+        case 'OPEN_DETAIL':  return { ...state, isDetailOpen: true, selectedId: action.id };
+        case 'CLOSE_DETAIL': return { ...state, isDetailOpen: false, selectedId: null };
+        default: return state;
+    }
+};
 
 export const CompanyPage = () => {
     const {
-        companies,
-        isLoading,
-        error,
-        totalPages,
-        createCompany,
-        updateCompany,
-        deleteCompany,
-        sector,
-        setSector,
-        search: urlSearch,
-        setSearch: setUrlSearch,
+        companies, isLoading, error, totalPages,
+        createCompany, updateCompany, deleteCompany,
+        sector, setSector,
+        search: urlSearch, setSearch: setUrlSearch,
     } = useCompany();
 
     const [selectedCompanies, setSelectedCompanies] = useState<number[]>([]);
     const [searchParams, setSearchParams] = useSearchParams();
-    const page = Number(searchParams.get('page')) || 1;
+    const page  = Number(searchParams.get('page'))  || 1;
     const limit = Number(searchParams.get('limit')) || 10;
-
     const [searchTerm, setSearchTerm] = useState(urlSearch);
+    const [modalState, dispatchModal] = useReducer(modalReducer, {
+        isCreateOpen: false, isDetailOpen: false, selectedId: null,
+    });
 
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-
+    useEffect(() => { if (urlSearch !== searchTerm) setSearchTerm(urlSearch); }, [urlSearch]);
     useEffect(() => {
-        if (urlSearch !== searchTerm) {
-            setSearchTerm(urlSearch);
-        }
-    }, [urlSearch]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (searchTerm !== urlSearch) {
-                setUrlSearch(searchTerm);
-            }
-        }, 500);
-
-        return () => clearTimeout(timer);
+        const t = setTimeout(() => { if (searchTerm !== urlSearch) setUrlSearch(searchTerm); }, 500);
+        return () => clearTimeout(t);
     }, [searchTerm, urlSearch, setUrlSearch]);
 
-    const toggleCompany = (id: number) => {
-        setSelectedCompanies((prev) =>
-            prev.includes(id) ? prev.filter((companyId) => companyId !== id) : [...prev, id]
-        );
-    };
+    const toggleCompany = (id: number) =>
+        setSelectedCompanies((prev) => prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]);
 
     const handleDeleteSelected = async () => {
-        if (
-            window.confirm(
-                `¿Estás seguro de que deseas eliminar ${selectedCompanies.length} empresas?`
-            )
-        ) {
-            for (const id of selectedCompanies) {
-                await deleteCompany(id);
-            }
-            setSelectedCompanies([]);
-        }
+        if (!window.confirm(`¿Eliminar ${selectedCompanies.length} empresa(s)?`)) return;
+        await Promise.all(selectedCompanies.map((id) => deleteCompany(id)));
+        setSelectedCompanies([]);
     };
 
     return (
-        <div className="space-y-4">
-            <div className="sm:flex sm:items-center sm:justify-between">
-                <div className="sm:flex-auto">
-                    <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                        Administrador de Empresas
-                    </h1>
-                    <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                        Lista de empresas registradas
-                    </p>
+        <div className="space-y-5">
+            {/* Header */}
+            <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+                        style={{ background: 'var(--color-cyan)' }}>
+                        <Building2 className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
+                            Empresas
+                        </h1>
+                        <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
+                            Directorio de establecimientos turísticos
+                        </p>
+                    </div>
                 </div>
 
-                <div className="mt-4 sm:mt-0 sm:flex sm:items-center sm:gap-3">
+                <div className="flex flex-wrap items-center gap-2">
                     <SearchInput value={searchTerm} onChange={setSearchTerm} />
 
-                    {selectedCompanies.length > 0 && (
-                        <button
-                            onClick={handleDeleteSelected}
-                            className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-500 transition-all"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                            <span>Eliminar ({selectedCompanies.length})</span>
-                        </button>
-                    )}
+                    <AnimatePresence>
+                        {selectedCompanies.length > 0 && (
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.9, x: 8 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, x: 8 }}
+                                onClick={handleDeleteSelected}
+                                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Eliminar ({selectedCompanies.length})
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
 
                     <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 dark:bg-indigo-500 whitespace-nowrap"
+                        onClick={() => dispatchModal({ type: 'OPEN_CREATE' })}
+                        className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-95"
+                        style={{ background: 'var(--color-cyan)' }}
                     >
+                        <Plus className="h-4 w-4" />
                         Agregar empresa
                     </button>
                 </div>
             </div>
 
-            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-[#121214] shadow-sm flex flex-col min-h-0">
+            {/* Table card */}
+            <div className="overflow-hidden rounded-2xl border shadow-sm" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
                 {isLoading && (
-                    <div className="flex justify-center items-center h-96">
-                        <p className="text-zinc-600 dark:text-zinc-400 font-medium">Cargando...</p>
-                    </div>
+                    <TableSkeleton
+                        rows={9}
+                        colWidths={['w-5', 'w-8', 'flex-1', 'w-32', 'w-28', 'w-16']}
+                    />
                 )}
-
                 {error && (
-                    <div className="flex justify-center items-center h-96">
-                        <p className="text-red-600 dark:text-red-400 font-medium">Error: {error}</p>
+                    <div className="flex h-64 flex-col items-center justify-center gap-3">
+                        <AlertCircle className="h-8 w-8 text-rose-400" />
+                        <p className="text-sm font-medium text-rose-500">{error}</p>
                     </div>
                 )}
-
                 {!isLoading && !error && (
                     <div className="h-[calc(100vh-260px)] min-h-[400px]">
                         <CompanyTable
                             companies={companies}
                             selectedCompanies={selectedCompanies}
                             onToggle={toggleCompany}
-                            onViewDetail={(id) => {
-                                setSelectedId(id);
-                                setIsDetailModalOpen(true);
-                            }}
+                            onViewDetail={(id) => dispatchModal({ type: 'OPEN_DETAIL', id })}
                             sector={sector}
                             setSector={setSector}
                         />
@@ -134,31 +134,17 @@ export const CompanyPage = () => {
             </div>
 
             {!isLoading && !error && companies.length > 0 && (
-                <div className="w-full">
-                    <Pagination
-                        page={page}
-                        limit={limit}
-                        totalPages={totalPages}
-                        setSearchParams={setSearchParams}
-                    />
-                </div>
+                <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />
             )}
 
-            {isCreateModalOpen && (
-                <CreateCompanyModal
-                    onClose={() => setIsCreateModalOpen(false)}
-                    onSubmit={createCompany}
-                />
+            {modalState.isCreateOpen && (
+                <CreateCompanyModal onClose={() => dispatchModal({ type: 'CLOSE_CREATE' })} onSubmit={createCompany} />
             )}
-
-            {isDetailModalOpen && selectedId && (
+            {modalState.isDetailOpen && modalState.selectedId && (
                 <CompanyDetailModal
-                    isOpen={isDetailModalOpen}
-                    onClose={() => {
-                        setSelectedId(null);
-                        setIsDetailModalOpen(false);
-                    }}
-                    companyId={selectedId}
+                    isOpen={modalState.isDetailOpen}
+                    onClose={() => dispatchModal({ type: 'CLOSE_DETAIL' })}
+                    companyId={modalState.selectedId}
                     updateCompany={updateCompany}
                 />
             )}

@@ -31,12 +31,12 @@ export const authApi = {
     },
 
     forgotPassword: async (payload: ForgotPasswordPayload) => {
-        const { data } = await api.post<ForgotPasswordPayload>('forgot', payload);
+        const { data } = await api.post<ForgotPasswordPayload>('/forgot', payload);
         return data;
     },
 
     resetPassword: async (payload: ResetPasswordPayload) => {
-        const { data } = await api.post<ResetPasswordPayload>('reset', payload);
+        const { data } = await api.post<ResetPasswordPayload>('/reset', payload);
         return data;
     },
 };

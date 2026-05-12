@@ -447,9 +447,11 @@ export default function SmartURLoader({ onFinished, isReady = false }: SmartURLo
             ease: "power2.inOut",
             onComplete: () => {
               if (containerRef.current) {
-                containerRef.current.style.opacity = "0";
-                containerRef.current.style.pointerEvents = "none";
-                containerRef.current.style.display = "none";
+                Object.assign(containerRef.current.style, {
+                  opacity: "0",
+                  pointerEvents: "none",
+                  display: "none",
+                });
               }
               try { window.dispatchEvent(new CustomEvent("smartur:loaded")); } catch {}
               try { document.body.classList.remove("is-loading"); } catch {}

@@ -1,59 +1,91 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { evaluationsApi } from '../api/evaluationsApi';
 import type { EvaluationRubric, FullEvaluationRegisterDTO } from '../types/types';
 
+interface EvaluationsState {
+    isLoading: boolean;
+    error: string | null;
+    rubric: EvaluationRubric | null;
+}
+
+type EvaluationsAction =
+    | { type: 'REQUEST_START' }
+    | { type: 'SET_RUBRIC'; rubric: EvaluationRubric }
+    | { type: 'REQUEST_SUCCESS' }
+    | { type: 'REQUEST_ERROR'; error: string };
+
+function evaluationsReducer(
+    state: EvaluationsState,
+    action: EvaluationsAction
+): EvaluationsState {
+    switch (action.type) {
+        case 'REQUEST_START':
+            return { ...state, isLoading: true, error: null };
+        case 'SET_RUBRIC':
+            return { ...state, isLoading: false, rubric: action.rubric };
+        case 'REQUEST_SUCCESS':
+            return { ...state, isLoading: false };
+        case 'REQUEST_ERROR':
+            return { ...state, isLoading: false, error: action.error };
+        default:
+            return state;
+    }
+}
+
 export const useEvaluations = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [rubric, setRubric] = useState<EvaluationRubric | null>(null);
+    const [state, dispatch] = useReducer(evaluationsReducer, {
+        isLoading: false,
+        error: null,
+        rubric: null,
+    });
 
     const getRubric = async (templateId: number) => {
-        setIsLoading(true);
-        setError(null);
+        dispatch({ type: 'REQUEST_START' });
         try {
             const response = await evaluationsApi.getRubric(templateId);
-            setRubric(response.rubric);
+            dispatch({ type: 'SET_RUBRIC', rubric: response.rubric });
             return response.rubric;
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Error fetching rubric');
+            dispatch({
+                type: 'REQUEST_ERROR',
+                error: err.response?.data?.message || 'Error fetching rubric',
+            });
             return null;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     const registerEvaluation = async (data: FullEvaluationRegisterDTO) => {
-        setIsLoading(true);
-        setError(null);
+        dispatch({ type: 'REQUEST_START' });
         try {
             const response = await evaluationsApi.registerFull(data);
+            dispatch({ type: 'REQUEST_SUCCESS' });
             return response;
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Error registering evaluation');
+            dispatch({
+                type: 'REQUEST_ERROR',
+                error: err.response?.data?.message || 'Error registering evaluation',
+            });
             return null;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     const getEvaluationByServiceId = async (serviceId: number) => {
-        setIsLoading(true);
-        setError(null);
+        dispatch({ type: 'REQUEST_START' });
         try {
             const response = await evaluationsApi.findByServiceId(serviceId);
+            dispatch({ type: 'REQUEST_SUCCESS' });
             return response;
-        } catch (err: any) {
+        } catch {
             // It's possible it doesn't exist, so we don't necessarily set error
+            dispatch({ type: 'REQUEST_SUCCESS' });
             return null;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     return {
-        isLoading,
-        error,
-        rubric,
+        isLoading: state.isLoading,
+        error: state.error,
+        rubric: state.rubric,
         getRubric,
         registerEvaluation,
         getEvaluationByServiceId,

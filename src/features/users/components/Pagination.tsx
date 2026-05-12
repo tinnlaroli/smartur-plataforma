@@ -90,10 +90,10 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                         if (p < 0) {
                             return (
                                 <span
-                                    key={`dots-${index}`}
+                                    key={`dots-${p}-${index}`}
                                     className="px-2 text-zinc-400 dark:text-zinc-600 select-none"
                                 >
-                                    ...
+                                    …
                                 </span>
                             );
                         }
@@ -107,7 +107,7 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                                     transition-all duration-200
                                     ${
                                         p === page
-                                            ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-medium border border-indigo-200 dark:border-indigo-900'
+                                            ? 'bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 font-medium border border-violet-200 dark:border-violet-900'
                                             : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-300'
                                     }
                                 `}
@@ -162,7 +162,7 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                             border border-zinc-200 dark:border-zinc-700 
                             bg-white dark:bg-zinc-900 
                             rounded-md px-2 py-1.5 text-xs
-                            focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500
+                            focus:outline-none focus:ring-1 focus:ring-violet-500 focus:border-violet-500
                             text-zinc-700 dark:text-zinc-300
                             cursor-pointer transition-colors
                         "

@@ -4,6 +4,7 @@ import type { SignUpPayload } from '../types';
 import { authApi } from '../authApi';
 import { useToast } from '../../../shared/context/ToastContext';
 import type { AuthStep } from '../context/AuthModalContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface SignUpViewProps {
     onSwitchStep: (step: AuthStep) => void;
@@ -11,6 +12,7 @@ interface SignUpViewProps {
 
 export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
     const toast = useToast();
+    const { t } = useLanguage();
     const [formData, setFormData] = useState<SignUpPayload>({
         name: '',
         email: '',
@@ -34,7 +36,7 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         let newValue = value;
         if (name === 'name') {
@@ -53,9 +55,9 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
         try {
             await authApi.signUp(formData);
             onSwitchStep('login');
-            toast.success('¡Bienvenido!', 'Ahora puedes iniciar sesión');
+            toast.success(t('auth.signup.success.title'), t('auth.signup.success.body'));
         } catch (error) {
-            toast.error('Algo salió mal', 'No se pudo crear la cuenta');
+            toast.error(t('auth.signup.error.title'), t('auth.signup.error.body'));
         } finally {
             setIsLoading(false);
         }
@@ -73,23 +75,23 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
     return (
         <div className="w-full">
             <div className="mb-6 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600/10">
-                    <User className="h-6 w-6 text-indigo-400" />
+                <div className="flex size-12 items-center justify-center rounded-full bg-violet-600/10">
+                    <User className="size-6 text-violet-400" />
                 </div>
             </div>
 
             <div className="mb-8 text-center">
-                <h2 className="text-2xl font-semibold text-white">Crear cuenta</h2>
-                <p className="mt-1 text-sm text-zinc-400">
-                    Ingresa tus datos para registrarte
+                <h2 className="text-2xl font-semibold text-[var(--color-text)]">{t('auth.signup.title')}</h2>
+                <p className="mt-1 text-sm text-[var(--color-text-alt)]">
+                    {t('auth.signup.subtitle')}
                 </p>
             </div>
 
             <form onSubmit={handleSingUp} className="space-y-5">
                 {/* Photo Upload */}
-                <div className="flex flex-col items-center justify-center space-y-4 pb-2">
+                <div className="flex flex-col items-center justify-center gap-y-4 pb-2">
                     <div className="relative group">
-                        <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-zinc-800 bg-zinc-950 transition-colors group-hover:border-indigo-500">
+                        <div className="size-24 overflow-hidden rounded-full border-2 border-zinc-800 bg-zinc-950 transition-colors group-hover:border-violet-500">
                             {previewUrl ? (
                                 <img
                                     src={previewUrl}
@@ -98,15 +100,15 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                                 />
                             ) : (
                                 <div className="flex h-full w-full items-center justify-center text-zinc-600">
-                                    <User className="h-10 w-10" />
+                                    <User className="size-10" />
                                 </div>
                             )}
                         </div>
                         <label
                             htmlFor="photo-upload"
-                            className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                            className="absolute bottom-0 right-0 flex size-8 cursor-pointer items-center justify-center rounded-full bg-violet-600 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                         >
-                            <Camera className="h-4 w-4" />
+                            <Camera className="size-4" />
                             <input
                                 id="photo-upload"
                                 type="file"
@@ -116,15 +118,15 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                             />
                         </label>
                     </div>
-                    <p className="text-xs text-zinc-500">Foto de perfil (opcional)</p>
+                    <p className="text-xs text-[var(--color-text-alt)]">{t('auth.signup.photo')}</p>
                 </div>
 
                 <div className="space-y-1.5">
                     <label
                         htmlFor="user-name"
-                        className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
+                        className="text-xs font-medium tracking-wider text-[var(--color-text-alt)] uppercase"
                     >
-                        Nombre completo
+                        {t('auth.signup.name.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -133,11 +135,11 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                             type="text"
                             required
                             value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Ej. Juan Pérez"
-                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                            onChange={handleFieldChange}
+                            placeholder={t('auth.signup.name.placeholder')}
+                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
                         />
-                        <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                        <User className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500" />
                     </div>
                 </div>
 
@@ -145,9 +147,9 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                 <div className="space-y-1.5">
                     <label
                         htmlFor="user-email"
-                        className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
+                        className="text-xs font-medium tracking-wider text-[var(--color-text-alt)] uppercase"
                     >
-                        Correo electrónico
+                        {t('auth.signup.email.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -156,20 +158,20 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                             type="email"
                             required
                             value={formData.email}
-                            onChange={handleChange}
-                            placeholder="correo@ejemplo.com"
-                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                            onChange={handleFieldChange}
+                            placeholder={t('auth.signup.email.placeholder')}
+                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-4 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
                         />
-                        <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                        <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500" />
                     </div>
                 </div>
 
                 <div className="space-y-1.5">
                     <label
                         htmlFor="user-password"
-                        className="text-xs font-medium tracking-wider text-zinc-400 uppercase"
+                        className="text-xs font-medium tracking-wider text-[var(--color-text-alt)] uppercase"
                     >
-                        Contraseña
+                        {t('auth.signup.password.label')}
                     </label>
                     <div className="relative">
                         <input
@@ -178,35 +180,35 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                             type={showPassword ? 'text' : 'password'}
                             required
                             value={formData.password}
-                            onChange={handleChange}
-                            placeholder="••••••••"
-                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-12 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                            onChange={handleFieldChange}
+                            placeholder="………………"
+                            className="w-full rounded-lg border border-zinc-800 bg-zinc-950 py-2.5 pr-12 pl-9 text-sm text-white transition-colors placeholder:text-zinc-500 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
                         />
-                        <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                        <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500" />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 transition-colors hover:text-indigo-400"
+                            className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-400 transition-colors hover:text-violet-400"
                         >
                             {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="size-4" />
                             ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="size-4" />
                             )}
                         </button>
                     </div>
 
                     {formData.password && (
                         <div className="mt-2 space-y-2 rounded-lg border border-zinc-800 bg-zinc-950/50 p-3">
-                            <p className="mb-2 text-xs font-medium text-zinc-400">
-                                La contraseña debe tener:
+                            <p className="mb-2 text-xs font-medium text-[var(--color-text-alt)]">
+                                {t('auth.password.requirements')}
                             </p>
 
                             <div className="flex items-center gap-2 text-xs">
                                 {passwordValidations.minLength ? (
-                                    <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />
+                                    <CheckCircle className="size-3.5 text-emerald-400" />
                                 ) : (
-                                    <XCircle className="h-3.5 w-3.5 text-zinc-600" />
+                                    <XCircle className="size-3.5 text-zinc-600" />
                                 )}
                                 <span
                                     className={
@@ -215,15 +217,15 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                                             : 'text-zinc-500'
                                     }
                                 >
-                                    Mínimo 8 caracteres
+                                    {t('auth.password.min')}
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-2 text-xs">
                                 {passwordValidations.hasUpperCase ? (
-                                    <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />
+                                    <CheckCircle className="size-3.5 text-emerald-400" />
                                 ) : (
-                                    <XCircle className="h-3.5 w-3.5 text-zinc-600" />
+                                    <XCircle className="size-3.5 text-zinc-600" />
                                 )}
                                 <span
                                     className={
@@ -232,15 +234,15 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                                             : 'text-zinc-500'
                                     }
                                 >
-                                    Al menos una mayúscula
+                                    {t('auth.password.uppercase')}
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-2 text-xs">
                                 {passwordValidations.hasNumber ? (
-                                    <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />
+                                    <CheckCircle className="size-3.5 text-emerald-400" />
                                 ) : (
-                                    <XCircle className="h-3.5 w-3.5 text-zinc-600" />
+                                    <XCircle className="size-3.5 text-zinc-600" />
                                 )}
                                 <span
                                     className={
@@ -249,15 +251,15 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                                             : 'text-zinc-500'
                                     }
                                 >
-                                    Al menos un número
+                                    {t('auth.password.number')}
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-2 text-xs">
                                 {passwordValidations.hasSpecialChar ? (
-                                    <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />
+                                    <CheckCircle className="size-3.5 text-emerald-400" />
                                 ) : (
-                                    <XCircle className="h-3.5 w-3.5 text-zinc-600" />
+                                    <XCircle className="size-3.5 text-zinc-600" />
                                 )}
                                 <span
                                     className={
@@ -266,14 +268,14 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                                             : 'text-zinc-500'
                                     }
                                 >
-                                    Al menos un carácter especial (!@#$%^&*)
+                                    {t('auth.password.special')}
                                 </span>
                             </div>
 
                             <div className="mt-3">
                                 <div className="mb-1 flex items-center gap-1.5">
-                                    <span className="text-xs text-zinc-400">
-                                        Fortaleza:
+                                    <span className="text-xs text-[var(--color-text-alt)]">
+                                        {t('auth.password.strength')}
                                     </span>
                                     <span
                                         className={`text-xs font-medium ${
@@ -290,12 +292,12 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                                     >
                                         {Object.values(passwordValidations).filter(Boolean)
                                             .length <= 2
-                                            ? 'Débil'
+                                            ? t('auth.password.weak')
                                             : Object.values(passwordValidations).filter(
                                                     Boolean,
                                                 ).length <= 3
-                                              ? 'Media'
-                                              : 'Fuerte'}
+                                              ? t('auth.password.medium')
+                                              : t('auth.password.strong')}
                                     </span>
                                 </div>
                                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
@@ -326,22 +328,22 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                         type="checkbox"
                         id="terms"
                         required
-                        className="mt-1 h-3.5 w-3.5 rounded border-zinc-700 bg-zinc-950 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0"
+                        className="mt-1 size-3.5 rounded border-zinc-700 bg-zinc-950 text-violet-500 focus:ring-violet-500 focus:ring-offset-0"
                     />
-                    <label htmlFor="terms" className="text-xs text-zinc-400">
-                        Acepto los{' '}
+                    <label htmlFor="terms" className="text-xs text-[var(--color-text-alt)]">
+                        {t('auth.signup.terms.prefix')}{' '}
                         <button
                             type="button"
-                            className="text-indigo-400 transition-colors hover:text-indigo-300"
+                            className="text-[var(--color-purple)] transition-colors hover:opacity-80"
                         >
-                            términos y condiciones
+                            {t('auth.signup.terms.link')}
                         </button>{' '}
-                        y la{' '}
+                        {t('auth.signup.terms.and')}{' '}
                         <button
                             type="button"
-                            className="text-indigo-400 transition-colors hover:text-indigo-300"
+                            className="text-[var(--color-purple)] transition-colors hover:opacity-80"
                         >
-                            política de privacidad
+                            {t('auth.signup.privacy.link')}
                         </button>
                     </label>
                 </div>
@@ -349,29 +351,29 @@ export const SignUpView = ({ onSwitchStep }: SignUpViewProps) => {
                 <button
                     type="submit"
                     disabled={isLoading || !allValidationsPassed}
-                    className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-violet-500 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                            <span>Registrando...</span>
+                            <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                            <span>{t('auth.signup.submitting')}</span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-center gap-2">
-                            <span>Registrarse</span>
-                            <ArrowRight className="h-4 w-4" />
+                            <span>{t('auth.signup.submit')}</span>
+                            <ArrowRight className="size-4" />
                         </div>
                     )}
                 </button>
 
-                <p className="text-center text-sm text-zinc-400">
-                    ¿Ya tienes una cuenta?{' '}
+                <p className="text-center text-sm text-[var(--color-text-alt)]">
+                    {t('auth.signup.have_account')}{' '}
                     <button
                         type="button"
                         onClick={() => onSwitchStep('login')}
-                        className="font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                        className="font-medium text-[var(--color-purple)] transition-colors hover:opacity-80"
                     >
-                        Inicia sesión
+                        {t('auth.signup.login')}
                     </button>
                 </p>
             </form>
