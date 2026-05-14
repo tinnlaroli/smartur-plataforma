@@ -1,10 +1,27 @@
 import { api } from '../../../shared/api/axiosClient';
 import type { Template, TemplateResponse, CreateTemplateDTO, UpdateTemplateDTO } from '../types/types';
 
+export type TemplatesListFilters = {
+    search?: string;
+    service_type?: string;
+    /** Solo plantillas activas cuando es true */
+    active?: boolean;
+};
+
 export const templatesApi = {
-    findAll: async (page: number = 1, limit: number = 50): Promise<TemplateResponse> => {
+    findAll: async (
+        page: number = 1,
+        limit: number = 50,
+        filters?: TemplatesListFilters
+    ): Promise<TemplateResponse> => {
         const response = await api.get('/templates', {
-            params: { page, limit },
+            params: {
+                page,
+                limit,
+                ...(filters?.search !== undefined ? { search: filters.search } : {}),
+                ...(filters?.service_type ? { service_type: filters.service_type } : {}),
+                ...(filters?.active !== undefined ? { active: filters.active } : {}),
+            },
         });
         return response.data;
     },

@@ -180,6 +180,10 @@ export const TouristServicePage = () => {
                     }}
                     serviceId={selectedServices[0]}
                     serviceName={selectedServiceName}
+                    serviceType={
+                        services.find((s) => s.id === selectedServices[0])?.service_type ??
+                        'restaurant'
+                    }
                 />
             )}
         </div>

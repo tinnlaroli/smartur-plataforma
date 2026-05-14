@@ -20,6 +20,8 @@ interface Props {
     onClose: () => void;
     serviceId: number;
     serviceName: string;
+    /** Debe coincidir con evaluation_template.service_type (p. ej. restaurant). */
+    serviceType: string;
 }
 
 const STEPS = [
@@ -31,9 +33,16 @@ const STEPS = [
 
 // Criterios específicos eliminados para usar rúbrica dinámica de 13 registros
 
-const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, serviceName }) => {
+const EvaluationWizardModal: React.FC<Props> = ({
+    isOpen,
+    onClose,
+    serviceId,
+    serviceName,
+    serviceType,
+}) => {
     const toast = useToast();
-    const { getRubric, registerEvaluation, rubric, isLoading, error: apiError } = useEvaluations();
+    const { loadRubricByServiceType, registerEvaluation, rubric, isLoading, error: apiError } =
+        useEvaluations();
     const [currentStep, setCurrentStep] = useState(0);
     const [responses, setResponses] = useState<
         Record<number, { score: number; subcriterionId: number; observations?: string }>
@@ -52,10 +61,13 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
     };
 
     useEffect(() => {
-        if (isOpen) {
-            getRubric(1); // Assuming template 1 as requested
-        }
-    }, [isOpen]);
+        if (!isOpen) return;
+        setCurrentStep(0);
+        setResponses({});
+        setGeneralObservations('');
+        setEvidences([]);
+        void loadRubricByServiceType(serviceType);
+    }, [isOpen, serviceType, loadRubricByServiceType]);
 
     if (!isOpen) return null;
 
@@ -96,6 +108,11 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
     };
 
     const handleFinish = async () => {
+        if (!rubric) {
+            toast.error('Error', 'No hay rúbrica cargada. Cierra el modal e inténtalo de nuevo.');
+            return;
+        }
+
         // Validar que se hayan respondido todos los criterios obligatorios
         const criteriaCount = [0, 1, 2].reduce(
             (acc, idx) => acc + getCriteriaForStep(idx).length,
@@ -123,7 +140,7 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
 
         const payload = {
             id_service: serviceId,
-            id_template: 1,
+            id_template: rubric.id_template,
             evaluator_id: 1,
             evaluation_date: new Date().toISOString().split('T')[0],
             evaluation_time: durationMinutes,
@@ -227,9 +244,28 @@ const EvaluationWizardModal: React.FC<Props> = ({ isOpen, onClose, serviceId, se
                         </div>
                     )}
 
-                    {!isLoading && (
+                    {!isLoading && apiError && (
+                        <div
+                            role="alert"
+                            className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-200"
+                        >
+                            <p className="font-semibold">No se pudo cargar la rúbrica</p>
+                            <p className="mt-1 text-rose-700 dark:text-rose-300">{apiError}</p>
+                            <p className="mt-2 text-xs text-rose-600 dark:text-rose-400">
+                                Si el mensaje menciona 404 o HTML, reinicia <code className="rounded bg-rose-100 px-1 dark:bg-rose-900/50">api-smartur</code> y
+                                confirma <code className="rounded bg-rose-100 px-1 dark:bg-rose-900/50">VITE_API_URL=…/api/v2</code> en la plataforma.
+                            </p>
+                        </div>
+                    )}
+
+                    {!isLoading && !apiError && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {currentStep < 3 ? (
+                            {currentStep < 3 && stepCriteria.length === 0 ? (
+                                <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 py-12">
+                                    Esta plantilla no tiene criterios activos. Revisa la configuración
+                                    en el administrador de plantillas.
+                                </p>
+                            ) : currentStep < 3 ? (
                                 <>
                                     <div className="mb-6">
                                         <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
