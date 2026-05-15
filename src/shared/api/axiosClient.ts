@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { emitUserStorageSync } from '../userStorageSync';
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL ?? '/api/v2',
@@ -29,6 +30,7 @@ api.interceptors.response.use(
             if (!isAuthRoute) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                emitUserStorageSync();
                 window.location.href = '/';
             }
         }

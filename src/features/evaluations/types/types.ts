@@ -7,8 +7,10 @@ export interface EvaluationLevel {
 export interface EvaluationCriterion {
     id_criterion: number;
     name: string;
+    description?: string;
     weight: number;
     order_index: number;
+    field_type?: string;
     levels: EvaluationLevel[];
 }
 

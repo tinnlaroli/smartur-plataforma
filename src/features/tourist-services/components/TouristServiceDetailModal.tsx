@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTouristService } from '../hooks/useTouristService';
 import { UserPen, X, Wrench, Building2, MapPin, Tag, Activity, Award } from 'lucide-react';
 import EditTouristServiceModal from './EditTouristServiceModal';
 import type { UpdateTouristServiceDTO } from '../types/types';
 import EvaluationResultModal from '../../evaluations/components/EvaluationResultModal';
+import { companyServices } from '../../companies/api/companyApi';
+import { locationApi } from '../../locations/api/locationApi';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 interface Props {
     isOpen: boolean;
@@ -18,16 +22,54 @@ const TouristServiceDetailModal: React.FC<Props> = ({
     serviceId,
     updateService,
 }) => {
+    const { lang } = useLanguage();
+    const mod = useMemo(() => getDashboardText(lang).modules.modals, [lang]);
+    const serviceTypeLabel = (t: string) =>
+        (mod.touristServices.serviceTypeLabels as Record<string, string>)[t] ?? t;
     const { service, isLoading, error, findById } = useTouristService();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isResultModalOpen, setIsResultModalOpen] = useState(false);
     const [evaluationId, setEvaluationId] = useState<number | null>(null);
+    const [companyName, setCompanyName] = useState<string>('');
+    const [locationName, setLocationName] = useState<string>('');
 
     useEffect(() => {
         if (serviceId && isOpen) {
             findById(serviceId);
         }
     }, [serviceId, isOpen]);
+
+    useEffect(() => {
+        if (!service || !isOpen) {
+            setCompanyName('');
+            setLocationName('');
+            return;
+        }
+
+        let cancelled = false;
+
+        Promise.allSettled([
+            companyServices.findById(service.id_company),
+            locationApi.findById(service.id_location),
+        ]).then(([companyResult, locationResult]) => {
+            if (cancelled) return;
+
+            setCompanyName(
+                companyResult.status === 'fulfilled'
+                    ? companyResult.value.company.name
+                    : mod.touristServices.linkedCompany,
+            );
+            setLocationName(
+                locationResult.status === 'fulfilled'
+                    ? locationResult.value.location.name
+                    : mod.touristServices.linkedLocation,
+            );
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [service, isOpen, mod]);
 
     if (!isOpen) return null;
 
@@ -37,7 +79,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
                         <Wrench className="size-5 text-violet-500" />
-                        Detalle del Servicio
+                        {mod.touristServices.detailTitle}
                     </h2>
                     <button
                         onClick={onClose}
@@ -65,8 +107,12 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                     {service && !isLoading && (
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                <div className="size-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
-                                    <Tag className="size-6" />
+                                <div className="size-12 overflow-hidden rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                                    {service.image_url ? (
+                                        <img src={service.image_url} alt={service.name} className="h-full w-full object-cover" />
+                                    ) : (
+                                        <Tag className="size-6" />
+                                    )}
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <h3
@@ -76,12 +122,11 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                         {service.name}
                                     </h3>
                                     <p className="text-xs text-zinc-500 dark:text-zinc-500 flex items-center gap-2">
-                                        Servicio ID: {service.id}
                                         {service.total_score !== undefined &&
                                             service.total_score !== null && (
                                                 <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold text-violet-500 border border-violet-500/20">
                                                     <Award className="size-3" />
-                                                    Puntaje:{' '}
+                                                    {mod.touristServices.scorePrefix}{' '}
                                                     {Number(service.total_score).toFixed(1)}
                                                 </span>
                                             )}
@@ -92,26 +137,26 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                             <div className="grid grid-cols-2 gap-y-5 gap-x-4">
                                 <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        Descripción
+                                        {mod.touristServices.descriptionLabel}
                                     </span>
                                     <p className="text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50/50 dark:bg-zinc-800/30 p-3 rounded-lg border border-zinc-100 dark:border-zinc-800/50 leading-relaxed italic">
-                                        "{service.description || 'Sin descripción disponible'}"
+                                        "{service.description || mod.touristServices.noDescription}"
                                     </p>
                                 </div>
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
-                                        Tipo
+                                        {mod.touristServices.type}
                                     </span>
                                     <p className="text-sm font-medium text-zinc-900 dark:text-zinc-200 capitalize">
-                                        {service.service_type}
+                                        {serviceTypeLabel(service.service_type)}
                                     </p>
                                 </div>
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <Activity className="size-3" />
-                                        Estado
+                                        {mod.users.status}
                                     </span>
                                     <div>
                                         <span
@@ -121,7 +166,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                                     : 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400'
                                             }`}
                                         >
-                                            {service.active ? 'ACTIVO' : 'INACTIVO'}
+                                            {service.active ? mod.touristServices.statusBadgeActive : mod.touristServices.statusBadgeInactive}
                                         </span>
                                     </div>
                                 </div>
@@ -129,20 +174,20 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                 <div className="pt-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <Building2 className="size-3" />
-                                        Compañía
+                                        {mod.touristServices.companyLabel}
                                     </span>
                                     <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                                        ID {service.id_company}
+                                        {companyName || mod.touristServices.loadingCompany}
                                     </p>
                                 </div>
 
                                 <div className="pt-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <MapPin className="size-3" />
-                                        Ubicación
+                                        {mod.touristServices.locationLabel}
                                     </span>
                                     <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                                        ID {service.id_location}
+                                        {locationName || mod.touristServices.loadingLocation}
                                     </p>
                                 </div>
                             </div>
@@ -159,7 +204,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                         hover:bg-emerald-700 shadow-sm transition-all duration-200 active:scale-[0.98] font-bold"
                                     >
                                         <Activity className="size-4" />
-                                        <span>Ver Resultados de Evaluación</span>
+                                        <span>{mod.touristServices.viewEvaluationResults}</span>
                                     </button>
                                 )}
 
@@ -170,7 +215,7 @@ const TouristServiceDetailModal: React.FC<Props> = ({
                                     hover:bg-violet-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
                                 >
                                     <UserPen className="size-4" />
-                                    <span>Editar servicio</span>
+                                    <span>{mod.touristServices.editService}</span>
                                 </button>
                             </div>
                         </div>

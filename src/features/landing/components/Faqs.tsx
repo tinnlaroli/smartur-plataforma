@@ -44,7 +44,7 @@ export const Faqs: React.FC = () => {
     };
 
     return (
-        <section id="faqs" className="relative overflow-hidden py-24 md:py-36 bg-white dark:bg-[var(--color-bg)]">
+        <section id="faqs" className="relative overflow-hidden py-24 md:py-36" style={{ background: 'var(--color-bg)' }}>
             {/* Background Accent */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
                 <div className="absolute -left-24 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full opacity-[0.04] blur-[100px]" style={{ background: 'var(--color-purple)' }} />
@@ -55,7 +55,7 @@ export const Faqs: React.FC = () => {
                     <p className="mb-3 text-xs font-black uppercase tracking-[0.25em]" style={{ color: 'var(--color-purple)' }}>
                         {t('faqs.label')}
                     </p>
-                    <h2 className="landing-heading text-[clamp(2rem,5vw,4rem)] tracking-tighter text-slate-900 dark:text-white leading-tight">
+                    <h2 className="landing-heading text-[clamp(2rem,5vw,4rem)] tracking-tighter leading-tight" style={{ color: 'var(--color-text)' }}>
                         {t('faqs.title')}
                     </h2>
                 </div>
@@ -64,7 +64,8 @@ export const Faqs: React.FC = () => {
                     {FAQ_KEYS.map((faq, i) => (
                         <div
                             key={faq.q}
-                            className={`faq-item py-6 transition-all duration-300 border-t border-[rgba(30,30,35,0.1)] dark:border-[rgba(230,230,238,0.1)] ${i === FAQ_KEYS.length - 1 ? 'border-b' : ''}`}
+                            className={`faq-item py-6 transition-all duration-300 border-t ${i === FAQ_KEYS.length - 1 ? 'border-b' : ''}`}
+                            style={{ borderColor: 'var(--color-border)' }}
                         >
                             <button
                                 onClick={() => toggleFaq(i)}
@@ -83,9 +84,12 @@ export const Faqs: React.FC = () => {
                                     />
                                 </div>
 
-                                <span className={`text-lg md:text-xl font-bold transition-colors duration-300 ${openIndex === i ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-zinc-400'}`}>
+                                <h3
+                                    className="text-lg md:text-xl font-bold transition-colors duration-300 m-0"
+                                    style={{ color: openIndex === i ? 'var(--color-text)' : 'var(--color-text-alt)' }}
+                                >
                                     {t(faq.q)}
-                                </span>
+                                </h3>
                             </button>
 
                             <div
@@ -93,7 +97,7 @@ export const Faqs: React.FC = () => {
                                 className="panel overflow-hidden"
                                 style={{ height: openIndex === i ? 'auto' : 0, opacity: openIndex === i ? 1 : 0 }}
                             >
-                                <div className="answer pt-4 pl-10 text-base md:text-lg font-medium leading-relaxed text-slate-500 dark:text-zinc-500 whitespace-pre-wrap">
+                                <div className="answer pt-4 pl-10 text-base md:text-lg font-medium leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-text-alt)' }}>
                                     {t(faq.a)}
                                 </div>
                             </div>

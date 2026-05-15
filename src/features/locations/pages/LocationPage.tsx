@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, useMemo } from 'react';
 import { useLocation } from '../hooks/useLocation';
 import Pagination from '../components/Pagination';
 import { useSearchParams } from 'react-router-dom';
@@ -6,8 +6,11 @@ import CreateLocationModal from '../components/CreateLocationModal';
 import LocationDetailModal from '../components/LocationDetailModal';
 import LocationTable from '../components/LocationTable';
 import SearchInput from '../components/SearchInput';
-import { Trash2, MapPin, Plus, Loader2, AlertCircle } from 'lucide-react';
+import { Trash2, MapPin, Plus, AlertCircle } from 'lucide-react';
+import { TableSkeleton } from '../../../components/ui/TableSkeleton';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 type ModalState = { isCreateOpen: boolean; isDetailOpen: boolean; selectedId: number | null };
 type ModalAction =
@@ -25,6 +28,8 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
 };
 
 export const LocationPage = () => {
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
     const {
         locations, isLoading, error, totalPages,
         createLocation, updateLocation, deleteLocation,
@@ -50,7 +55,7 @@ export const LocationPage = () => {
         setSelectedLocations((prev) => prev.includes(id) ? prev.filter((l) => l !== id) : [...prev, id]);
 
     const handleDeleteSelected = async () => {
-        if (!window.confirm(`¿Eliminar ${selectedLocations.length} ubicación(es)?`)) return;
+        if (!window.confirm(m.common.confirmDeleteLocations(selectedLocations.length))) return;
         for (const id of selectedLocations) await deleteLocation(id);
         setSelectedLocations([]);
     };
@@ -66,16 +71,16 @@ export const LocationPage = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
-                            Ubicaciones
+                            {m.locations.title}
                         </h1>
                         <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
-                            Lugares y destinos turísticos registrados
+                            {m.locations.subtitle}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <SearchInput value={searchTerm} onChange={setSearchTerm} />
+                    <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder={m.locations.searchPlaceholder} />
 
                     <AnimatePresence>
                         {selectedLocations.length > 0 && (
@@ -87,7 +92,7 @@ export const LocationPage = () => {
                                 className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
                             >
                                 <Trash2 className="h-4 w-4" />
-                                Eliminar ({selectedLocations.length})
+                                {m.common.deleteCount(selectedLocations.length)}
                             </motion.button>
                         )}
                     </AnimatePresence>
@@ -98,7 +103,7 @@ export const LocationPage = () => {
                         style={{ background: 'var(--color-orange)' }}
                     >
                         <Plus className="h-4 w-4" />
-                        Agregar ubicación
+                        {m.locations.add}
                     </button>
                 </div>
             </div>
@@ -106,10 +111,10 @@ export const LocationPage = () => {
             {/* Table card */}
             <div className="overflow-hidden rounded-2xl border shadow-sm" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
                 {isLoading && (
-                    <div className="flex h-64 flex-col items-center justify-center gap-3">
-                        <Loader2 className="h-7 w-7 animate-spin" style={{ color: 'var(--color-orange)' }} />
-                        <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>Cargando ubicaciones…</p>
-                    </div>
+                        <TableSkeleton
+                            rows={9}
+                            colWidths={['w-5', 'flex-1', 'w-24', 'w-24', 'w-20', 'w-20']}
+                        />
                 )}
                 {error && (
                     <div className="flex h-64 flex-col items-center justify-center gap-3">

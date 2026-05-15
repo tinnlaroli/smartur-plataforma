@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCompany } from '../hooks/useCompany';
 import { UserPen, X, Building2, MapPin, Phone, Briefcase, Calendar } from 'lucide-react';
 import EditCompanyModal from './EditCompanyModal';
 import type { UpdateCompanyDTO } from '../types/types';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
+import type { SectorId } from '../../../shared/i18n/dashboardModalsLocale';
 
 interface Props {
     isOpen: boolean;
@@ -14,6 +17,15 @@ interface Props {
 const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updateCompany }) => {
     const { company, isLoading, error, findById } = useCompany();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { lang } = useLanguage();
+    const mod = useMemo(() => getDashboardText(lang).modules.modals, [lang]);
+    const dateLocale = useMemo(
+        () => (lang === 'en' ? 'en-US' : lang === 'fr' ? 'fr-FR' : 'es-MX'),
+        [lang],
+    );
+
+    const sectorLabel = (id: number) =>
+        mod.companies.sectorNames[id as SectorId] ?? mod.companies.sectorUndefined;
 
     useEffect(() => {
         if (companyId && isOpen) {
@@ -29,7 +41,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
                         <Building2 className="size-5 text-violet-500" />
-                        Detalle de la Empresa
+                        {mod.companies.detailTitle}
                     </h2>
                     <button
                         onClick={onClose}
@@ -68,7 +80,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                                         {company.name}
                                     </h3>
                                     <p className="text-xs text-zinc-500 dark:text-zinc-500 flex items-center gap-1">
-                                        ID de registro: {company.id}
+                                        {mod.companies.activeRegistry}
                                     </p>
                                 </div>
                             </div>
@@ -77,7 +89,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                                 <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <MapPin className="size-3" />
-                                        Dirección
+                                        {mod.companies.addressLabel}
                                     </span>
                                     <p className="text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-50/50 dark:bg-zinc-800/30 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-800/50 leading-relaxed">
                                         {company.address}
@@ -87,7 +99,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <Phone className="size-3" />
-                                        Teléfono
+                                        {mod.companies.phoneLabel}
                                     </span>
                                     <p className="text-sm font-medium text-zinc-900 dark:text-zinc-200">
                                         {company.phone}
@@ -97,21 +109,21 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <Briefcase className="size-3" />
-                                        Sector
+                                        {mod.companies.sectorLabel}
                                     </span>
                                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-300">
-                                        Sector {company.id_sector}
+                                        {sectorLabel(company.id_sector)}
                                     </span>
                                 </div>
 
                                 <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-1.5 mb-1.5">
                                         <Calendar className="size-3" />
-                                        Fecha de Registro
+                                        {mod.companies.registrationDate}
                                     </span>
                                     <p className="text-xs text-zinc-600 dark:text-zinc-400" suppressHydrationWarning>
                                         {new Date(company.registration_date).toLocaleDateString(
-                                            'es-MX',
+                                            dateLocale,
                                             {
                                                 weekday: 'long',
                                                 year: 'numeric',
@@ -131,7 +143,7 @@ const CompanyDetailModal: React.FC<Props> = ({ isOpen, onClose, companyId, updat
                                     hover:bg-violet-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
                                 >
                                     <UserPen className="size-4" />
-                                    <span>Editar empresa</span>
+                                    <span>{mod.companies.editCompany}</span>
                                 </button>
                             </div>
                         </div>

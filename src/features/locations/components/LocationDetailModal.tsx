@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from '../hooks/useLocation';
 import { UserPen, X, MapPin } from 'lucide-react';
 import EditLocationModal from './EditLocationModal';
 import type { UpdateLocationDTO } from '../types/types';
+import MapPicker from '../../../components/ui/MapPicker';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 interface Props {
     isOpen: boolean;
@@ -14,6 +17,8 @@ interface Props {
 const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, updateLocation }) => {
     const { location, isLoading, error, findById } = useLocation();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { lang } = useLanguage();
+    const mod = useMemo(() => getDashboardText(lang).modules.modals, [lang]);
 
     useEffect(() => {
         if (locationId && isOpen) {
@@ -25,11 +30,11 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-[#121214] rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
                         <MapPin className="size-5 text-violet-500" />
-                        Detalle de Ubicación
+                        {mod.locations.detailTitle}
                     </h2>
                     <button
                         onClick={onClose}
@@ -59,7 +64,7 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
                             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                                 <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
-                                        Nombre
+                                        {mod.locations.name}
                                     </span>
                                     <p className="mt-1 text-base font-semibold text-zinc-900 dark:text-zinc-100">
                                         {location.name}
@@ -68,7 +73,7 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
-                                        Estado
+                                        {mod.locations.state}
                                     </span>
                                     <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
                                         {location.state}
@@ -77,28 +82,26 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
 
                                 <div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
-                                        Municipio
+                                        {mod.locations.municipality}
                                     </span>
                                     <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
-                                        {location.municipality || 'N/A'}
+                                        {location.municipality || mod.common.notApplicable}
                                     </p>
                                 </div>
 
-                                <div>
+                                <div className="col-span-2">
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
-                                        Latitud
+                                        {mod.locations.map}
                                     </span>
-                                    <p className="mt-1 text-sm font-mono text-zinc-900 dark:text-zinc-300">
-                                        {location.latitude}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-500">
-                                        Longitud
-                                    </span>
-                                    <p className="mt-1 text-sm font-mono text-zinc-900 dark:text-zinc-300">
-                                        {location.longitude}
+                                    <div className="mt-2 h-48 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 shadow-sm pointer-events-none">
+                                        <MapPicker
+                                            lat={parseFloat(location.latitude ?? '0')}
+                                            lng={parseFloat(location.longitude ?? '0')}
+                                            onChange={() => {}}
+                                        />
+                                    </div>
+                                    <p className="mt-1.5 text-xs font-mono text-zinc-400 dark:text-zinc-500">
+                                        {location.latitude}, {location.longitude}
                                     </p>
                                 </div>
                             </div>
@@ -111,7 +114,7 @@ const LocationDetailModal: React.FC<Props> = ({ isOpen, onClose, locationId, upd
                                     hover:bg-violet-700 shadow-sm transition-all duration-200 active:scale-[0.98]"
                                 >
                                     <UserPen className="size-4" />
-                                    <span>Editar ubicación</span>
+                                    <span>{mod.locations.editLocation}</span>
                                 </button>
                             </div>
                         </div>

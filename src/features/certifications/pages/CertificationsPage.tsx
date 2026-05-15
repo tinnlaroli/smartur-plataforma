@@ -1,41 +1,48 @@
+import { useMemo } from 'react';
 import { useCertifications } from '../hooks/useCertifications';
 import { useSearchParams } from 'react-router-dom';
 import Pagination from '../../users/components/Pagination';
 import { Award, ExternalLink, ToggleLeft, ToggleRight, ShieldCheck, ShieldOff } from 'lucide-react';
 import { CardSkeleton } from '../../../components/ui/CardSkeleton';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 export const CertificationsPage = () => {
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
     const { certifications, isLoading, totalPages, updateStatus } = useCertifications();
     const [searchParams, setSearchParams] = useSearchParams();
-    const page  = Number(searchParams.get('page'))  || 1;
+    const page = Number(searchParams.get('page')) || 1;
     const limit = Number(searchParams.get('limit')) || 10;
 
     return (
         <div className="space-y-5">
-            {/* Header */}
             <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl"
-                    style={{ background: 'var(--color-orange)' }}>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'var(--color-orange)' }}>
                     <Award className="h-5 w-5 text-white" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
-                        Certificaciones
+                        {m.certifications.title}
                     </h1>
                     <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
-                        Sellos de calidad y sostenibilidad
+                        {m.certifications.subtitle}
                     </p>
                 </div>
             </div>
 
-            {/* Cards grid */}
             {isLoading ? (
                 <CardSkeleton count={6} />
             ) : certifications.length === 0 ? (
-                <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed" style={{ borderColor: 'var(--color-border)' }}>
+                <div
+                    className="flex h-64 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed"
+                    style={{ borderColor: 'var(--color-border)' }}
+                >
                     <Award className="h-12 w-12" style={{ color: 'var(--color-border)' }} />
-                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>No hay certificaciones registradas</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>
+                        {m.certifications.empty}
+                    </p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -51,28 +58,33 @@ export const CertificationsPage = () => {
                                 className="relative overflow-hidden rounded-2xl border p-5 shadow-sm transition-shadow hover:shadow-md"
                                 style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
                             >
-                                {/* accent strip */}
                                 <div
                                     className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
-                                    style={{ background: isActive
-                                        ? 'var(--color-green)'
-                                        : 'var(--color-border)' }}
+                                    style={{
+                                        background: isActive ? 'var(--color-green)' : 'var(--color-border)',
+                                    }}
                                 />
 
                                 <div className="mb-4 flex items-start justify-between pl-2">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl"
-                                        style={{ background: isActive
-                                            ? 'var(--color-green)'
-                                            : 'var(--color-bg-alt)' }}>
-                                        {isActive
-                                            ? <ShieldCheck className="h-5 w-5 text-white" />
-                                            : <ShieldOff className="h-5 w-5" style={{ color: 'var(--color-text-alt)' }} />}
+                                    <div
+                                        className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                        style={{
+                                            background: isActive ? 'var(--color-green)' : 'var(--color-bg-alt)',
+                                        }}
+                                    >
+                                        {isActive ? (
+                                            <ShieldCheck className="h-5 w-5 text-white" />
+                                        ) : (
+                                            <ShieldOff className="h-5 w-5" style={{ color: 'var(--color-text-alt)' }} />
+                                        )}
                                     </div>
-                                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
-                                        isActive
-                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                                            : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
-                                    }`}>
+                                    <span
+                                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                                            isActive
+                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+                                        }`}
+                                    >
                                         {cert.status}
                                     </span>
                                 </div>
@@ -82,15 +94,17 @@ export const CertificationsPage = () => {
                                         {cert.certificationType}
                                     </h3>
                                     <p className="mt-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
-                                        <span className="font-medium">Org:</span> {cert.issuingOrganization}
+                                        <span className="font-medium">{m.certifications.org}</span> {cert.issuingOrganization}
                                     </p>
                                     <p className="mt-0.5 text-xs" style={{ color: 'var(--color-text-alt)' }}>
-                                        <span className="font-medium">Expira:</span> {cert.expirationDate || 'Sin fecha'}
+                                        <span className="font-medium">{m.certifications.expires}</span>{' '}
+                                        {cert.expirationDate || m.certifications.noDate}
                                     </p>
                                 </div>
 
                                 <div className="mt-4 flex items-center gap-2 border-t pt-4 pl-2" style={{ borderColor: 'var(--color-border)' }}>
                                     <button
+                                        type="button"
                                         onClick={() => updateStatus(cert.id, isActive ? 'Vencido' : 'Activo')}
                                         className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-1.5 text-xs font-semibold transition-colors"
                                         style={{
@@ -100,9 +114,15 @@ export const CertificationsPage = () => {
                                         onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--rgb-text),0.08)')}
                                         onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--color-bg-alt)')}
                                     >
-                                        {isActive
-                                            ? <><ToggleRight className="h-3.5 w-3.5 text-emerald-500" /> Desactivar</>
-                                            : <><ToggleLeft className="h-3.5 w-3.5" /> Activar</>}
+                                        {isActive ? (
+                                            <>
+                                                <ToggleRight className="h-3.5 w-3.5 text-emerald-500" /> {m.certifications.deactivate}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ToggleLeft className="h-3.5 w-3.5" /> {m.certifications.activate}
+                                            </>
+                                        )}
                                     </button>
                                     {cert.evidenceUrl && (
                                         <a
@@ -114,7 +134,7 @@ export const CertificationsPage = () => {
                                             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(var(--rgb-purple-accent),0.1)')}
                                             onMouseLeave={(e) => (e.currentTarget.style.background = '')}
                                         >
-                                            <ExternalLink className="h-3.5 w-3.5" /> Evidencia
+                                            <ExternalLink className="h-3.5 w-3.5" /> {m.certifications.evidence}
                                         </a>
                                     )}
                                 </div>

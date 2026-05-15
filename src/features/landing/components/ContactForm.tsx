@@ -3,6 +3,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { prefersReducedMotion } from '../utils/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,31 +27,37 @@ export const ContactForm: React.FC = () => {
     useEffect(() => {
         const section = sectionRef.current;
         if (!section) return;
+        if (prefersReducedMotion()) return;
 
-        const revealElements = section.querySelectorAll('.reveal-fade-up');
-        revealElements.forEach((el) => {
-            gsap.fromTo(el, 
-                { y: 30, opacity: 0 },
-                { 
-                    y: 0, 
-                    opacity: 1, 
-                    duration: 0.8, 
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: el,
-                        start: "top 90%",
-                        toggleActions: "play none none none"
-                    }
-                }
-            );
-        });
+        const ctx = gsap.context(() => {
+            const revealElements = section.querySelectorAll('.reveal-fade-up');
+            revealElements.forEach((el) => {
+                gsap.fromTo(el,
+                    { y: 30, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.8,
+                        ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 90%',
+                            toggleActions: 'play none none none',
+                            once: true,
+                        },
+                    },
+                );
+            });
+        }, section);
+        return () => ctx.revert();
     }, []);
 
     return (
         <section 
             ref={sectionRef} 
             id="contacto" 
-            className="cta-minimal bg-white transition-colors duration-300 py-16 sm:py-20 md:py-24 lg:py-32 dark:bg-[var(--color-bg)]"
+            className="cta-minimal py-16 sm:py-20 md:py-24 lg:py-32"
+            style={{ background: 'var(--color-bg)' }}
         >
             <div className="container mx-auto px-4 sm:px-6 md:px-12 max-w-7xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 lg:gap-24 items-center">
@@ -60,14 +67,14 @@ export const ContactForm: React.FC = () => {
                         <span className="block text-sm font-black tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--color-purple)' }}>
                             {t('contact.label')}
                         </span>
-                        <h2 className="landing-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-tight dark:text-white">
+                        <h2 className="landing-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight" style={{ color: 'var(--color-text)' }}>
                             {t('contact.title')}
                         </h2>
                     </div>
 
                     {/* Right Column: Text & Input */}
                     <div className="cta-content-right reveal-fade-up">
-                        <p className="text-base sm:text-lg text-slate-500 mb-6 sm:mb-8 leading-relaxed max-w-md dark:text-zinc-400">
+                        <p className="text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed max-w-md" style={{ color: 'var(--color-text-alt)' }}>
                             {t('contact.subtitle')}
                         </p>
 
@@ -93,7 +100,13 @@ export const ContactForm: React.FC = () => {
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder={t('contact.email.placeholder')}
                                     required
-                                    className="w-full flex-grow min-w-0 bg-[var(--color-bg-alt)] border border-[rgba(var(--rgb-text),0.12)] text-[var(--color-text)] rounded-full py-3 sm:py-4 px-4 sm:px-6 outline-none focus:ring-2 focus:ring-[var(--color-purple)] transition-all duration-300 ease-out placeholder:opacity-60 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
+                                    className="w-full flex-grow min-w-0 rounded-full py-3 sm:py-4 px-4 sm:px-6 outline-none focus:ring-2 transition-all duration-300 ease-out placeholder:opacity-60"
+                                    style={{
+                                        background: 'var(--color-bg-alt)',
+                                        border: '1px solid var(--color-border)',
+                                        color: 'var(--color-text)',
+                                        '--tw-ring-color': 'var(--color-purple)',
+                                    } as React.CSSProperties}
                                 />
                                 
                                 <button

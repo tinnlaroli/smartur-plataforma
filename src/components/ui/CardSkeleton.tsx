@@ -1,5 +1,13 @@
-export const CardSkeleton = ({ count = 6 }: { count?: number }) => (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+interface CardSkeletonProps {
+    count?: number;
+    gridClassName?: string;
+}
+
+export const CardSkeleton = ({
+    count = 6,
+    gridClassName = 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3',
+}: CardSkeletonProps) => (
+    <div className={gridClassName}>
         {Array.from({ length: count }, (_, i) => (
             <div
                 key={i}

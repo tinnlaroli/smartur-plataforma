@@ -117,7 +117,7 @@ export const About: React.FC = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} id="nosotros" className="sy-about relative min-h-screen py-20 bg-white dark:bg-[var(--color-bg)] flex items-center overflow-hidden">
+        <section ref={sectionRef} id="nosotros" className="sy-about relative min-h-screen py-20 flex items-center overflow-hidden" style={{ background: 'var(--color-bg)' }}>
             {/* Background accents */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
                 <div className="absolute -left-32 top-1/4 h-[500px] w-[500px] rounded-full opacity-[0.05] blur-[120px]" style={{ background: 'var(--color-purple)' }} />
@@ -134,11 +134,11 @@ export const About: React.FC = () => {
                             <span className="label-text text-xs font-bold tracking-widest uppercase" style={{ color: 'var(--color-purple)' }}>{t('about.sectionLabel')}</span>
                         </div>
 
-                        <h2 className="landing-heading text-4xl md:text-5xl lg:text-7xl font-black mb-6 leading-tight text-slate-900 dark:text-white" data-reveal>
+                        <h2 className="landing-heading text-4xl md:text-5xl lg:text-7xl font-black mb-6 leading-tight" style={{ color: 'var(--color-text)' }} data-reveal>
                             {t('about.headingPrefix')}<span style={{ color: 'var(--color-purple)' }}>{t('about.headingHighlight')}</span>
                         </h2>
 
-                        <p className="text-lg md:text-xl text-slate-500 dark:text-zinc-300 mb-12 max-w-2xl leading-relaxed" data-reveal>
+                        <p className="text-lg md:text-xl mb-12 max-w-2xl leading-relaxed" style={{ color: 'var(--color-text-alt)' }} data-reveal>
                             {t('about.subtitle')}
                         </p>
 
@@ -154,8 +154,8 @@ export const About: React.FC = () => {
                                 <span className="text-[10px] font-black uppercase" style={{ color: 'var(--color-green)' }}>{t('about.award.badge')}</span>
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{t('about.award.title')}</h3>
-                                <span className="text-sm font-black text-slate-400 dark:text-zinc-300">{t('about.award.year')}</span>
+                                <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>{t('about.award.title')}</h3>
+                                <span className="text-sm font-black" style={{ color: 'var(--color-text-alt)' }}>{t('about.award.year')}</span>
                             </div>
                         </div>
 
@@ -170,7 +170,7 @@ export const About: React.FC = () => {
                                     <h3 className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: i === 0 ? 'var(--color-green)' : i === 1 ? 'var(--color-purple)' : 'var(--color-pink)' }}>
                                         {t(slide.labelKey)}
                                     </h3>
-                                    <p className="text-slate-700 dark:text-zinc-300 leading-relaxed font-medium">
+                                    <p className="leading-relaxed font-medium" style={{ color: 'var(--color-text-alt)' }}>
                                         {t(slide.textKey)}
                                     </p>
                                 </div>
@@ -180,22 +180,30 @@ export const About: React.FC = () => {
 
                     {/* Right Column: Stepper Timeline */}
                     <div className="stepper-column py-12">
-                        <div className="relative border-l-2 border-slate-100 dark:border-slate-800 pl-8 ml-4">
+                        <div className="relative border-l-2 pl-8 ml-4" style={{ borderColor: 'var(--color-border)' }}>
                             {TIMELINE_ITEMS.map((item, i) => (
                                 <div
                                     key={item.titleKey}
                                     className={`step-item relative mb-12 transition-all duration-700 ${i === activeStep ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}
                                 >
                                     {/* Dot Indicator */}
-                                    <div className={`absolute -left-[39px] top-2 w-4 h-4 rounded-full border-2 bg-white transition-all duration-300 ${i === activeStep ? 'scale-125' : 'border-slate-300 dark:border-slate-700'}`}
-                                        style={i === activeStep ? { background: 'var(--color-purple)', borderColor: 'var(--color-purple)', boxShadow: '0 0 0 4px rgba(152, 78, 253, 0.2)' } : undefined}
+                                    <div
+                                        className={`absolute -left-[39px] top-2 w-4 h-4 rounded-full border-2 transition-all duration-300 ${i === activeStep ? 'scale-125' : ''}`}
+                                        style={i === activeStep
+                                            ? { background: 'var(--color-purple)', borderColor: 'var(--color-purple)', boxShadow: '0 0 0 4px rgba(var(--rgb-purple-accent), 0.2)' }
+                                            : { background: 'var(--color-bg)', borderColor: 'var(--color-border)' }
+                                        }
                                     />
                                     
-                                    <div className={`p-6 rounded-2xl border transition-all duration-500 bg-white dark:bg-zinc-900 ${i === activeStep ? 'shadow-xl' : 'border-transparent'}`}
-                                        style={i === activeStep ? { borderColor: 'rgba(152, 78, 253, 0.2)' } : undefined}
+                                    <div
+                                        className={`p-6 rounded-2xl border transition-all duration-500 ${i === activeStep ? 'shadow-xl' : 'border-transparent'}`}
+                                        style={{
+                                            background: 'var(--color-bg-alt)',
+                                            ...(i === activeStep ? { borderColor: 'rgba(var(--rgb-purple-accent), 0.2)' } : {})
+                                        }}
                                     >
-                                        <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">{t(item.titleKey)}</h3>
-                                        <p className="text-slate-500 dark:text-zinc-300 leading-relaxed text-sm">{t(item.textKey)}</p>
+                                        <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--color-text)' }}>{t(item.titleKey)}</h3>
+                                        <p className="leading-relaxed text-sm" style={{ color: 'var(--color-text-alt)' }}>{t(item.textKey)}</p>
                                     </div>
                                 </div>
                             ))}

@@ -224,8 +224,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
 
             {/* Background accents */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-                <div className="absolute -left-20 top-1/4 h-[400px] w-[400px] rounded-full opacity-[0.07] blur-[100px]" style={{ background: 'var(--color-cyan)' }} />
-                <div className="absolute -right-20 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-[0.08] blur-[120px]" style={{ background: 'var(--color-pink)' }} />
+                <div className="float-accent absolute -left-20 top-1/4 h-[400px] w-[400px] rounded-full opacity-[0.07] blur-[100px]" style={{ background: 'var(--color-cyan)' }} />
+                <div className="float-accent-delayed absolute -right-20 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-[0.08] blur-[120px]" style={{ background: 'var(--color-pink)' }} />
             </div>
 
             <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 md:px-10 lg:px-16 pt-0">
@@ -289,7 +289,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 }}
             >
                 <span className="text-[11px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--color-text-alt)' }}>{t('heroSection.scrollIndicator')}</span>
-                <ChevronDown className="h-8 w-8" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
+                <ChevronDown className="h-8 w-8 scroll-indicator-animate" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
             </button>
         </section>
     );

@@ -18,8 +18,8 @@ export function useProfiles() {
         setIsLoading(true);
         try {
             const data = await profileApi.findAll(page, limit);
-            setProfiles(data.travelerProfiles || []);
-            setTotalPages(data.totalPages);
+            setProfiles(Array.isArray(data.travelerProfiles) ? data.travelerProfiles : []);
+            setTotalPages(data.totalPages || 1);
         } catch (error: any) {
             toast.error('Error al cargar perfiles');
         } finally {

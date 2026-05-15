@@ -26,7 +26,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentSte
             <div className="mb-8 flex items-center gap-4">
                 <div className={`h-3 flex-1 overflow-hidden rounded-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
                     <div
-                        className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-700 ease-out"
+                        className="h-full bg-indigo-600 shadow-[0_0_12px_rgba(79,70,229,0.45)] transition-all duration-700 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>

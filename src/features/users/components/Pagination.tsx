@@ -1,7 +1,12 @@
 import type { PaginationProps } from '../types/types';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { useUserPreferences } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProps) {
+    const { lang } = useUserPreferences();
+    const p = getDashboardText(lang).modules.pagination;
+
     const goToPage = (newPage: number) => {
         if (newPage < 1 || newPage > totalPages) return;
 
@@ -51,7 +56,6 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 text-sm text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800">
-            {/* Navegación de páginas a la izquierda */}
             <div className="flex items-center gap-1">
                 <button
                     onClick={() => goToPage(1)}
@@ -64,7 +68,7 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                                 : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
                         }
                     `}
-                    title="Primera página"
+                    title={p.firstPage}
                 >
                     <ChevronsLeft size={16} strokeWidth={1.5} />
                 </button>
@@ -80,17 +84,17 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                                 : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
                         }
                     `}
-                    title="Página anterior"
+                    title={p.prevPage}
                 >
                     <ChevronLeft size={16} strokeWidth={1.5} />
                 </button>
 
                 <div className="flex items-center gap-1 mx-1">
-                    {generatePageNumbers().map((p, index) => {
-                        if (p < 0) {
+                    {generatePageNumbers().map((pg, index) => {
+                        if (pg < 0) {
                             return (
                                 <span
-                                    key={`dots-${p}-${index}`}
+                                    key={`dots-${pg}-${index}`}
                                     className="px-2 text-zinc-400 dark:text-zinc-600 select-none"
                                 >
                                     …
@@ -100,20 +104,20 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
 
                         return (
                             <button
-                                key={p}
-                                onClick={() => goToPage(p)}
+                                key={pg}
+                                onClick={() => goToPage(pg)}
                                 className={`
                                     min-w-[32px] h-8 px-2 rounded-md text-sm
                                     transition-all duration-200
                                     ${
-                                        p === page
+                                        pg === page
                                             ? 'bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 font-medium border border-violet-200 dark:border-violet-900'
                                             : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-300'
                                     }
                                 `}
-                                title={`Ir a página ${p}`}
+                                title={p.goToPage(pg)}
                             >
-                                {p}
+                                {pg}
                             </button>
                         );
                     })}
@@ -130,7 +134,7 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                                 : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
                         }
                     `}
-                    title="Página siguiente"
+                    title={p.nextPage}
                 >
                     <ChevronRight size={16} strokeWidth={1.5} />
                 </button>
@@ -146,7 +150,7 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                                 : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
                         }
                     `}
-                    title="Última página"
+                    title={p.lastPage}
                 >
                     <ChevronsRight size={16} strokeWidth={1.5} />
                 </button>
@@ -154,7 +158,7 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
 
             <div className="flex items-center gap-4 text-xs justify-end">
                 <div className="flex items-center gap-2">
-                    <span className="text-zinc-500 dark:text-zinc-500">Mostrar</span>
+                    <span className="text-zinc-500 dark:text-zinc-500">{p.show}</span>
                     <select
                         value={limit}
                         onChange={(e) => changeLimit(Number(e.target.value))}
@@ -174,16 +178,12 @@ function Pagination({ page, totalPages, limit, setSearchParams }: PaginationProp
                         <option value={25}>25</option>
                         <option value={50}>50</option>
                     </select>
-                    <span className="text-zinc-500 dark:text-zinc-500">por página</span>
+                    <span className="text-zinc-500 dark:text-zinc-500">{p.perPage}</span>
                 </div>
 
                 <div className="text-zinc-500 dark:text-zinc-500">
                     <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                        {(page - 1) * limit + 1} - {Math.min(page * limit, totalPages * limit)}
-                    </span>{' '}
-                    de{' '}
-                    <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                        {totalPages * limit}
+                        {p.range((page - 1) * limit + 1, Math.min(page * limit, totalPages * limit), totalPages * limit)}
                     </span>
                 </div>
             </div>

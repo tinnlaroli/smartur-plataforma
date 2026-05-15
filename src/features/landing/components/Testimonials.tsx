@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Quote } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { prefersReducedMotion } from '../utils/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,12 +18,13 @@ export const Testimonials: React.FC = () => {
     const sectionRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
+        if (prefersReducedMotion()) return;
         const ctx = gsap.context(() => {
             gsap.fromTo('.testimonial-card',
                 { y: 50, opacity: 0 },
                 {
                     y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power3.out',
-                    scrollTrigger: { trigger: sectionRef.current, start: 'top 60%' }
+                    scrollTrigger: { trigger: sectionRef.current, start: 'top 60%', once: true }
                 }
             );
         }, sectionRef);
@@ -44,12 +46,13 @@ export const Testimonials: React.FC = () => {
                     {TESTIMONIAL_KEYS.map((item, i) => (
                         <article
                             key={item.name}
-                            className="testimonial-card group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-500 hover:-translate-y-1"
+                            className="testimonial-card group relative overflow-hidden rounded-[2rem] p-8"
                             style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}
                         >
-                            {/* Subtle gradient on hover */}
-                            <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 rounded-[2rem]"
-                                style={{ background: `linear-gradient(135deg, rgba(var(--rgb-pink-primary),0.04), rgba(var(--rgb-purple-accent),0.04))` }} />
+                            <div
+                                className="pointer-events-none absolute inset-0 rounded-[2rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                                style={{ background: 'rgba(var(--rgb-pink-primary), 0.08)' }}
+                            />
 
                             <Quote className="mb-6 h-8 w-8 opacity-20" style={{ color: 'var(--color-pink)' }} />
 

@@ -10,6 +10,7 @@ export interface TouristService {
     active: boolean;
     id_evaluation?: number;
     total_score?: number;
+    image_url?: string | null;
     created_at: string;
 }
 
@@ -20,6 +21,7 @@ export interface CreateTouristServiceDTO {
     id_location: number;
     service_type: string;
     active?: boolean;
+    image?: File | null;
 }
 
 export interface UpdateTouristServiceDTO {
@@ -29,6 +31,7 @@ export interface UpdateTouristServiceDTO {
     id_location?: number;
     service_type?: string;
     active?: boolean;
+    image?: File | null;
 }
 
 export interface TouristServiceResponse {

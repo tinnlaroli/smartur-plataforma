@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Write",
+      "Bash(Remove-Item *)",
+      "Bash(rm *)",
+      "PowerShell(Remove-Item *)"
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 import type { Location } from '../types/types';
 import { useRef } from 'react';
+import { motion } from 'framer-motion';
 
 interface Props {
     locations: Location[];
@@ -39,9 +40,6 @@ export default function LocationTable({
                             className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                         />
                     </div>
-                    <div className="w-16 flex-shrink-0 text-xs font-medium uppercase text-zinc-400">
-                        ID
-                    </div>
                     <div className="flex-1 min-w-[200px] text-xs font-medium uppercase text-zinc-400">
                         Nombre
                     </div>
@@ -62,9 +60,12 @@ export default function LocationTable({
 
             <div ref={tableRef} className="flex-1 overflow-y-auto min-h-0">
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {locations.map((loc) => (
-                        <div
+                    {locations.map((loc, index) => (
+                        <motion.div
                             key={loc.id}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.03 }}
                             className="flex items-center px-4 py-4 gap-4 hover:bg-zinc-800/50 transition-colors"
                         >
                             <div className="w-8 flex-shrink-0">
@@ -74,9 +75,6 @@ export default function LocationTable({
                                     onChange={() => onToggle(loc.id)}
                                     className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                                 />
-                            </div>
-                            <div className="w-16 flex-shrink-0 text-sm font-medium text-zinc-100">
-                                {loc.id}
                             </div>
                             <button
                                 type="button"
@@ -97,7 +95,7 @@ export default function LocationTable({
                             <div className="w-24 flex-shrink-0 text-sm text-zinc-500">
                                 {loc.longitude}
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>

@@ -1,8 +1,8 @@
-import React, { createContext, use, useState, useCallback, useRef, type ReactNode } from 'react';
+import React, { createContext, use, useState, useCallback, useRef, useMemo, type ReactNode } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
 
 // --- Tipos ---
-type NotificationType = 'success' | 'error' | 'info' | 'warning';
+export type NotificationType = 'success' | 'error' | 'info' | 'warning';
 
 interface Toast {
     id: string;
@@ -11,11 +11,20 @@ interface Toast {
     description?: string;
 }
 
+export interface ToastNotification extends Toast {
+    createdAt: number;
+    read: boolean;
+}
+
 interface ToastContextValue {
     success: (title: string, description?: string) => void;
     error: (title: string, description?: string) => void;
     info: (title: string, description?: string) => void;
     warning: (title: string, description?: string) => void;
+    notifications: ToastNotification[];
+    unreadCount: number;
+    markAllAsRead: () => void;
+    clearNotifications: () => void;
 }
 
 // --- Estilos con fondo gris muy oscuro ---
@@ -96,6 +105,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
     const [toasts, setToasts] = useState<Toast[]>([]);
+    const [notifications, setNotifications] = useState<ToastNotification[]>([]);
     const timeoutRefs = useRef<Map<string, number>>(new Map());
 
     const removeToast = useCallback((id: string) => {
@@ -109,10 +119,29 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         (type: NotificationType, title: string, description?: string) => {
             const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2)}`;
             setToasts((prev) => [...prev, { id, type, title, description }]);
+            setNotifications((prev) => [
+                { id, type, title, description, createdAt: Date.now(), read: false },
+                ...prev,
+            ].slice(0, 25));
             const tid = window.setTimeout(() => removeToast(id), 5000);
             timeoutRefs.current.set(id, tid);
         },
         [removeToast],
+    );
+
+    const markAllAsRead = useCallback(() => {
+        setNotifications((prev) => prev.map((item) => (
+            item.read ? item : { ...item, read: true }
+        )));
+    }, []);
+
+    const clearNotifications = useCallback(() => {
+        setNotifications([]);
+    }, []);
+
+    const unreadCount = useMemo(
+        () => notifications.reduce((total, item) => total + (item.read ? 0 : 1), 0),
+        [notifications],
     );
 
     const value: ToastContextValue = {
@@ -120,6 +149,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         error: (title, description) => addToast('error', title, description),
         info: (title, description) => addToast('info', title, description),
         warning: (title, description) => addToast('warning', title, description),
+        notifications,
+        unreadCount,
+        markAllAsRead,
+        clearNotifications,
     };
 
     return (

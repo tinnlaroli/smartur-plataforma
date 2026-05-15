@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LayoutGrid, ClipboardList, Info, LogOut } from 'lucide-react';
 import { FormModal } from '../components/FormModal';
+import { useLanguage, useUserPreferences } from '../../../contexts/LanguageContext';
 
 export default function Form() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useLanguage();
+    const { clearUser } = useUserPreferences();
 
     // Auth context or state from navigation
     const token = location.state?.tokenValide || localStorage.getItem('token');
@@ -21,7 +24,7 @@ export default function Form() {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearUser();
         navigate('/');
     };
 
@@ -33,7 +36,7 @@ export default function Form() {
                 className="absolute top-8 right-8 z-20 flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all active:scale-95 group"
             >
                 <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                <span className="text-sm font-semibold">Cerrar Sesión</span>
+                <span className="text-sm font-semibold">{t('header.logout')}</span>
             </button>
 
             {/* Background elements */}
@@ -79,7 +82,6 @@ export default function Form() {
                             ¡Comenzar Formulario!
                             <div className="w-2 h-2 rounded-full bg-white animate-ping" />
                         </span>
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     </button>
 
                     

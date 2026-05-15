@@ -1,4 +1,5 @@
 export type FieldType = 'text' | 'multiple_choice' | 'scale' | 'checkbox' | 'select';
+export type EvaluationStep = 'infraestructura' | 'higiene' | 'servicio';
 
 export interface InstrumentTemplate {
     id: number;
@@ -27,6 +28,7 @@ export interface Criterion {
     active: boolean;
     field_type: FieldType;
     is_required: boolean;
+    evaluation_step?: EvaluationStep;
     levels?: Subcriterion[];
 }
 

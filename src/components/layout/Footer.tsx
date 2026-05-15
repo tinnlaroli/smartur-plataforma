@@ -190,16 +190,16 @@ export const Footer: React.FC<FooterProps> = ({ navLinks = [] }) => {
                                     href="https://github.com/tinnlaroli/smartur-movil/releases/latest/download/app-release.apk"
                                     className="group inline-flex w-fit items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
                                     style={{
-                                        background: 'var(--color-purple)',
-                                        boxShadow: '0 8px 20px rgba(var(--rgb-purple-accent), 0.28)',
+                                        background: 'var(--color-pink)',
+                                        boxShadow: '0 8px 20px rgba(var(--rgb-pink-primary), 0.28)',
                                     }}
                                     onMouseEnter={e => {
                                         (e.currentTarget as HTMLAnchorElement).style.opacity = '0.88';
-                                        (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 12px 24px rgba(var(--rgb-purple-accent), 0.38)';
+                                        (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 12px 24px rgba(var(--rgb-pink-primary), 0.38)';
                                     }}
                                     onMouseLeave={e => {
                                         (e.currentTarget as HTMLAnchorElement).style.opacity = '1';
-                                        (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 20px rgba(var(--rgb-purple-accent), 0.28)';
+                                        (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 20px rgba(var(--rgb-pink-primary), 0.28)';
                                     }}
                                 >
                                     <Download className="size-4" />

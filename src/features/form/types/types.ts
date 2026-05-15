@@ -42,6 +42,7 @@ export interface Recommendation {
     pred_cf: number;
     pred_rf: number;
     kind?: string;
+    image_url?: string | null;
 }
 
 export interface RecommendationsResponse {

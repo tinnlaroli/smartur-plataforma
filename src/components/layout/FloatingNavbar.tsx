@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage, languages } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
 import { Globe, Sun, Moon, LogOut, Menu, X, ExternalLink } from 'lucide-react';
 import logoSrc from '../../assets/landing/logo.png';
+import gsap from 'gsap';
 
 interface NavLink {
     label: string;
@@ -55,17 +55,21 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
     const [langDropdownOpen, setLangDropdownOpen] = useState(false);
     
     const lastScrollY = useRef(0);
+    const navRef = useRef<HTMLDivElement>(null);
+    const bgRef = useRef<HTMLDivElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
+    const langDropdownRef = useRef<HTMLDivElement>(null);
 
     const handleScroll = () => {
         const currentY = window.scrollY;
 
-        if (currentY > 80) {
+        if (currentY > 100) {
             setIsNavSmall(true);
         } else {
             setIsNavSmall(false);
         }
 
-        if (currentY > 400) {
+        if (currentY > 200) {
             if (currentY > lastScrollY.current) {
                 setIsNavHidden(true);
             } else {
@@ -87,6 +91,69 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
         return () => window.removeEventListener('scroll', listener);
     }, []);
 
+    useEffect(() => {
+        if (navRef.current) {
+            gsap.to(navRef.current, { 
+                y: isNavHidden ? -150 : 0,
+                opacity: isNavHidden ? 0 : 1,
+                duration: 0.3,
+                ease: 'power3.out'
+            });
+        }
+    }, [isNavHidden]);
+
+    useEffect(() => {
+        if (bgRef.current) {
+            gsap.to(bgRef.current, {
+                scaleY: isNavSmall ? 1 : 0,
+                duration: 0.4,
+                ease: 'power4.out',
+                transformOrigin: 'top'
+            });
+        }
+    }, [isNavSmall]);
+
+    useEffect(() => {
+        if (mobileMenuRef.current) {
+            const links = mobileMenuRef.current.querySelectorAll('button');
+            if (isMobileMenuOpen) {
+                gsap.to(mobileMenuRef.current, {
+                    clipPath: 'inset(0% 0% 0% 0%)',
+                    duration: 0.5,
+                    ease: 'power4.out'
+                });
+                gsap.fromTo(links, 
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power4.out', delay: 0.2 }
+                );
+            } else {
+                gsap.to(mobileMenuRef.current, {
+                    clipPath: 'inset(0% 0% 100% 0%)',
+                    duration: 0.5,
+                    ease: 'power4.inOut'
+                });
+            }
+        }
+    }, [isMobileMenuOpen]);
+
+    useEffect(() => {
+        if (langDropdownRef.current) {
+            if (langDropdownOpen) {
+                gsap.fromTo(langDropdownRef.current,
+                    { opacity: 0, y: 10, scale: 0.95 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'power3.out' }
+                );
+            } else {
+                gsap.to(langDropdownRef.current, {
+                    opacity: 0,
+                    y: 10,
+                    duration: 0.2,
+                    ease: 'power3.in'
+                });
+            }
+        }
+    }, [langDropdownOpen]);
+
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
         if (!isMobileMenuOpen) {
@@ -103,14 +170,12 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
     };
 
     return (
-        <LazyMotion features={domAnimation}>
-            <>
-                <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-[var(--ease-out-expo)]
-                    ${isNavHidden ? '-translate-y-full' : 'translate-y-0'}
+        <>
+            <div ref={navRef} className={`fixed top-0 left-0 right-0 z-[100]
                     ${isNavSmall ? 'is-nav-small pt-2' : 'pt-6'}`}>
 
                     <div className="container mx-auto px-4 max-w-[1360px]">
-                        <div className="nav-small-bg relative flex items-center justify-between px-6 py-3 rounded-[50px]">
+                        <div ref={bgRef} className="nav-small-bg relative flex items-center justify-between px-6 py-3 rounded-[50px]">
 
                             {/* Logo */}
                             <a
@@ -189,29 +254,25 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                                         <Globe className="size-4" />
                                                         <span>{lang.toUpperCase()}</span>
                                                     </button>
-                                                    <AnimatePresence>
-                                                        {langDropdownOpen && (
-                                                            <m.div
-                                                                initial={{ opacity: 0, y: 10 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                exit={{ opacity: 0, y: 10 }}
-                                                                className="absolute top-full right-0 mt-2 rounded-xl shadow-2xl py-2 min-w-[140px]"
-                                                                style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}
-                                                            >
-                                                                {Object.entries(languages).map(([code, name]) => (
-                                                                    <button
-                                                                        key={code}
-                                                                        onClick={() => { changeLanguage(code); setLangDropdownOpen(false); }}
-                                                                        className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold transition-colors"
-                                                                        style={{ color: lang === code ? 'var(--color-pink)' : 'var(--color-text)' }}
-                                                                    >
-                                                                        <span>{name}</span>
-                                                                        <span className="text-[10px] uppercase opacity-50">{code}</span>
-                                                                    </button>
-                                                                ))}
-                                                            </m.div>
-                                                        )}
-                                                    </AnimatePresence>
+                                                    {langDropdownOpen && (
+                                                        <div
+                                                            ref={langDropdownRef}
+                                                            className="absolute top-full right-0 mt-2 rounded-xl shadow-2xl py-2 min-w-[140px]"
+                                                            style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}
+                                                        >
+                                                            {Object.entries(languages).map(([code, name]) => (
+                                                                <button
+                                                                    key={code}
+                                                                    onClick={() => { changeLanguage(code); setLangDropdownOpen(false); }}
+                                                                    className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold transition-colors"
+                                                                    style={{ color: lang === code ? 'var(--color-pink)' : 'var(--color-text)' }}
+                                                                >
+                                                                    <span>{name}</span>
+                                                                    <span className="text-[10px] uppercase opacity-50">{code}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -220,7 +281,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                                 onClick={toggleMobileMenu}
                                                 className="md:hidden p-2"
                                                 style={{ color: 'var(--color-text)' }}
-                                                aria-label="Toggle menu"
+                                                aria-label={t('accessibility.toggleMenu')}
                                             >
                                                 {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
                                             </button>
@@ -230,7 +291,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                 </div>
 
                 {/* Mobile Menu Overlay */}
-                <div className={`mobile-menu-overlay fixed inset-0 z-[90] flex flex-col items-center justify-center ${isMobileMenuOpen ? 'is-opened' : ''}`}>
+                <div ref={mobileMenuRef} className={`mobile-menu-overlay fixed inset-0 z-[90] flex flex-col items-center justify-center`}>
                     <nav className="flex flex-col items-center gap-8">
                         {navLinks.map((item, idx) => (
                             <button
@@ -249,14 +310,13 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                             <button
                                 onClick={() => { handleStartExperience(); setIsMobileMenuOpen(false); document.body.style.overflow = ''; }}
                                 className="mt-4 text-2xl font-bold"
-                                style={{ color: 'var(--color-purple)' }}
+                                style={{ color: 'var(--color-pink)' }}
                             >
                                 {t('nav.start')}
                             </button>
                         )}
                     </nav>
                 </div>
-            </>
-        </LazyMotion>
+        </>
     );
 };

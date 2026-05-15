@@ -5,6 +5,7 @@ import { Map, MapMarker, MapPopup, MapControls } from './ui/Map';
 import type { MapRef } from './ui/Map';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { prefersReducedMotion } from '../utils/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -110,43 +111,47 @@ export const VideoSection: React.FC = () => {
   useEffect(() => {
     const section = sectionRef.current;
     const container = containerRef.current;
+    if (!section || prefersReducedMotion()) return;
 
-    // GSAP scale-in animation
-    if (section && container && !window.matchMedia('(max-width: 767px)').matches) {
-      gsap.fromTo(
-        container,
-        { scale: 0.9, borderRadius: '2rem' },
-        {
-          scale: 1,
-          borderRadius: '0.75rem',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top bottom',
-            end: 'center center',
-            scrub: 1,
+    const ctx = gsap.context(() => {
+      if (container && !window.matchMedia('(max-width: 767px)').matches) {
+        gsap.fromTo(
+          container,
+          { scale: 0.9, borderRadius: '2rem' },
+          {
+            scale: 1,
+            borderRadius: '0.75rem',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top bottom',
+              end: 'center center',
+              scrub: 1,
+            },
           },
-        }
-      );
-    }
+        );
+      }
 
-    // Reveal animations
-    const titleEl = section?.querySelector('.title');
-    const descEl  = section?.querySelector('.description');
-    [titleEl, descEl].forEach((el, i) => {
-      if (!el) return;
-      gsap.fromTo(el,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, delay: i * 0.15,
-          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' } }
-      );
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(t => {
-        if (t.trigger === section || t.trigger === titleEl || t.trigger === descEl) t.kill();
+      const titleEl = section.querySelector('.title');
+      const descEl = section.querySelector('.description');
+      [titleEl, descEl].forEach((el, i) => {
+        if (!el) return;
+        gsap.fromTo(
+          el,
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            delay: i * 0.15,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none', once: true },
+          },
+        );
       });
-    };
+    }, section);
+
+    return () => ctx.revert();
   }, []);
 
     return (
@@ -158,11 +163,12 @@ export const VideoSection: React.FC = () => {
       <div className="container mx-auto px-4 text-center">
         <div className="header mb-12">
           <h2
-            className={`title landing-heading text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}
+            className="title landing-heading text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight"
+            style={{ color: 'var(--color-text)' }}
           >
             {renderTitle(t('map.header.titleHtml'))}
           </h2>
-          <p className={`description text-lg md:text-xl max-w-3xl mx-auto leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+          <p className="description text-lg md:text-xl max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--color-text-alt)' }}>
             {t('map.header.description')}
           </p>
         </div>
@@ -174,7 +180,7 @@ export const VideoSection: React.FC = () => {
               ? 'shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5'
               : 'shadow-[0_0_50px_rgba(0,0,0,0.15)] border border-black/10'
           }`}
-          style={{ height: '560px' }}
+          style={{ height: 'clamp(320px, 45vw, 560px)' }}
         >
           <Map
             initialViewport={REGION_CENTER}

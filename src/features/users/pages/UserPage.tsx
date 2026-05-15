@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useUser } from '../hooks/useUser';
 import Pagination from '../components/Pagination';
 import { useSearchParams } from 'react-router-dom';
@@ -9,8 +9,12 @@ import SearchInput from '../components/SearchInput';
 import { Trash2, UserPlus, Users, AlertCircle, RefreshCw } from 'lucide-react';
 import { TableSkeleton } from '../../../components/ui/TableSkeleton';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 export const UserPage = () => {
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
     const {
         users, isLoading, error, totalPages,
         createUser, updateUser, deleteUser,
@@ -37,7 +41,7 @@ export const UserPage = () => {
         setSelectedUsers((prev) => prev.includes(id) ? prev.filter((u) => u !== id) : [...prev, id]);
 
     const handleDeleteSelected = async () => {
-        if (!window.confirm(`¿Eliminar ${selectedUsers.length} usuario(s)?`)) return;
+        if (!window.confirm(m.common.confirmDeleteUsers(selectedUsers.length))) return;
         await Promise.all(selectedUsers.map((id) => deleteUser(id)));
         setSelectedUsers([]);
     };
@@ -53,16 +57,16 @@ export const UserPage = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
-                            Usuarios
+                            {m.users.title}
                         </h1>
                         <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
-                            Gestión de cuentas y permisos
+                            {m.users.subtitle}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <SearchInput value={searchTerm} onChange={setSearchTerm} />
+                    <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder={m.users.searchPlaceholder} />
 
                     <AnimatePresence>
                         {selectedUsers.length > 0 && (
@@ -74,7 +78,7 @@ export const UserPage = () => {
                                 className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
                             >
                                 <Trash2 className="h-4 w-4" />
-                                Eliminar ({selectedUsers.length})
+                                {m.common.deleteCount(selectedUsers.length)}
                             </motion.button>
                         )}
                     </AnimatePresence>
@@ -85,7 +89,7 @@ export const UserPage = () => {
                         style={{ background: 'var(--color-purple)' }}
                     >
                         <UserPlus className="h-4 w-4" />
-                        Agregar usuario
+                        {m.users.add}
                     </button>
                 </div>
             </div>
@@ -103,7 +107,7 @@ export const UserPage = () => {
                         <AlertCircle className="h-8 w-8 text-rose-400" />
                         <p className="text-sm font-medium text-rose-500">{error}</p>
                         <button onClick={() => setUrlSearch(urlSearch)} className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition nav-item-idle">
-                            <RefreshCw className="h-3.5 w-3.5" /> Reintentar
+                            <RefreshCw className="h-3.5 w-3.5" /> {m.common.retry}
                         </button>
                     </div>
                 )}

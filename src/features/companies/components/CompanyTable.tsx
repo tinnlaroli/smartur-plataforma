@@ -1,5 +1,14 @@
 import type { Company } from '../types/types';
 import { useRef } from 'react';
+import { motion } from 'framer-motion';
+
+const SECTOR_LABELS: Record<number, string> = {
+    1: 'Alojamiento',
+    2: 'Alimentos y Bebidas',
+    3: 'Transporte Turístico',
+    4: 'Agencias de Viaje',
+    5: 'Entretenimiento',
+};
 
 interface Props {
     companies: Company[];
@@ -45,9 +54,6 @@ export default function CompanyTable({
                             className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
                         />
                     </div>
-                    <div className="w-16 flex-shrink-0 text-xs font-medium uppercase tracking-wider text-zinc-400">
-                        ID
-                    </div>
                     <div className="flex-1 min-w-[200px] text-xs font-medium uppercase tracking-wider text-zinc-400">
                         Nombre
                     </div>
@@ -68,15 +74,10 @@ export default function CompanyTable({
                                 }}
                                 className="border-0 bg-transparent p-0 text-xs font-medium text-zinc-400 focus:ring-0 cursor-pointer hover:text-white transition-colors"
                             >
-                                <option value="" className="bg-zinc-900 text-zinc-400">
-                                    Todos
-                                </option>
-                                <option value="1" className="bg-zinc-900 text-zinc-400">
-                                    Sector 1
-                                </option>
-                                <option value="2" className="bg-zinc-900 text-zinc-400">
-                                    Sector 2
-                                </option>
+                                <option value="" className="bg-zinc-900 text-zinc-400">Todos</option>
+                                {Object.entries(SECTOR_LABELS).map(([id, label]) => (
+                                    <option key={id} value={id} className="bg-zinc-900 text-zinc-400">{label}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -88,9 +89,12 @@ export default function CompanyTable({
 
             <div ref={tableRef} className="flex-1 overflow-y-auto min-h-0">
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {companies.map((company) => (
-                        <div
+                    {companies.map((company, index) => (
+                        <motion.div
                             key={company.id}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.03 }}
                             className="flex items-center p-4 gap-4 transition-colors hover:bg-zinc-800/50 group"
                         >
                             <div className="w-8 flex-shrink-0">
@@ -100,10 +104,6 @@ export default function CompanyTable({
                                     onChange={() => onToggle(company.id)}
                                     className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
                                 />
-                            </div>
-
-                            <div className="w-16 flex-shrink-0 text-sm font-medium text-zinc-100">
-                                {company.id}
                             </div>
 
                             <button
@@ -127,7 +127,7 @@ export default function CompanyTable({
                             </div>
 
                             <div className="w-32 flex-shrink-0 text-sm text-zinc-400">
-                                Sector {company.id_sector}
+                                {SECTOR_LABELS[company.id_sector] ?? 'Sin sector'}
                             </div>
 
                             <div className="w-28 flex-shrink-0 text-sm text-zinc-400" suppressHydrationWarning>
@@ -137,7 +137,7 @@ export default function CompanyTable({
                                     day: '2-digit',
                                 })}
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>

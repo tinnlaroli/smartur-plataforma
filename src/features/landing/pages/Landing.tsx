@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback /*, useMemo */ } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { useLanguage, useUserPreferences } from '../../../contexts/LanguageContext';
 import SmartURLoader from '../../auth/components/SmartURLoader';
 import { FloatingNavbar } from '../../../components/layout/FloatingNavbar';
 import { HeroSection } from '../components/HeroSection';
 import { FlightDivider } from '../components/FlightDivider';
+import { ActionBridge } from '../components/ActionBridge';
 import { VideoSection } from '../components/VideoSection';
 import { TechnologySection } from '../components/TechnologySection';
 import { About } from '../components/About';
@@ -35,8 +36,8 @@ interface InfoCard {
 }
 */
 
-interface User {
-    id?: string;
+interface NavbarUser {
+    id?: string | number;
     name?: string;
     email?: string;
     role?: string;
@@ -59,17 +60,8 @@ export default function Landing() {
     */
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
 
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            setUser(null);
-        }
-    }, [location]);
-
+    const { user: sessionUser, clearUser } = useUserPreferences();
+    const user: NavbarUser | null = sessionUser;
     useEffect(() => {
         if (location.state?.openForm) {
             setIsFormModalOpen(true);
@@ -110,6 +102,7 @@ export default function Landing() {
 
     const navLinks = [
         { label: t('nav.home'), target: 'inicio', external: false },
+        { label: t('nav.howItWorks'), target: 'como-funciona', external: false },
         { label: t('nav.region'), target: 'region', external: false },
         { label: t('nav.technology'), target: 'tecnologia', external: false },
         { label: t('nav.about'), target: 'nosotros', external: false },
@@ -162,17 +155,16 @@ export default function Landing() {
     }, []);
 
     const handleStartExperience = useCallback(() => {
-        if (user) {
+        if (sessionUser) {
             setIsFormModalOpen(true);
         } else {
             openModal('login');
         }
-    }, [user, openModal]);
+    }, [sessionUser, openModal]);
 
     const logout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
+        clearUser();
         navigate('/');
     };
 
@@ -199,6 +191,10 @@ export default function Landing() {
                         </div>
 
                         <FlightDivider handleStartExperience={handleStartExperience} />
+
+                        <div id="como-funciona">
+                            <ActionBridge handleStartExperience={handleStartExperience} />
+                        </div>
 
                         <Statements handleStartExperience={handleStartExperience} />
 

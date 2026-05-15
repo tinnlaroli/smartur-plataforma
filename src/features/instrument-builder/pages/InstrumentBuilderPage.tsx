@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, FileText, Edit3, ToggleLeft, ToggleRight, Trash2, Search, ListChecks, Loader2, AlertCircle } from 'lucide-react';
 import { instrumentApi } from '../api/instrumentApi';
 import type { InstrumentTemplate } from '../types/types';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 export const InstrumentBuilderPage = () => {
     const navigate = useNavigate();
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
     const [templates, setTemplates] = useState<InstrumentTemplate[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export const InstrumentBuilderPage = () => {
             const res = await instrumentApi.getTemplates(1, 100);
             setTemplates(res.templates);
         } catch {
-            setError('No se pudieron cargar los instrumentos');
+            setError(m.instruments.loadError);
         } finally {
             setLoading(false);
         }
@@ -43,7 +47,7 @@ export const InstrumentBuilderPage = () => {
             setNewTemplate((prev) => ({ ...prev, name: '', version: '1.0.0', service_type: '', active: true }));
             fetchTemplates();
         } catch {
-            setError('Error al crear el instrumento');
+            setError(m.instruments.createError);
         }
     };
 
@@ -52,17 +56,17 @@ export const InstrumentBuilderPage = () => {
             await instrumentApi.updateTemplate(t.id, { active: !t.estado });
             fetchTemplates();
         } catch {
-            setError('Error al cambiar estado');
+            setError(m.instruments.toggleError);
         }
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('¿Eliminar este instrumento?')) return;
+        if (!confirm(m.common.confirmDeleteInstrument)) return;
         try {
             await instrumentApi.deleteTemplate(id);
             fetchTemplates();
         } catch {
-            setError('Error al eliminar');
+            setError(m.instruments.deleteError);
         }
     };
 
@@ -77,18 +81,18 @@ export const InstrumentBuilderPage = () => {
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                        Constructor de Instrumentos
+                        {m.instruments.builderTitle}
                     </h1>
                     <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                        Crea y administra instrumentos de evaluación tipo Google Forms
+                        {m.instruments.builderSubtitle}
                     </p>
                 </div>
                 <button
                     onClick={() => setShowCreate(true)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] hover:bg-indigo-500 hover:shadow-xl active:scale-[0.98]"
                 >
                     <Plus className="h-4 w-4" />
-                    Nuevo Instrumento
+                    {m.instruments.newButton}
                 </button>
             </div>
 
@@ -104,7 +108,7 @@ export const InstrumentBuilderPage = () => {
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <input
                     type="text"
-                    placeholder="Buscar instrumentos…"
+                    placeholder={m.instruments.searchPlaceholder}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full rounded-xl border border-zinc-200 bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
@@ -119,10 +123,10 @@ export const InstrumentBuilderPage = () => {
                 <div className="flex min-h-[40vh] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
                     <ListChecks className="mb-4 h-16 w-16 text-zinc-300 dark:text-zinc-600" />
                     <p className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
-                        {search ? 'Sin resultados' : 'No hay instrumentos'}
+                        {search ? m.instruments.emptyNoResults : m.instruments.emptyDefaultTitle}
                     </p>
                     <p className="mt-1 text-sm text-zinc-400">
-                        {search ? 'Intenta con otra búsqueda' : 'Crea tu primer instrumento de evaluación'}
+                        {search ? m.instruments.emptyHintNoResults : m.instruments.emptyDefaultHint}
                     </p>
                 </div>
             ) : (
@@ -133,7 +137,7 @@ export const InstrumentBuilderPage = () => {
                             className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
                         >
                             <div className="mb-4 flex items-start justify-between">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-sm">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
                                     <FileText className="h-5 w-5" />
                                 </div>
                                 <span
@@ -148,7 +152,7 @@ export const InstrumentBuilderPage = () => {
                                             t.estado ? 'bg-emerald-500' : 'bg-zinc-400'
                                         }`}
                                     />
-                                    {t.estado ? 'Activo' : 'Inactivo'}
+                                    {t.estado ? m.instruments.active : m.instruments.inactive}
                                 </span>
                             </div>
 
@@ -161,7 +165,8 @@ export const InstrumentBuilderPage = () => {
                             <p className="mt-1 text-xs text-zinc-400">v{t.version}</p>
 
                             <p className="mt-2 text-xs text-zinc-400" suppressHydrationWarning>
-                                Creado: {new Date(t.register_at).toLocaleDateString('es-MX')}
+                                {m.instruments.createdPrefix}{' '}
+                                {new Date(t.register_at).toLocaleDateString(lang === 'es' ? 'es-MX' : lang === 'fr' ? 'fr-FR' : 'en-US')}
                             </p>
 
                             <div className="mt-4 flex items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
@@ -170,7 +175,7 @@ export const InstrumentBuilderPage = () => {
                                     className="flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:hover:bg-indigo-950/50"
                                 >
                                     <Edit3 className="h-3.5 w-3.5" />
-                                    Editar
+                                    {m.instruments.edit}
                                 </button>
                                 <button
                                     onClick={() => handleToggleActive(t)}
@@ -181,7 +186,7 @@ export const InstrumentBuilderPage = () => {
                                     ) : (
                                         <ToggleLeft className="h-3.5 w-3.5" />
                                     )}
-                                    {t.estado ? 'Desactivar' : 'Activar'}
+                                    {t.estado ? m.instruments.toggleDeactivate : m.instruments.toggleActivate}
                                 </button>
                                 <button
                                     onClick={() => handleDelete(t.id)}
@@ -197,13 +202,13 @@ export const InstrumentBuilderPage = () => {
 
             {showCreate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <button type="button" aria-label="Cerrar" className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-default" onClick={() => setShowCreate(false)} />
+                    <button type="button" aria-label={m.instruments.closeAria} className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-default" onClick={() => setShowCreate(false)} />
                     <div className="relative w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
-                        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Nuevo Instrumento</h2>
-                        <p className="mt-1 text-sm text-zinc-500">Define las propiedades básicas</p>
+                        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">{m.instruments.modalNewTitle}</h2>
+                        <p className="mt-1 text-sm text-zinc-500">{m.instruments.modalNewSubtitle}</p>
                         <div className="mt-6 space-y-4">
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Nombre</label>
+                                <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">{m.instruments.fieldName}</label>
                                 <input
                                     type="text"
                                     value={newTemplate.name}
@@ -213,7 +218,7 @@ export const InstrumentBuilderPage = () => {
                                 />
                             </div>
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Versión</label>
+                                <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">{m.instruments.fieldVersion}</label>
                                 <input
                                     type="text"
                                     value={newTemplate.version}
@@ -222,13 +227,13 @@ export const InstrumentBuilderPage = () => {
                                 />
                             </div>
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">Tipo de Servicio</label>
+                                <label className="mb-1 block text-xs font-medium text-zinc-500 dark:text-zinc-400">{m.instruments.fieldService}</label>
                                 <select
                                     value={newTemplate.service_type}
                                     onChange={(e) => setNewTemplate((prev) => ({ ...prev, service_type: e.target.value }))}
                                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                                 >
-                                    <option value="">Seleccionar…</option>
+                                    <option value="">{m.instruments.selectPlaceholder}</option>
                                     <option value="Hotel">Hotel</option>
                                     <option value="Restaurante">Restaurante</option>
                                     <option value="Tour">Tour</option>
@@ -245,15 +250,15 @@ export const InstrumentBuilderPage = () => {
                                     onChange={(e) => setNewTemplate((prev) => ({ ...prev, active: e.target.checked }))}
                                     className="rounded border-zinc-300 text-indigo-600 dark:border-zinc-600"
                                 />
-                                <label htmlFor="new-active" className="text-sm text-zinc-700 dark:text-zinc-300">Activo</label>
+                                <label htmlFor="new-active" className="text-sm text-zinc-700 dark:text-zinc-300">{m.instruments.checkboxActive}</label>
                             </div>
                         </div>
                         <div className="mt-6 flex justify-end gap-3">
                             <button onClick={() => setShowCreate(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
-                                Cancelar
+                                {m.instruments.cancel}
                             </button>
                             <button onClick={handleCreate} className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500">
-                                Crear
+                                {m.instruments.create}
                             </button>
                         </div>
                     </div>

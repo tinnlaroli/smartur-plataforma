@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage, useUserPreferences } from '../contexts/LanguageContext';
 import { useAuthModal } from '../features/auth/context/AuthModalContext';
 
 interface SidebarProps { isOpen: boolean; onClose: () => void; }
@@ -44,9 +44,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const navigate = useNavigate();
     const { openModal } = useAuthModal();
     const { t } = useLanguage();
-
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
+    const { user, clearUser } = useUserPreferences();
     const userRole = user?.role_id || 2;
 
     const allItems: MenuItem[] = [
@@ -72,7 +70,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearUser();
         openModal('login');
         navigate('/');
         onClose();
@@ -264,7 +262,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                             <div className="flex justify-center">
                                 <div
                                     className="flex size-10 cursor-default items-center justify-center rounded-xl text-sm font-bold text-white shadow-md transition-transform hover:scale-105"
-                                    style={{ background: 'linear-gradient(135deg, var(--color-purple), var(--color-pink))' }}
+                                    style={{ background: 'var(--color-purple)' }}
                                     title={user?.name ?? ''}
                                 >
                                     {user ? getInitials(user.name) : 'U'}
@@ -279,7 +277,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                     <div className="relative shrink-0">
                                         <div
                                             className="flex size-9 items-center justify-center rounded-lg text-sm font-bold text-white shadow"
-                                            style={{ background: 'linear-gradient(135deg, var(--color-purple), var(--color-pink))' }}
+                                            style={{ background: 'var(--color-purple)' }}
                                         >
                                             {user ? getInitials(user.name) : 'U'}
                                         </div>

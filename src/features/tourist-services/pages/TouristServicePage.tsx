@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, useMemo } from 'react';
 import { useTouristService } from '../hooks/useTouristService';
 import Pagination from '../components/Pagination';
 import { useSearchParams } from 'react-router-dom';
@@ -10,6 +10,8 @@ import { Trash2, ClipboardCheck, Wrench, Plus, AlertCircle } from 'lucide-react'
 import { TableSkeleton } from '../../../components/ui/TableSkeleton';
 import EvaluationWizardModal from '../../evaluations/components/EvaluationWizardModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 type ModalState = {
     isCreateOpen: boolean; isDetailOpen: boolean;
@@ -33,6 +35,8 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
 };
 
 export const TouristServicePage = () => {
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
     const {
         services, isLoading, error, totalPages,
         createService, updateService, deleteService,
@@ -58,17 +62,16 @@ export const TouristServicePage = () => {
         setSelectedServices((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
 
     const handleDeleteSelected = async () => {
-        if (!window.confirm(`¿Eliminar ${selectedServices.length} servicio(s)?`)) return;
+        if (!window.confirm(m.common.confirmDeleteServices(selectedServices.length))) return;
         for (const id of selectedServices) await deleteService(id);
         setSelectedServices([]);
     };
 
-    const isOneRestaurantSelected = () => {
-        if (selectedServices.length !== 1) return false;
-        return services.find((s) => s.id === selectedServices[0])?.service_type === 'restaurant';
-    };
+    const isOneServiceSelected = () => selectedServices.length === 1;
 
-    const selectedServiceName = services.find((s) => s.id === selectedServices[0])?.name || '';
+    const selectedService = services.find((s) => s.id === selectedServices[0]);
+    const selectedServiceName = selectedService?.name || '';
+    const selectedServiceType = selectedService?.service_type || '';
 
     return (
         <div className="space-y-5">
@@ -81,16 +84,16 @@ export const TouristServicePage = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
-                            Servicios Turísticos
+                            {m.touristServices.title}
                         </h1>
                         <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
-                            Hoteles, restaurantes, tours y más
+                            {m.touristServices.subtitle}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <SearchInput value={searchTerm} onChange={setSearchTerm} />
+                    <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder={m.touristServices.searchPlaceholder} />
 
                     <AnimatePresence>
                         {selectedServices.length > 0 && (
@@ -103,10 +106,10 @@ export const TouristServicePage = () => {
                                 className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
                             >
                                 <Trash2 className="h-4 w-4" />
-                                Eliminar ({selectedServices.length})
+                                {m.common.deleteCount(selectedServices.length)}
                             </motion.button>
                         )}
-                        {isOneRestaurantSelected() && (
+                        {isOneServiceSelected() && (
                             <motion.button
                                 key="evaluate"
                                 initial={{ opacity: 0, scale: 0.9, x: 8 }}
@@ -116,7 +119,7 @@ export const TouristServicePage = () => {
                                 className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500 active:scale-95"
                             >
                                 <ClipboardCheck className="h-4 w-4" />
-                                Evaluar Servicio
+                                {m.touristServices.evaluate}
                             </motion.button>
                         )}
                     </AnimatePresence>
@@ -127,7 +130,7 @@ export const TouristServicePage = () => {
                         style={{ background: 'var(--color-green)' }}
                     >
                         <Plus className="h-4 w-4" />
-                        Agregar servicio
+                        {m.touristServices.add}
                     </button>
                 </div>
             </div>
@@ -183,6 +186,7 @@ export const TouristServicePage = () => {
                     onClose={() => { dispatchModal({ type: 'CLOSE_EVALUATION' }); fetchServices(); }}
                     serviceId={selectedServices[0]}
                     serviceName={selectedServiceName}
+                    serviceType={selectedServiceType}
                 />
             )}
         </div>

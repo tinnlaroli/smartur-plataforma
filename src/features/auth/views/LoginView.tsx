@@ -7,7 +7,7 @@ import { useToast } from '../../../shared/context/ToastContext';
 import SmartURLoader from '../components/SmartURLoader';
 import { useAuthModal, type AuthStep } from '../context/AuthModalContext';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { useLanguage, useUserPreferences } from '../../../contexts/LanguageContext';
 
 interface LoginViewProps {
     onSwitchStep: (step: AuthStep) => void;
@@ -19,6 +19,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
     const { setStep } = useAuthModal();
     const toast = useToast();
     const { t } = useLanguage();
+    const { setUser } = useUserPreferences();
 
     const [formData, setFormData] = useState<LoginPayload>({
         email: '',
@@ -54,7 +55,7 @@ export const LoginView = ({ onSwitchStep, onClose }: LoginViewProps) => {
 
             if (response.token && response.user) {
                 localStorage.setItem('token', response.token);
-                localStorage.setItem('user', JSON.stringify(response.user));
+                setUser(response.user);
                 localStorage.removeItem('v1:token');
                 localStorage.removeItem('v1:user');
 

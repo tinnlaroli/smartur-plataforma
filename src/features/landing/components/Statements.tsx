@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { prefersReducedMotion } from '../utils/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,6 +63,7 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
     useEffect(() => {
         const inner = innerRef.current;
         if (!inner) return;
+        if (prefersReducedMotion()) return;
 
         const panels = Array.from(inner.querySelectorAll<HTMLElement>('.st-panel'));
         const sizes = [window.innerWidth, window.innerHeight];
@@ -172,12 +174,12 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                                     <button onClick={handleStartExperience} className="btn-premium group">
                                         <span>
                                             <span className="btn-base gap-3 px-10 py-5 text-xl font-semibold"
-                                                style={{ '--bg-color': 'var(--color-purple)' } as any}>
+                                                style={{ '--bg-color': 'var(--color-pink)' } as React.CSSProperties}>
                                                 {t('story.cta.button')}
                                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                                             </span>
                                             <span className="btn-hover gap-3 px-10 py-5 text-xl font-semibold" aria-hidden
-                                                style={{ '--hover-text': 'var(--color-purple)' } as any}>
+                                                style={{ '--hover-text': 'var(--color-pink)' } as React.CSSProperties}>
                                                 {t('story.cta.button')}
                                                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                                             </span>

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { Company, UpdateCompanyDTO } from '../types/types';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 interface Props {
     onClose: () => void;
@@ -8,6 +10,8 @@ interface Props {
 }
 
 export default function EditCompanyModal({ onClose, onSubmit, company }: Props) {
+    const { lang } = useLanguage();
+    const mod = useMemo(() => getDashboardText(lang).modules.modals, [lang]);
     const [formData, setFormData] = useState<UpdateCompanyDTO>({
         name: company.name,
         address: company.address,
@@ -35,7 +39,7 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-md">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                        Editar empresa
+                        {mod.companies.editTitle}
                     </h2>
                     <button onClick={onClose} className="text-zinc-400 hover:text-zinc-500">
                         <svg
@@ -56,7 +60,7 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                 <form onSubmit={handleSubmit} className="p-6 gap-y-4 flex flex-col">
                     <div>
                         <label htmlFor="edit-company-name" className="block text-xs font-medium uppercase text-zinc-500">
-                            Nombre
+                            {mod.companies.name}
                         </label>
                         <input
                             id="edit-company-name"
@@ -68,7 +72,7 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                     </div>
                     <div>
                         <label htmlFor="edit-company-address" className="block text-xs font-medium uppercase text-zinc-500">
-                            Dirección
+                            {mod.companies.address}
                         </label>
                         <input
                             id="edit-company-address"
@@ -80,7 +84,7 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                     </div>
                     <div>
                         <label htmlFor="edit-company-phone" className="block text-xs font-medium uppercase text-zinc-500">
-                            Teléfono
+                            {mod.companies.phone}
                         </label>
                         <input
                             id="edit-company-phone"
@@ -96,13 +100,13 @@ export default function EditCompanyModal({ onClose, onSubmit, company }: Props) 
                             onClick={onClose}
                             className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-medium dark:text-zinc-300"
                         >
-                            Cancelar
+                            {mod.common.cancel}
                         </button>
                         <button
                             type="submit"
                             className="rounded-lg bg-violet-600 px-5 py-2 text-sm font-medium text-white shadow-lg"
                         >
-                            Guardar cambios
+                            {mod.common.saveChanges}
                         </button>
                     </div>
                 </form>

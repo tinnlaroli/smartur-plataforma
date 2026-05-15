@@ -6,7 +6,7 @@ import type { TwoFactorPayload } from '../types';
 import { useToast } from '../../../shared/context/ToastContext';
 import SmartURLoader from '../components/SmartURLoader';
 import type { AuthStep } from '../context/AuthModalContext';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { useLanguage, useUserPreferences } from '../../../contexts/LanguageContext';
 
 interface TwoFactorViewProps {
     email: string;
@@ -18,6 +18,7 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
     const toast = useToast();
     const navigate = useNavigate();
     const { t } = useLanguage();
+    const { setUser } = useUserPreferences();
     const [otp, setOtp] = useState<string[]>(() => Array(6).fill(''));
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +89,7 @@ export const TwoFactorView = ({ email, onSwitchStep, onClose }: TwoFactorViewPro
             const { token: jwt } = response;
 
             localStorage.setItem('token', jwt);
-            localStorage.setItem('user', JSON.stringify(response.user));
+            setUser(response.user);
             localStorage.removeItem('v1:token');
             localStorage.removeItem('v1:user');
 

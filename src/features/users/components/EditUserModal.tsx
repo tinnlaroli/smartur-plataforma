@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { UpdateUserDTO } from '../types/types';
 import { Save, X, Camera, User as UserIcon } from 'lucide-react';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 interface Props {
     user: {
@@ -15,6 +17,8 @@ interface Props {
 }
 
 export default function EditUserModal({ user, onClose, onSubmit }: Props) {
+    const { lang } = useLanguage();
+    const mod = useMemo(() => getDashboardText(lang).modules.modals, [lang]);
     const [formData, setFormData] = useState({
         name: user.name,
         password: '',
@@ -89,7 +93,7 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md transform transition-all">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                        Editar usuario
+                        {mod.users.editTitle}
                     </h2>
                 </div>
 
@@ -124,14 +128,14 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                             </label>
                         </div>
                         <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">
-                            Foto de perfil
+                            {mod.users.profilePhoto}
                         </p>
                     </div>
 
                     <div className="gap-y-4 flex flex-col">
                         <div className="gap-y-1.5 flex flex-col">
                             <label htmlFor="edit-user-name" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                Nombre
+                                {mod.users.name}
                             </label>
                             <input
                                 id="edit-user-name"
@@ -139,15 +143,15 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                                 value={formData.name}
                                 onChange={handleFieldChange}
                                 className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm  bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500  dark:focus:ring-violet-400/20 dark:focus:border-violet-400 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-colors"
-                                placeholder="Nombre completo"
+                                placeholder={mod.users.namePlaceholderShort}
                             />
                         </div>
 
                         <div className="gap-y-1.5 flex flex-col">
                             <label htmlFor="edit-user-password" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                Nueva contraseña
+                                {mod.users.newPassword}
                                 <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500 ml-2">
-                                    (opcional)
+                                    {mod.users.optionalHint}
                                 </span>
                             </label>
                             <input
@@ -162,13 +166,13 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                                      dark:focus:ring-violet-400/20 dark:focus:border-violet-400
                                      placeholder:text-zinc-400 dark:placeholder:text-zinc-500
                                      transition-colors"
-                                placeholder="Dejar vacío para no cambiar"
+                                placeholder={mod.users.passwordLeaveBlank}
                             />
                         </div>
 
                         <div className="gap-y-1.5 flex flex-col">
                             <label htmlFor="edit-user-role" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                Rol
+                                {mod.users.role}
                             </label>
                             <select
                                 id="edit-user-role"
@@ -182,17 +186,17 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                                      cursor-pointer transition-colors"
                             >
                                 <option value={1} className="py-2">
-                                    Administrador
+                                    {mod.users.roleAdmin}
                                 </option>
                                 <option value={2} className="py-2">
-                                    Usuario
+                                    {mod.users.roleUser}
                                 </option>
                             </select>
                         </div>
 
                         <div className="gap-y-1.5 flex flex-col">
                             <label htmlFor="edit-user-status" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                Estado
+                                {mod.users.status}
                             </label>
                             <select
                                 id="edit-user-status"
@@ -206,10 +210,10 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                                      cursor-pointer transition-colors"
                             >
                                 <option value="true" className="py-2">
-                                    Activo
+                                    {mod.users.statusActive}
                                 </option>
                                 <option value="false" className="py-2">
-                                    Inactivo
+                                    {mod.users.statusInactive}
                                 </option>
                             </select>
                         </div>
@@ -226,7 +230,7 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                    transition-colors"
                         >
                             <X className="size-4" />
-                            <span>Cancelar</span>
+                            <span>{mod.common.cancel}</span>
                         </button>
 
                         <button
@@ -240,7 +244,7 @@ export default function EditUserModal({ user, onClose, onSubmit }: Props) {
                    transition-colors"
                         >
                             <Save className="size-4" />
-                            <span>Guardar</span>
+                            <span>{mod.common.save}</span>
                         </button>
                     </div>
                 </form>

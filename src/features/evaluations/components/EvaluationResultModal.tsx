@@ -1,6 +1,8 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useMemo } from 'react';
 import { X, Award, BarChart3, Clock, User, ClipboardCheck, Info } from 'lucide-react';
 import { evaluationsApi } from '../api/evaluationsApi';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 interface Props {
     isOpen: boolean;
@@ -32,6 +34,8 @@ function modalReducer(state: ModalState, action: ModalAction): ModalState {
 }
 
 const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId }) => {
+    const { lang } = useLanguage();
+    const res = useMemo(() => getDashboardText(lang).modules.modals.evaluations.result, [lang]);
     const [{ evaluation, isLoading }, dispatch] = useReducer(modalReducer, {
         evaluation: null,
         isLoading: false,
@@ -72,7 +76,7 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                         <div className="p-2 bg-white/20 rounded-lg">
                             <Award className="size-6 text-white" />
                         </div>
-                        <h2 className="text-xl font-semibold text-white">Resultados de Evaluación</h2>
+                        <h2 className="text-xl font-semibold text-white">{res.title}</h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -87,16 +91,16 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                         <div className="flex flex-col items-center justify-center py-20">
                             <div className="size-10 animate-spin rounded-full border-4 border-zinc-200 border-t-violet-600 mb-4"></div>
                             <p className="text-zinc-500">
-                                Recuperando detalles de la evaluación…
+                                {res.loading}
                             </p>
                         </div>
                     ) : evaluation ? (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* Score Card */}
-                            <div className="bg-gradient-to-br from-violet-500 to-violet-700 rounded-2xl p-6 text-white shadow-xl shadow-violet-500/20">
+                            <div className="rounded-2xl bg-violet-600 p-6 text-white shadow-xl">
                                 <div className="flex justify-between items-center text-violet-100 mb-2">
                                     <span className="text-xs font-semibold uppercase tracking-widest">
-                                        Puntaje Total
+                                        {res.totalScore}
                                     </span>
                                     <BarChart3 className="size-4" />
                                 </div>
@@ -107,20 +111,20 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                                             : '0.0'}
                                     </span>
                                     <span className="text-lg font-semibold text-violet-200 mb-1">
-                                        / 4.0
+                                        {res.ofMax}
                                     </span>
                                 </div>
                                 <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-2 gap-4">
                                     <div className="flex items-center gap-2">
                                         <Clock className="size-3.5 text-violet-200" />
                                         <span className="text-xs">
-                                            {evaluation.evaluationTime} min
+                                            {evaluation.evaluationTime} {res.minSuffix}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <User className="size-3.5 text-violet-200" />
                                         <span className="text-xs">
-                                            Evaluador #{evaluation.evaluatorId}
+                                            {res.evaluator(evaluation.evaluatorId)}
                                         </span>
                                     </div>
                                 </div>
@@ -130,7 +134,7 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                             <div className="space-y-6">
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-500 flex items-center gap-2">
                                     <ClipboardCheck className="size-4" />
-                                    Detalle por Criterios
+                                    {res.criteriaHeading}
                                 </h3>
 
                                 {/* This would normally map over details. Since we don't have them in the summary,
@@ -154,14 +158,13 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                                                     </span>
                                                 </div>
                                                 <p className="text-xs text-zinc-500 dark:text-zinc-400 italic">
-                                                    "{detail.observations || 'Sin observaciones'}"
+                                                    "{detail.observations || res.noObservations}"
                                                 </p>
                                             </div>
                                         ))
                                     ) : (
                                         <div className="text-center p-6 border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl text-zinc-400 text-sm">
-                                            Los detalles específicos por criterio no están
-                                            disponibles en esta vista.
+                                            {res.detailsUnavailable}
                                         </div>
                                     )}
                                 </div>
@@ -169,12 +172,12 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                                 <div className="space-y-3">
                                     <h3 className="text-sm font-semibold uppercase tracking-widest text-zinc-500 flex items-center gap-2 pt-2">
                                         <Info className="size-4" />
-                                        Observaciones Generales
+                                        {res.generalHeading}
                                     </h3>
                                     <div className="p-4 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed border border-zinc-200 dark:border-zinc-700 italic">
                                         "
                                         {evaluation.generalObservations ||
-                                            'No se registraron observaciones generales.'}
+                                            res.noGeneralObservations}
                                         "
                                     </div>
                                 </div>
@@ -183,7 +186,7 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                     ) : (
                         <div className="text-center py-20">
                             <p className="text-zinc-500">
-                                No se encontró la información de la evaluación.
+                                {res.notFound}
                             </p>
                         </div>
                     )}
@@ -194,7 +197,7 @@ const EvaluationResultModal: React.FC<Props> = ({ isOpen, onClose, evaluationId 
                         onClick={onClose}
                         className="px-6 py-2 bg-zinc-800 dark:bg-zinc-700 text-white rounded-xl text-sm font-semibold hover:bg-zinc-700 dark:hover:bg-zinc-600 transition-all"
                     >
-                        Cerrar
+                        {res.close}
                     </button>
                 </div>
             </div>

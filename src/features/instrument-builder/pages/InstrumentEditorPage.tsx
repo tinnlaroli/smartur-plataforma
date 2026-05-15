@@ -1,29 +1,82 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-    ArrowLeft, Plus, Trash2, GripVertical, Save, Eye, EyeOff,
+    ArrowLeft, Plus, Trash2, Save, Eye, EyeOff,
     ToggleLeft, ToggleRight, AlertCircle, Loader2, Check,
-    Type, List, Star, CheckSquare, ChevronDown,
+    Type, List, Star, CheckSquare, ChevronDown, ChevronUp, TriangleAlert,
 } from 'lucide-react';
 import { instrumentApi } from '../api/instrumentApi';
-import type { FullRubric, Criterion, Subcriterion, FieldType } from '../types/types';
+import type { FullRubric, Criterion, Subcriterion, FieldType, EvaluationStep } from '../types/types';
 import { useToast } from '../../../shared/context/ToastContext';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
+import type { ComponentType } from 'react';
 
-const FIELD_TYPES: { value: FieldType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { value: 'text', label: 'Texto', icon: Type },
-    { value: 'multiple_choice', label: 'Opción múltiple', icon: List },
-    { value: 'scale', label: 'Escala / Rating', icon: Star },
-    { value: 'checkbox', label: 'Checkbox', icon: CheckSquare },
-    { value: 'select', label: 'Select', icon: ChevronDown },
-];
+const STEP_REGEX = /^\[STEP:(\w+)\]\s*/;
 
-const FIELD_TYPE_LABELS = new Map(FIELD_TYPES.map((ft) => [ft.value, ft.label]));
+const STEP_COLORS: Record<EvaluationStep, string> = {
+    infraestructura: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    higiene: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+    servicio: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+};
+
+function parseDescriptionStep(desc: string): { evaluation_step?: EvaluationStep; description: string } {
+    const match = desc.match(STEP_REGEX);
+    if (match) {
+        return { evaluation_step: match[1] as EvaluationStep, description: desc.slice(match[0].length) };
+    }
+    return { evaluation_step: undefined, description: desc };
+}
+
+function encodeDescriptionStep(step: EvaluationStep | undefined, desc: string): string {
+    if (!step) return desc;
+    return `[STEP:${step}] ${desc}`;
+}
+
+function parseCriteria(criteria: Criterion[]): Criterion[] {
+    return criteria.map((c) => {
+        const { evaluation_step, description } = parseDescriptionStep(c.description || '');
+        return { ...c, evaluation_step, description };
+    });
+}
+
 const LEVELS_FIELD_TYPES = new Set<FieldType>(['multiple_choice', 'scale', 'checkbox', 'select']);
+
+const DEFAULT_SCALE_LEVELS: Subcriterion[] = [
+    { id_subcriterion: 0, id_criterion: 0, description: 'Deficiente', score: 2, order_index: 0 },
+    { id_subcriterion: 0, id_criterion: 0, description: 'Regular', score: 4, order_index: 1 },
+    { id_subcriterion: 0, id_criterion: 0, description: 'Bueno', score: 6, order_index: 2 },
+    { id_subcriterion: 0, id_criterion: 0, description: 'Muy bueno', score: 8, order_index: 3 },
+    { id_subcriterion: 0, id_criterion: 0, description: 'Excelente', score: 10, order_index: 4 },
+];
 
 export const InstrumentEditorPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const toast = useToast();
+    const { lang } = useLanguage();
+    const ie = useMemo(() => getDashboardText(lang).modules.modals.instrumentEditor, [lang]);
+    const evalStepsUi = useMemo(
+        () =>
+            [
+                { value: 'infraestructura' as const, label: ie.stepInfra },
+                { value: 'higiene' as const, label: ie.stepHigiene },
+                { value: 'servicio' as const, label: ie.stepServicio },
+            ] as { value: EvaluationStep; label: string }[],
+        [ie],
+    );
+    const fieldTypesUi = useMemo(
+        () =>
+            [
+                { value: 'text' as const, label: ie.fieldTypeText, icon: Type },
+                { value: 'multiple_choice' as const, label: ie.fieldTypeMultiple, icon: List },
+                { value: 'scale' as const, label: ie.fieldTypeScale, icon: Star },
+                { value: 'checkbox' as const, label: ie.fieldTypeCheckbox, icon: CheckSquare },
+                { value: 'select' as const, label: ie.fieldTypeSelect, icon: ChevronDown },
+            ] as { value: FieldType; label: string; icon: ComponentType<{ className?: string }> }[],
+        [ie],
+    );
+    const fieldTypeLabelMap = useMemo(() => new Map(fieldTypesUi.map((ft) => [ft.value, ft.label])), [fieldTypesUi]);
 
     const [rubric, setRubric] = useState<FullRubric | null>(null);
     const [criteria, setCriteria] = useState<Criterion[]>([]);
@@ -48,25 +101,25 @@ export const InstrumentEditorPage = () => {
             setTemplateVersion(r.version);
             setTemplateServiceType(r.service_type);
             setTemplateActive(r.active);
-            setCriteria(r.criteria || []);
+            setCriteria(parseCriteria(r.criteria || []));
         } catch {
             try {
                 const [res, tpl] = await Promise.all([
                     instrumentApi.getCriteria(Number(id)),
                     instrumentApi.getTemplateById(Number(id)),
                 ]);
-                setCriteria(res);
+                setCriteria(parseCriteria(res));
                 setTemplateName(tpl.template.name);
                 setTemplateVersion(tpl.template.version);
                 setTemplateServiceType(tpl.template.servicio);
                 setTemplateActive(tpl.template.estado);
             } catch {
-                setError('No se pudo cargar el instrumento');
+                setError(ie.loadFailed);
             }
         } finally {
             setLoading(false);
         }
-    }, [id]);
+    }, [id, ie]);
 
     useEffect(() => {
         fetchRubric();
@@ -82,15 +135,15 @@ export const InstrumentEditorPage = () => {
                 service_type: templateServiceType,
                 active: templateActive,
             });
-            toast.success('Instrumento guardado', 'Cambios aplicados correctamente');
+            toast.success(ie.toastMetaSavedTitle, ie.toastMetaSavedBody);
         } catch {
-            toast.error('Error al guardar', 'No se pudieron guardar los cambios');
+            toast.error(ie.toastMetaErrorTitle, ie.toastMetaErrorBody);
         } finally {
             setSaving(false);
         }
     };
 
-    const addCriterion = async () => {
+    const addCriterion = () => {
         if (!id) return;
         const tempId = Date.now();
         const newCriterion: Criterion = {
@@ -103,7 +156,7 @@ export const InstrumentEditorPage = () => {
             active: true,
             field_type: 'scale',
             is_required: true,
-            levels: [],
+            levels: DEFAULT_SCALE_LEVELS.map((l) => ({ ...l })),
         };
         setCriteria([...criteria, newCriterion]);
     };
@@ -114,7 +167,8 @@ export const InstrumentEditorPage = () => {
 
     const removeCriterion = async (index: number) => {
         const criterion = criteria[index];
-        if (criterion.id_criterion > 0 && !criterion.name.startsWith('temp-')) {
+        const isTemp = criterion.id_criterion > 1000000;
+        if (!isTemp) {
             try {
                 await instrumentApi.deleteCriterion(criterion.id_criterion);
             } catch {
@@ -164,11 +218,12 @@ export const InstrumentEditorPage = () => {
                 if (!c.name) return;
 
                 let criterionId = c.id_criterion;
+                const encodedDesc = encodeDescriptionStep(c.evaluation_step, c.description || '');
                 if (criterionId > 1000000 || criterionId <= 0) {
                     const created = await instrumentApi.createCriterion({
                         id_template: Number(id),
                         name: c.name,
-                        description: c.description,
+                        description: encodedDesc,
                         weight: c.weight || 1,
                         order_index: i,
                         active: c.active,
@@ -179,7 +234,7 @@ export const InstrumentEditorPage = () => {
                 } else {
                     await instrumentApi.updateCriterion(criterionId, {
                         name: c.name,
-                        description: c.description,
+                        description: encodedDesc,
                         weight: c.weight || 1,
                         order_index: i,
                         active: c.active,
@@ -195,10 +250,10 @@ export const InstrumentEditorPage = () => {
                     );
                 }
             }, Promise.resolve());
-            toast.success('Criterios guardados', 'Todas las preguntas se guardaron correctamente');
+            toast.success(ie.toastCriteriaSavedTitle, ie.toastCriteriaSavedBody);
             fetchRubric();
         } catch {
-            toast.error('Error al guardar', 'No se pudieron guardar todos los criterios');
+            toast.error(ie.toastCriteriaErrorTitle, ie.toastCriteriaErrorBody);
         } finally {
             setSaving(false);
         }
@@ -219,7 +274,7 @@ export const InstrumentEditorPage = () => {
                     <AlertCircle className="mx-auto h-12 w-12 text-rose-400" />
                     <p className="mt-4 text-lg font-medium text-zinc-900 dark:text-zinc-100">{error}</p>
                     <button onClick={fetchRubric} className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">
-                        Reintentar
+                        {ie.retryLoad}
                     </button>
                 </div>
             </div>
@@ -238,7 +293,7 @@ export const InstrumentEditorPage = () => {
                     </button>
                     <div>
                         <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">
-                            Editor: {templateName || 'Sin nombre'}
+                            {ie.titlePrefix} {templateName || ie.unnamed}
                         </h1>
                         <p className="text-sm text-zinc-500">v{templateVersion} · {templateServiceType}</p>
                     </div>
@@ -253,7 +308,7 @@ export const InstrumentEditorPage = () => {
                         }`}
                     >
                         {preview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        {preview ? 'Editar' : 'Vista previa'}
+                        {preview ? ie.editMode : ie.previewMode}
                     </button>
                 </div>
             </div>
@@ -261,7 +316,7 @@ export const InstrumentEditorPage = () => {
             <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-zinc-500">Nombre</label>
+                        <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.metaName}</label>
                         <input
                             type="text"
                             value={templateName}
@@ -271,7 +326,7 @@ export const InstrumentEditorPage = () => {
                         />
                     </div>
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-zinc-500">Versión</label>
+                        <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.metaVersion}</label>
                         <input
                             type="text"
                             value={templateVersion}
@@ -281,7 +336,7 @@ export const InstrumentEditorPage = () => {
                         />
                     </div>
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-zinc-500">Tipo Servicio</label>
+                        <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.metaServiceType}</label>
                         <select
                             value={templateServiceType}
                             onChange={(e) => setTemplateServiceType(e.target.value)}
@@ -293,7 +348,7 @@ export const InstrumentEditorPage = () => {
                             <option value="Tour">Tour</option>
                             <option value="Spa">Spa</option>
                             <option value="Transporte">Transporte</option>
-                            <option value="Otro">Otro</option>
+                            <option value="Otro">{ie.serviceOtro}</option>
                         </select>
                     </div>
                     <div className="flex items-center gap-3 pt-5">
@@ -307,7 +362,7 @@ export const InstrumentEditorPage = () => {
                             disabled={preview}
                         >
                             {templateActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
-                            {templateActive ? 'Activo' : 'Inactivo'}
+                            {templateActive ? ie.active : ie.inactive}
                         </button>
                         <button
                             onClick={handleSaveTemplate}
@@ -315,7 +370,7 @@ export const InstrumentEditorPage = () => {
                             className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:opacity-50"
                         >
                             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                            Guardar
+                            {ie.saveMetadata}
                         </button>
                     </div>
                 </div>
@@ -323,9 +378,9 @@ export const InstrumentEditorPage = () => {
 
             {preview ? (
                 <div className="space-y-4">
-                    <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">Vista previa</h2>
+                    <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">{ie.previewSection}</h2>
                     {criteria.reduce((n, c) => n + (c.active ? 1 : 0), 0) === 0 ? (
-                        <p className="py-8 text-center text-sm text-zinc-500">Sin preguntas activas</p>
+                        <p className="py-8 text-center text-sm text-zinc-500">{ie.noActiveQuestions}</p>
                     ) : (
                         criteria.filter((c) => c.active).map((c, i) => (
                             <div key={c.id_criterion} className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -341,7 +396,7 @@ export const InstrumentEditorPage = () => {
                                 {c.field_type === 'text' && (
                                     <input
                                         type="text"
-                                        placeholder="Respuesta de texto…"
+                                        placeholder={ie.textAnswerPlaceholder}
                                         className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
                                         disabled
                                     />
@@ -357,7 +412,7 @@ export const InstrumentEditorPage = () => {
                                                 {n}
                                             </button>
                                         ))}
-                                        <span className="ml-2 text-xs text-zinc-400">1=Malo, 5=Excelente</span>
+                                        <span className="ml-2 text-xs text-zinc-400">{ie.scaleHint}</span>
                                     </div>
                                 )}
                                 {c.field_type === 'multiple_choice' && (
@@ -365,11 +420,11 @@ export const InstrumentEditorPage = () => {
                                         {(c.levels || []).map((l, li) => (
                                             <label key={li} className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                                                 <input type="radio" name={`preview-${c.id_criterion}`} disabled className="text-indigo-600" />
-                                                {l.description} {l.score > 0 && <span className="text-xs text-zinc-400">({l.score} pts)</span>}
+                                                {l.description} {l.score > 0 && <span className="text-xs text-zinc-400">({l.score} {ie.ptsWord})</span>}
                                             </label>
                                         ))}
                                         {(c.levels || []).length === 0 && (
-                                            <p className="text-xs text-zinc-400">Sin opciones configuradas</p>
+                                            <p className="text-xs text-zinc-400">{ie.noOptionsConfigured}</p>
                                         )}
                                     </div>
                                 )}
@@ -378,7 +433,7 @@ export const InstrumentEditorPage = () => {
                                         {(c.levels || []).map((l, li) => (
                                             <label key={li} className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                                                 <input type="checkbox" disabled className="rounded text-indigo-600" />
-                                                {l.description} {l.score > 0 && <span className="text-xs text-zinc-400">({l.score} pts)</span>}
+                                                {l.description} {l.score > 0 && <span className="text-xs text-zinc-400">({l.score} {ie.ptsWord})</span>}
                                             </label>
                                         ))}
                                     </div>
@@ -388,16 +443,24 @@ export const InstrumentEditorPage = () => {
                                         className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800"
                                         disabled
                                     >
-                                        <option>Seleccionar…</option>
+                                        <option>{ie.selectPlaceholder}</option>
                                         {(c.levels || []).map((l, li) => (
                                             <option key={li}>{l.description}</option>
                                         ))}
                                     </select>
                                 )}
                                 <div className="mt-2 flex items-center gap-3 text-xs text-zinc-400">
-                                    <span>Peso: {c.weight}</span>
+                                    <span>{ie.weightLabel}: {c.weight}</span>
                                     <span>·</span>
-                                    <span>Tipo: {FIELD_TYPE_LABELS.get(c.field_type)}</span>
+                                    <span>{ie.typeColon} {fieldTypeLabelMap.get(c.field_type)}</span>
+                                    {c.evaluation_step && (
+                                        <>
+                                            <span>·</span>
+                                            <span className={`rounded-full px-2 py-0.5 font-semibold ${STEP_COLORS[c.evaluation_step]}`}>
+                                                {evalStepsUi.find((s) => s.value === c.evaluation_step)?.label}
+                                            </span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))
@@ -407,15 +470,15 @@ export const InstrumentEditorPage = () => {
                 <>
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                            Preguntas ({criteria.length})
+                            {ie.questions(criteria.length)}
                         </h2>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={addCriterion}
-                                className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 <Plus className="h-4 w-4" />
-                                Agregar Pregunta
+                                {ie.addQuestion}
                             </button>
                             <button
                                 onClick={saveAllCriteria}
@@ -427,7 +490,7 @@ export const InstrumentEditorPage = () => {
                                 ) : (
                                     <Check className="h-4 w-4" />
                                 )}
-                                Guardar Todo
+                                {ie.saveAll}
                             </button>
                         </div>
                     </div>
@@ -436,7 +499,7 @@ export const InstrumentEditorPage = () => {
                         <div className="flex min-h-[30vh] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
                             <Plus className="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-600" />
                             <p className="text-zinc-500 dark:text-zinc-400">
-                                No hay preguntas. Haz clic en "Agregar Pregunta"
+                                {ie.emptyQuestionsHint}
                             </p>
                         </div>
                     ) : (
@@ -447,19 +510,45 @@ export const InstrumentEditorPage = () => {
                                     className="group rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
                                 >
                                     <div className="mb-4 flex items-center gap-3">
-                                        <div className="cursor-grab text-zinc-300 hover:text-zinc-500 dark:text-zinc-600">
-                                            <GripVertical className="h-5 w-5" />
+                                        <div className="flex flex-col gap-0.5 shrink-0">
+                                            <button
+                                                onClick={() => i > 0 && moveCriterion(i, i - 1)}
+                                                disabled={i === 0}
+                                                className="rounded p-0.5 text-zinc-300 hover:text-zinc-500 disabled:opacity-20 dark:text-zinc-600"
+                                                title={ie.moveUpTitle}
+                                            >
+                                                <ChevronUp className="h-3.5 w-3.5" />
+                                            </button>
+                                            <button
+                                                onClick={() => i < criteria.length - 1 && moveCriterion(i, i + 1)}
+                                                disabled={i === criteria.length - 1}
+                                                className="rounded p-0.5 text-zinc-300 hover:text-zinc-500 disabled:opacity-20 dark:text-zinc-600"
+                                                title={ie.moveDownTitle}
+                                            >
+                                                <ChevronDown className="h-3.5 w-3.5" />
+                                            </button>
                                         </div>
-                                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs font-bold text-white shadow-sm">
+                                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-sm shrink-0">
                                             {i + 1}
                                         </span>
                                         <input
                                             type="text"
                                             value={c.name}
                                             onChange={(e) => updateCriterion(i, { name: e.target.value })}
-                                            placeholder="Escribe la pregunta…"
+                                            placeholder={ie.questionNamePlaceholder}
                                             className="flex-1 border-0 border-b-2 border-transparent bg-transparent py-1 text-base font-medium text-zinc-900 placeholder:text-zinc-300 focus:border-indigo-500 focus:ring-0 dark:text-white dark:placeholder:text-zinc-600"
                                         />
+                                        {LEVELS_FIELD_TYPES.has(c.field_type) && (!c.levels || c.levels.length === 0) && (
+                                            <span className="shrink-0 flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" title={ie.noLevelsTooltip}>
+                                                <TriangleAlert className="h-3 w-3" />
+                                                {ie.noLevelsShort}
+                                            </span>
+                                        )}
+                                        {c.evaluation_step && (
+                                            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${STEP_COLORS[c.evaluation_step]}`}>
+                                                {evalStepsUi.find((s) => s.value === c.evaluation_step)?.label}
+                                            </span>
+                                        )}
                                         <button
                                             onClick={() => updateCriterion(i, { active: !c.active })}
                                             className={`rounded-lg p-1.5 transition-colors ${
@@ -479,21 +568,43 @@ export const InstrumentEditorPage = () => {
                                     </div>
 
                                     <div className="ml-10 space-y-4">
-                                        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                             <div>
-                                                <label className="mb-1 block text-xs font-medium text-zinc-500">Tipo de campo</label>
+                                                <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.fieldTypeColumn}</label>
                                                 <select
                                                     value={c.field_type}
-                                                    onChange={(e) => updateCriterion(i, { field_type: e.target.value as FieldType })}
+                                                    onChange={(e) => {
+                                                        const newType = e.target.value as FieldType;
+                                                        const updates: Partial<Criterion> = { field_type: newType };
+                                                        if (LEVELS_FIELD_TYPES.has(newType) && (!c.levels || c.levels.length === 0)) {
+                                                            updates.levels = newType === 'scale'
+                                                                ? DEFAULT_SCALE_LEVELS.map((l) => ({ ...l }))
+                                                                : [{ id_subcriterion: 0, id_criterion: 0, description: '', score: 0, order_index: 0 }];
+                                                        }
+                                                        updateCriterion(i, updates);
+                                                    }}
                                                     className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                                                 >
-                                                    {FIELD_TYPES.map((ft) => (
+                                                    {fieldTypesUi.map((ft) => (
                                                         <option key={ft.value} value={ft.value}>{ft.label}</option>
                                                     ))}
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="mb-1 block text-xs font-medium text-zinc-500">Peso</label>
+                                                <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.evaluationStepColumn}</label>
+                                                <select
+                                                    value={c.evaluation_step || ''}
+                                                    onChange={(e) => { const v = e.target.value; updateCriterion(i, { evaluation_step: v ? v as EvaluationStep : undefined }); }}
+                                                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                                                >
+                                                    <option value="">{ie.stepUnassigned}</option>
+                                                    {evalStepsUi.map((s) => (
+                                                        <option key={s.value} value={s.value}>{s.label}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.weightLabel}</label>
                                                 <input
                                                     type="number"
                                                     value={c.weight}
@@ -513,18 +624,18 @@ export const InstrumentEditorPage = () => {
                                                     className="rounded border-zinc-300 text-indigo-600 dark:border-zinc-600"
                                                 />
                                                 <label htmlFor={`required-${i}`} className="text-sm text-zinc-600 dark:text-zinc-400">
-                                                    Campo requerido
+                                                    {ie.requiredFieldLabel}
                                                 </label>
                                             </div>
                                         </div>
 
                                         <div>
-                                            <label className="mb-1 block text-xs font-medium text-zinc-500">Descripción (opcional)</label>
+                                            <label className="mb-1 block text-xs font-medium text-zinc-500">{ie.optionalDescriptionLabel}</label>
                                             <input
                                                 type="text"
                                                 value={c.description || ''}
                                                 onChange={(e) => updateCriterion(i, { description: e.target.value })}
-                                                placeholder="Instrucciones o ayuda para esta pregunta"
+                                                placeholder={ie.criterionInstructionPlaceholder}
                                                 className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500"
                                             />
                                         </div>
@@ -532,13 +643,16 @@ export const InstrumentEditorPage = () => {
                                         {LEVELS_FIELD_TYPES.has(c.field_type) && (
                                             <div>
                                                 <div className="mb-2 flex items-center justify-between">
-                                                    <label className="text-xs font-medium text-zinc-500">Opciones / Niveles</label>
+                                                    <label className="text-xs font-medium text-zinc-500">
+                                                        {ie.optionsLevelsLabel}
+                                                        <span className="ml-1 text-zinc-400">({(c.levels || []).length})</span>
+                                                    </label>
                                                     <button
                                                         onClick={() => addLevel(i)}
                                                         className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
                                                     >
                                                         <Plus className="h-3 w-3" />
-                                                        Agregar opción
+                                                        {ie.addOption}
                                                     </button>
                                                 </div>
                                                 <div className="space-y-2">
@@ -548,14 +662,14 @@ export const InstrumentEditorPage = () => {
                                                                 type="text"
                                                                 value={l.description}
                                                                 onChange={(e) => updateLevel(i, li, { description: e.target.value })}
-                                                                placeholder="Descripción"
+                                                                placeholder={ie.levelDescriptionPlaceholder}
                                                                 className="flex-1 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                                                             />
                                                             <input
                                                                 type="number"
                                                                 value={l.score}
                                                                 onChange={(e) => updateLevel(i, li, { score: Number(e.target.value) })}
-                                                                placeholder="Pts"
+                                                                placeholder={ie.pointsShort}
                                                                 min="0"
                                                                 max="100"
                                                                 className="w-20 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"

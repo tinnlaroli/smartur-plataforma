@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { prefersReducedMotion } from '../utils/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,12 +19,20 @@ export const ImpactSection: React.FC = () => {
     const statRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
     useEffect(() => {
+        if (prefersReducedMotion()) {
+            statRefs.current.forEach((el, i) => {
+                if (!el) return;
+                const targetNum = parseFloat(t(STAT_KEYS[i].num));
+                if (!Number.isNaN(targetNum)) el.textContent = String(Math.round(targetNum));
+            });
+            return;
+        }
         const ctx = gsap.context(() => {
             // Reveal title/text
             gsap.fromTo('.impact-header',
                 { y: 40, opacity: 0 },
                 { y: 0, opacity: 1, duration: 1, stagger: 0.15, ease: 'power3.out',
-                    scrollTrigger: { trigger: sectionRef.current, start: 'top 65%' } }
+                    scrollTrigger: { trigger: sectionRef.current, start: 'top 65%', once: true } }
             );
 
             // Animated counters
@@ -36,7 +45,7 @@ export const ImpactSection: React.FC = () => {
                     val: targetNum,
                     duration: 2,
                     ease: 'power2.out',
-                    scrollTrigger: { trigger: el, start: 'top 80%' },
+                    scrollTrigger: { trigger: el, start: 'top 80%', once: true },
                     onUpdate: () => { if (el) el.textContent = Math.round(proxy.val).toString(); }
                 });
             });
@@ -45,11 +54,11 @@ export const ImpactSection: React.FC = () => {
             gsap.fromTo('.impact-card',
                 { y: 50, opacity: 0, scale: 0.95 },
                 { y: 0, opacity: 1, scale: 1, duration: 0.8, stagger: 0.12, ease: 'power3.out',
-                    scrollTrigger: { trigger: sectionRef.current, start: 'top 60%' } }
+                    scrollTrigger: { trigger: sectionRef.current, start: 'top 60%', once: true } }
             );
         }, sectionRef);
         return () => ctx.revert();
-    }, []);
+    }, [t]);
 
     return (
         <section
@@ -60,7 +69,7 @@ export const ImpactSection: React.FC = () => {
         >
             {/* Background accent */}
             <div className="pointer-events-none absolute inset-0" aria-hidden>
-                <div className="absolute -left-48 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full opacity-10 blur-3xl" style={{ background: 'var(--color-purple)' }} />
+                <div className="float-accent absolute -left-48 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full opacity-10 blur-3xl" style={{ background: 'var(--color-purple)' }} />
             </div>
 
             <div className="relative mx-auto max-w-[1240px] px-6">
@@ -82,7 +91,7 @@ export const ImpactSection: React.FC = () => {
                     {STAT_KEYS.map((stat, i) => (
                         <div
                             key={stat.num}
-                            className="impact-card relative overflow-hidden rounded-[2rem] p-8"
+                            className="impact-card relative overflow-hidden rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8"
                             style={{ border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}
                         >
                             {/* Accent corner */}

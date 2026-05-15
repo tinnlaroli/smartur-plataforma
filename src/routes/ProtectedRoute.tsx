@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { emitUserStorageSync } from '../shared/userStorageSync';
 
 interface ProtectedRouteProps {
     allowedRoles?: number[];
@@ -22,6 +23,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     if (!token || isTokenExpired(token)) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        emitUserStorageSync();
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
@@ -37,6 +39,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
         } catch {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            emitUserStorageSync();
             return <Navigate to="/" replace />;
         }
 

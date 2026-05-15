@@ -1,5 +1,6 @@
 import type { User } from '../types/types';
 import { useRef } from 'react';
+import { motion } from 'framer-motion';
 
 interface Props {
     users: User[];
@@ -36,7 +37,6 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
                             className="size-4 cursor-pointer rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0"
                         />
                     </div>
-                    <div className="w-16 shrink-0 text-xs font-medium tracking-wider text-zinc-400 uppercase">ID</div>
                     <div className="w-16 shrink-0 text-xs font-medium tracking-wider text-zinc-400 uppercase">Foto</div>
                     <div className="min-w-0 flex-1 text-xs font-medium tracking-wider text-zinc-400 uppercase">Nombre</div>
                     <div className="min-w-0 flex-1 text-xs font-medium tracking-wider text-zinc-400 uppercase">Email</div>
@@ -71,8 +71,14 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
             {/* Body */}
             <div ref={tableRef} className="min-h-0 flex-1 overflow-y-auto">
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {users.map((user) => (
-                        <div key={user.id} className="group flex items-center gap-4 p-4 transition-colors hover:bg-zinc-800/50">
+                    {users.map((user, index) => (
+                        <motion.div
+                            key={user.id}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.03 }}
+                            className="group flex items-center gap-4 p-4 transition-colors hover:bg-zinc-800/50"
+                        >
                             <div className="w-8 shrink-0">
                                 <input
                                     type="checkbox"
@@ -81,8 +87,6 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
                                     className="size-4 cursor-pointer rounded border-zinc-700 bg-zinc-900 text-violet-500 focus:ring-violet-500 focus:ring-offset-0"
                                 />
                             </div>
-                            <div className="w-16 shrink-0 text-sm font-medium text-zinc-100">{user.id}</div>
-
                             {/* Foto - Centrado */}
                             <div className="flex w-16 shrink-0">
                                 {user.photo_url ? (
@@ -138,7 +142,7 @@ export default function UserTable({ users, selectedUsers, onToggle, onViewDetail
                                     day: '2-digit',
                                 })}
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>

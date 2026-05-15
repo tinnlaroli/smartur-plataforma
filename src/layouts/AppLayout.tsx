@@ -1,38 +1,31 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Menu, Bell, LogOut, ChevronRight, Sun, Moon } from 'lucide-react';
+import { Menu, Bell, LogOut, ChevronRight, Sun, Moon, CheckCircle, XCircle, AlertCircle, Info, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthModal } from '../features/auth/context/AuthModalContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage, useUserPreferences } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { getDashboardText } from '../shared/i18n/dashboardLocale';
+import { useToast, type NotificationType, type ToastNotification } from '../shared/context/ToastContext';
 
-/* ── Route → breadcrumb label map ────────────────────────────────────── */
-const ROUTE_LABELS: Record<string, string> = {
-    '/dashboard':                  'Inicio',
-    '/dashboard/usuarios':         'Usuarios',
-    '/dashboard/companias':        'Compañías',
-    '/dashboard/servicios':        'Servicios',
-    '/dashboard/ubicaciones':      'Ubicaciones',
-    '/dashboard/perfiles':         'Perfiles',
-    '/dashboard/actividades':      'Actividades',
-    '/dashboard/certificaciones':  'Certificaciones',
-    '/dashboard/poi':              'Puntos de Interés',
-    '/dashboard/estadisticas':     'Estadísticas',
-    '/dashboard/instrumentos':     'Instrumentos',
-    '/dashboard/configuracion':    'Configuración',
+const NOTIFICATION_ICON_MAP: Record<NotificationType, typeof CheckCircle> = {
+    success: CheckCircle,
+    error: XCircle,
+    warning: AlertCircle,
+    info: Info,
 };
 
 const getInitials = (name: string) =>
     name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
 /* ── Breadcrumb ──────────────────────────────────────────────────────── */
-const Breadcrumb = ({ pathname }: { pathname: string }) => {
+const Breadcrumb = ({ pathname, routeLabels }: { pathname: string; routeLabels: Record<string, string> }) => {
     const segments = pathname.split('/').filter(Boolean);
     const crumbs = segments.map((_, i) => {
         const path = '/' + segments.slice(0, i + 1).join('/');
-        return { label: ROUTE_LABELS[path] ?? segments[i], path };
+        return { label: routeLabels[path] ?? segments[i], path };
     });
 
     return (
@@ -56,23 +49,147 @@ const Breadcrumb = ({ pathname }: { pathname: string }) => {
     );
 };
 
+const formatNotificationTime = (notification: ToastNotification, locale: string, justNowLabel: string) => {
+    const elapsedMs = Date.now() - notification.createdAt;
+    if (elapsedMs < 60_000) return justNowLabel;
+
+    return new Intl.DateTimeFormat(locale, {
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(notification.createdAt);
+};
+
+const NotificationPanel = ({
+    clearLabel,
+    emptyHint,
+    emptyTitle,
+    justNowLabel,
+    locale,
+    notifications,
+    recentLabel,
+    title,
+    onClear,
+}: {
+    clearLabel: string;
+    emptyHint: string;
+    emptyTitle: string;
+    justNowLabel: string;
+    locale: string;
+    notifications: ToastNotification[];
+    recentLabel: string;
+    title: string;
+    onClear: () => void;
+}) => (
+    <motion.div
+        initial={{ opacity: 0, y: 6, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 6, scale: 0.96 }}
+        transition={{ duration: 0.18 }}
+        className="absolute right-0 top-11 z-30 w-80 rounded-2xl border p-4 shadow-xl"
+        style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+    >
+        <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-alt)' }}>
+                    {title}
+                </p>
+                {notifications.length > 0 && (
+                    <p className="mt-1 text-[11px]" style={{ color: 'var(--color-text-alt)' }}>
+                        {recentLabel}
+                    </p>
+                )}
+            </div>
+            {notifications.length > 0 && (
+                <button
+                    type="button"
+                    onClick={onClear}
+                    className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-[11px] font-semibold transition hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    style={{ color: 'var(--color-text-alt)' }}
+                >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {clearLabel}
+                </button>
+            )}
+        </div>
+
+        {notifications.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-4 text-center">
+                <Bell className="h-8 w-8 text-zinc-300" />
+                <p className="text-sm font-medium text-zinc-400">{emptyTitle}</p>
+                <p className="max-w-[16rem] text-xs text-zinc-400">{emptyHint}</p>
+            </div>
+        ) : (
+            <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
+                {notifications.map((notification) => {
+                    const Icon = NOTIFICATION_ICON_MAP[notification.type];
+
+                    return (
+                        <div
+                            key={notification.id}
+                            className={`rounded-2xl border px-3 py-3 ${notification.read ? 'opacity-75' : ''}`}
+                            style={{
+                                background: notification.read ? 'var(--color-bg-alt)' : 'rgba(var(--rgb-purple-accent), 0.08)',
+                                borderColor: 'var(--color-border)',
+                            }}
+                        >
+                            <div className="flex items-start gap-3">
+                                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+                                    style={{ background: 'rgba(var(--rgb-text), 0.06)' }}>
+                                    <Icon className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+                                            {notification.title}
+                                        </p>
+                                        {!notification.read && (
+                                            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
+                                        )}
+                                    </div>
+                                    {notification.description && (
+                                        <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--color-text-alt)' }}>
+                                            {notification.description}
+                                        </p>
+                                    )}
+                                    <p className="mt-2 text-[11px]" style={{ color: 'var(--color-text-alt)' }}>
+                                        {formatNotificationTime(notification, locale, justNowLabel)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        )}
+    </motion.div>
+);
+
 /* ── Main layout ─────────────────────────────────────────────────────── */
 export default function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notifOpen, setNotifOpen] = useState(false);
     const navigate = useNavigate();
     const { openModal } = useAuthModal();
-    const { t } = useLanguage();
+    const { lang, t } = useLanguage();
+    const { user, clearUser } = useUserPreferences();
     const { pathname } = useLocation();
     const { theme, toggleTheme } = useTheme();
+    const { notifications, unreadCount, markAllAsRead, clearNotifications } = useToast();
+    const copy = getDashboardText(lang);
 
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
     const userRole = user?.role_id || 2;
+
+    const handleToggleNotifications = () => {
+        setNotifOpen((current) => {
+            const next = !current;
+            if (next) markAllAsRead();
+            return next;
+        });
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearUser();
         openModal('login');
         navigate('/');
     };
@@ -92,7 +209,7 @@ export default function AppLayout() {
                     }}
                 >
                     {/* Left: breadcrumb */}
-                    <Breadcrumb pathname={pathname} />
+                    <Breadcrumb pathname={pathname} routeLabels={copy.layout.routes} />
 
                     {/* Right: actions */}
                     <div className="flex items-center gap-2">
@@ -100,7 +217,7 @@ export default function AppLayout() {
                         {/* Theme toggle */}
                         <button
                             onClick={toggleTheme}
-                            title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+                            title={theme === 'dark' ? copy.layout.clearToLight : copy.layout.clearToDark}
                             className="rounded-xl p-2 transition-colors nav-item-idle hover:bg-zinc-100 dark:hover:bg-zinc-800"
                         >
                             {theme === 'dark'
@@ -111,37 +228,35 @@ export default function AppLayout() {
                         {/* Notification bell */}
                         <div className="relative">
                             <button
-                                onClick={() => setNotifOpen((v) => !v)}
+                                onClick={handleToggleNotifications}
                                 className="relative rounded-xl p-2 transition-colors nav-item-idle hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                                title="Notificaciones"
+                                title={copy.layout.notificationTitle}
                             >
                                 <Bell className="size-[18px]" />
-                                <motion.span
-                                    animate={{ scale: [1, 1.3, 1] }}
-                                    transition={{ repeat: Infinity, repeatDelay: 3, duration: 0.4 }}
-                                    className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 bg-rose-500"
-                                    style={{ borderColor: 'var(--color-bg)' }}
-                                />
+                                {unreadCount > 0 && (
+                                    <motion.span
+                                        animate={{ scale: [1, 1.3, 1] }}
+                                        transition={{ repeat: Infinity, repeatDelay: 3, duration: 0.4 }}
+                                        className="absolute right-1.5 top-1.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white"
+                                    >
+                                        {Math.min(unreadCount, 9)}
+                                    </motion.span>
+                                )}
                             </button>
 
                             <AnimatePresence>
                                 {notifOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 6, scale: 0.96 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 6, scale: 0.96 }}
-                                        transition={{ duration: 0.18 }}
-                                        className="absolute right-0 top-11 w-72 rounded-2xl border p-4 shadow-xl"
-                                        style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
-                                    >
-                                        <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-text-alt)' }}>
-                                            Notificaciones
-                                        </p>
-                                        <div className="flex flex-col items-center gap-2 py-4 text-center">
-                                            <Bell className="h-8 w-8 text-zinc-300" />
-                                            <p className="text-sm text-zinc-400">Sin notificaciones nuevas</p>
-                                        </div>
-                                    </motion.div>
+                                    <NotificationPanel
+                                        clearLabel={copy.layout.clearAll}
+                                        emptyHint={copy.layout.notificationEmptyHint}
+                                        emptyTitle={copy.layout.notificationEmpty}
+                                        justNowLabel={copy.layout.justNow}
+                                        locale={copy.locale}
+                                        notifications={notifications}
+                                        recentLabel={copy.layout.recentLabel}
+                                        title={copy.layout.notificationTitle}
+                                        onClear={clearNotifications}
+                                    />
                                 )}
                             </AnimatePresence>
                         </div>
@@ -156,7 +271,7 @@ export default function AppLayout() {
                         >
                             <div
                                 className="flex size-7 items-center justify-center rounded-lg text-xs font-bold text-white shadow-sm"
-                                style={{ background: 'linear-gradient(135deg, var(--color-purple), var(--color-pink))' }}
+                                style={{ background: 'var(--color-purple)' }}
                             >
                                 {user ? getInitials(user.name) : 'U'}
                             </div>
@@ -200,26 +315,51 @@ export default function AppLayout() {
 
                     <span
                         className="ml-3 text-base font-bold"
-                        style={{ background: 'linear-gradient(90deg, var(--color-purple), var(--color-pink))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                        style={{ color: 'var(--color-purple)' }}
                     >
                         Smartur
                     </span>
 
                     <div className="ml-auto flex items-center gap-2">
                         <button
+                            type="button"
+                            onClick={handleToggleNotifications}
                             className="relative rounded-xl p-2 transition-colors nav-item-idle"
+                            aria-label={copy.layout.notificationTitle}
                         >
                             <Bell className="size-[18px]" />
-                            <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-rose-500" />
+                            {unreadCount > 0 && (
+                                <span className="absolute right-1.5 top-1.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
+                                    {Math.min(unreadCount, 9)}
+                                </span>
+                            )}
                         </button>
                         <div
                             className="flex size-8 items-center justify-center rounded-lg text-xs font-bold text-white shadow"
-                            style={{ background: 'linear-gradient(135deg, var(--color-purple), var(--color-pink))' }}
+                            style={{ background: 'var(--color-purple)' }}
                         >
                             {user ? getInitials(user.name) : 'U'}
                         </div>
                     </div>
                 </div>
+
+                <AnimatePresence>
+                    {notifOpen && (
+                        <div className="relative px-4 pt-3 md:hidden">
+                            <NotificationPanel
+                                clearLabel={copy.layout.clearAll}
+                                emptyHint={copy.layout.notificationEmptyHint}
+                                emptyTitle={copy.layout.notificationEmpty}
+                                justNowLabel={copy.layout.justNow}
+                                locale={copy.locale}
+                                notifications={notifications}
+                                recentLabel={copy.layout.recentLabel}
+                                title={copy.layout.notificationTitle}
+                                onClear={clearNotifications}
+                            />
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 {/* ── Main content ── */}
                 <main

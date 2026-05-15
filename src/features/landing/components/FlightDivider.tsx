@@ -95,7 +95,8 @@ export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperie
         <section
             ref={sectionRef}
             id="flight-divider"
-            className="flight-divider-section relative h-[50vh] md:h-[65vh] lg:h-[80vh] w-full bg-white dark:bg-[var(--color-bg)] transition-colors duration-300"
+            className="flight-divider-section relative h-[50vh] md:h-[65vh] lg:h-[80vh] w-full"
+            style={{ background: 'var(--color-bg)' }}
         >
             <div className="absolute inset-0 h-full w-full overflow-hidden pointer-events-none">
                 

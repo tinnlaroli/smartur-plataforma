@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState, useMemo } from 'react';
 import { useCompany } from '../hooks/useCompany';
 import Pagination from '../components/Pagination';
 import { useSearchParams } from 'react-router-dom';
@@ -9,6 +9,8 @@ import SearchInput from '../components/SearchInput';
 import { Trash2, Building2, Plus, AlertCircle } from 'lucide-react';
 import { TableSkeleton } from '../../../components/ui/TableSkeleton';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 type ModalState = { isCreateOpen: boolean; isDetailOpen: boolean; selectedId: number | null };
 type ModalAction =
@@ -26,6 +28,8 @@ const modalReducer = (state: ModalState, action: ModalAction): ModalState => {
 };
 
 export const CompanyPage = () => {
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
     const {
         companies, isLoading, error, totalPages,
         createCompany, updateCompany, deleteCompany,
@@ -52,7 +56,7 @@ export const CompanyPage = () => {
         setSelectedCompanies((prev) => prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]);
 
     const handleDeleteSelected = async () => {
-        if (!window.confirm(`¿Eliminar ${selectedCompanies.length} empresa(s)?`)) return;
+        if (!window.confirm(m.common.confirmDeleteCompanies(selectedCompanies.length))) return;
         await Promise.all(selectedCompanies.map((id) => deleteCompany(id)));
         setSelectedCompanies([]);
     };
@@ -68,16 +72,16 @@ export const CompanyPage = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
-                            Empresas
+                            {m.companies.title}
                         </h1>
                         <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
-                            Directorio de establecimientos turísticos
+                            {m.companies.subtitle}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <SearchInput value={searchTerm} onChange={setSearchTerm} />
+                    <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder={m.companies.searchPlaceholder} />
 
                     <AnimatePresence>
                         {selectedCompanies.length > 0 && (
@@ -89,7 +93,7 @@ export const CompanyPage = () => {
                                 className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
                             >
                                 <Trash2 className="h-4 w-4" />
-                                Eliminar ({selectedCompanies.length})
+                                {m.common.deleteCount(selectedCompanies.length)}
                             </motion.button>
                         )}
                     </AnimatePresence>
@@ -100,7 +104,7 @@ export const CompanyPage = () => {
                         style={{ background: 'var(--color-cyan)' }}
                     >
                         <Plus className="h-4 w-4" />
-                        Agregar empresa
+                        {m.companies.add}
                     </button>
                 </div>
             </div>

@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { CreateUserDTO } from '../types/types';
 import { Camera, User as UserIcon } from 'lucide-react';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
 interface Props {
     onClose: () => void;
@@ -8,6 +10,8 @@ interface Props {
 }
 
 export default function CreateUserModal({ onClose, onSubmit }: Props) {
+    const { lang } = useLanguage();
+    const mod = useMemo(() => getDashboardText(lang).modules.modals, [lang]);
     const [formData, setFormData] = useState<CreateUserDTO>({
         name: '',
         email: '',
@@ -49,13 +53,13 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
             <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-md transform transition-all">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
                     <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
-                        Crear usuario
+                        {mod.users.createTitle}
                     </h2>
                     <button
                         onClick={onClose}
                         className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
                     >
-                        <span className="sr-only">Cerrar</span>
+                        <span className="sr-only">{mod.common.closeSr}</span>
                         <svg
                             className="size-5"
                             fill="none"
@@ -101,7 +105,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                             </label>
                         </div>
                         <p className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">
-                            Foto de perfil
+                            {mod.users.profilePhoto}
                         </p>
                     </div>
 
@@ -111,7 +115,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 htmlFor="create-user-name"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
-                                Nombre completo
+                                {mod.users.fullName}
                             </label>
                             <input
                                 id="create-user-name"
@@ -120,7 +124,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 required
                                 onChange={handleFieldChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
-                                placeholder="Ej. Juan Pérez" />
+                                placeholder={mod.users.namePlaceholder} />
                         </div>
 
                         <div className="gap-y-1 flex flex-col">
@@ -128,7 +132,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 htmlFor="create-user-email"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
-                                Correo electrónico
+                                {mod.users.email}
                             </label>
                             <input
                                 id="create-user-email"
@@ -138,7 +142,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 value={formData.email}
                                 onChange={handleFieldChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
-                                placeholder="user@ejemplo.com" />
+                                placeholder={mod.users.emailPlaceholder} />
                         </div>
 
                         <div className="gap-y-1 flex flex-col">
@@ -146,7 +150,7 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 htmlFor="create-user-password"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
-                                Contraseña
+                                {mod.users.password}
                             </label>
                             <input
                                 id="create-user-password"
@@ -156,14 +160,14 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 value={formData.password}
                                 onChange={handleFieldChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 placeholder-zinc-400 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-500"
-                                placeholder="••••••••" />
+                                placeholder={mod.users.passwordPlaceholder} />
                         </div>
                         <div className="gap-y-1 flex flex-col">
                             <label
                                 htmlFor="create-user-role"
                                 className="block text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
                             >
-                                Rol
+                                {mod.users.role}
                             </label>
                             <select
                                 id="create-user-role"
@@ -172,8 +176,8 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                                 onChange={handleFieldChange}
                                 className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-zinc-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                             >
-                                <option value={1}>Administrador</option>
-                                <option value={2}>Usuario</option>
+                                <option value={1}>{mod.users.roleAdmin}</option>
+                                <option value={2}>{mod.users.roleUser}</option>
                             </select>
                         </div>
                     </div>
@@ -184,14 +188,14 @@ export default function CreateUserModal({ onClose, onSubmit }: Props) {
                             onClick={onClose}
                             className="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                         >
-                            Cancelar
+                            {mod.common.cancel}
                         </button>
 
                         <button
                             type="submit"
                             className="transform rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:scale-[1.02] hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 active:scale-[0.98] dark:bg-violet-500 dark:hover:bg-violet-600"
                         >
-                            Crear usuario
+                            {mod.users.createSubmit}
                         </button>
                     </div>
                 </form>

@@ -1,15 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useStatistics } from '../hooks/useStatistics';
 import { DollarSign, Briefcase, Zap, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SmartURSpinner } from '../../../components/ui/SmartURSpinner';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
-const TABS = [
-    { key: 'expenditure', label: 'Gasto Turístico',  icon: DollarSign, color: 'var(--color-purple)' },
-    { key: 'employment',  label: 'Empleo',            icon: Briefcase,  color: 'var(--color-cyan)'   },
-    { key: 'input',       label: 'Huella de Carbono', icon: Zap,        color: 'var(--color-green)'  },
-] as const;
-type TabKey = typeof TABS[number]['key'];
+type TabKey = 'expenditure' | 'employment' | 'input';
 
 const Label = ({ children }: { children: React.ReactNode }) => (
     <label className="block text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text-alt)' }}>
@@ -27,8 +24,20 @@ const inputStyle: React.CSSProperties = {
 export const StatisticsPage = () => {
     const { isLoading, recordExpenditure, recordEmployment, recordInput } = useStatistics();
     const [activeTab, setActiveTab] = useState<TabKey>('expenditure');
+    const { lang } = useLanguage();
+    const m = useMemo(() => getDashboardText(lang).modules, [lang]);
 
-    const activeTabData = TABS.find((t) => t.key === activeTab)!;
+    const tabs = useMemo(
+        () =>
+            [
+                { key: 'expenditure' as const, label: m.statistics.tabExpenditure, icon: DollarSign, color: 'var(--color-purple)' },
+                { key: 'employment' as const, label: m.statistics.tabEmployment, icon: Briefcase, color: 'var(--color-cyan)' },
+                { key: 'input' as const, label: m.statistics.tabCarbon, icon: Zap, color: 'var(--color-green)' },
+            ] as const,
+        [lang],
+    );
+
+    const activeTabData = tabs.find((t) => t.key === activeTab)!;
 
     return (
         <div className="space-y-6">
@@ -40,17 +49,17 @@ export const StatisticsPage = () => {
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
-                        Estadísticas y Finanzas
+                        {m.statistics.title}
                     </h1>
                     <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
-                        KPIs turísticos, laborales y ambientales
+                        {m.statistics.subtitle}
                     </p>
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex gap-1 rounded-2xl p-1.5" style={{ background: 'var(--color-bg-alt)' }}>
-                {TABS.map((tab) => {
+                {tabs.map((tab) => {
                     const isActive = activeTab === tab.key;
                     return (
                         <button
@@ -93,12 +102,12 @@ export const StatisticsPage = () => {
                         </div>
                         <div>
                             <h2 className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                                {activeTab === 'expenditure' && 'Registrar Gasto Turístico'}
-                                {activeTab === 'employment'  && 'Registrar Empleado'}
-                                {activeTab === 'input'       && 'Registrar Insumo / Huella'}
+                                {activeTab === 'expenditure' && m.statistics.panelExpenditure}
+                                {activeTab === 'employment' && m.statistics.panelEmployment}
+                                {activeTab === 'input' && m.statistics.panelCarbon}
                             </h2>
                             <p className="text-xs" style={{ color: 'var(--color-text-alt)' }}>
-                                Completa los campos y guarda el registro
+                                {m.statistics.formHint}
                             </p>
                         </div>
                     </div>
@@ -119,24 +128,24 @@ export const StatisticsPage = () => {
                             className="max-w-md space-y-4"
                         >
                             <div>
-                                <Label>Tipo de gasto</Label>
-                                <input name="type" placeholder="Alojamiento, Comida, Transporte…"
+                                <Label>{m.statistics.expType}</Label>
+                                <input name="type" placeholder={m.statistics.expTypePh}
                                     className={inputCls} style={inputStyle} required />
                             </div>
                             <div>
-                                <Label>Monto ($)</Label>
-                                <input name="amount" type="number" placeholder="0.00"
+                                <Label>{m.statistics.amount}</Label>
+                                <input name="amount" type="number" placeholder={m.statistics.amountPh}
                                     className={inputCls} style={inputStyle} required />
                             </div>
                             <div>
-                                <Label>Destino / Establecimiento</Label>
-                                <input name="destination" placeholder="Nombre del lugar o establecimiento"
+                                <Label>{m.statistics.destination}</Label>
+                                <input name="destination" placeholder={m.statistics.destinationPh}
                                     className={inputCls} style={inputStyle} required />
                             </div>
                             <button type="submit" disabled={isLoading}
                                 className="mt-2 w-full rounded-xl py-3 text-sm font-bold text-white transition hover:opacity-90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                 style={{ background: activeTabData.color }}>
-                                {isLoading ? <><SmartURSpinner size={22} /> Guardando…</> : 'Guardar Gasto'}
+                                {isLoading ? <><SmartURSpinner size={22} /> {m.statistics.saving}</> : m.statistics.btnSaveExpense}
                             </button>
                         </form>
                     )}
@@ -159,36 +168,36 @@ export const StatisticsPage = () => {
                             className="max-w-md space-y-4"
                         >
                             <div>
-                                <Label>Cargo / Puesto</Label>
-                                <input name="position" placeholder="Ej: Recepcionista, Guía turístico…"
+                                <Label>{m.statistics.position}</Label>
+                                <input name="position" placeholder={m.statistics.positionPh}
                                     className={inputCls} style={inputStyle} required />
                             </div>
                             <div>
-                                <Label>Tipo de contrato</Label>
+                                <Label>{m.statistics.contractType}</Label>
                                 <select name="contract" className={inputCls} style={inputStyle}>
-                                    <option value="Tiempo Completo">Tiempo Completo</option>
-                                    <option value="Medio Tiempo">Medio Tiempo</option>
-                                    <option value="Temporal">Temporal</option>
+                                    <option value="Tiempo Completo">{m.statistics.contractFull}</option>
+                                    <option value="Medio Tiempo">{m.statistics.contractHalf}</option>
+                                    <option value="Temporal">{m.statistics.contractTemporal}</option>
                                 </select>
                             </div>
                             <div>
-                                <Label>Género</Label>
+                                <Label>{m.statistics.gender}</Label>
                                 <select name="gender" className={inputCls} style={inputStyle}>
-                                    <option value="Masculino">Masculino</option>
-                                    <option value="Femenino">Femenino</option>
-                                    <option value="No binario">No binario</option>
-                                    <option value="Prefiero no decir">Prefiero no decir</option>
+                                    <option value="Masculino">{m.statistics.genderMale}</option>
+                                    <option value="Femenino">{m.statistics.genderFemale}</option>
+                                    <option value="No binario">{m.statistics.genderNb}</option>
+                                    <option value="Prefiero no decir">{m.statistics.genderPreferNot}</option>
                                 </select>
                             </div>
                             <div>
-                                <Label>Salario mensual ($)</Label>
-                                <input name="salary" type="number" placeholder="0.00"
+                                <Label>{m.statistics.salary}</Label>
+                                <input name="salary" type="number" placeholder={m.statistics.salaryPh}
                                     className={inputCls} style={inputStyle} required />
                             </div>
                             <button type="submit" disabled={isLoading}
                                 className="mt-2 w-full rounded-xl py-3 text-sm font-bold text-white transition hover:opacity-90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                 style={{ background: activeTabData.color }}>
-                                {isLoading ? <><SmartURSpinner size={22} /> Guardando…</> : 'Registrar Empleado'}
+                                {isLoading ? <><SmartURSpinner size={22} /> {m.statistics.saving}</> : m.statistics.btnRegisterEmployee}
                             </button>
                         </form>
                     )}
@@ -210,34 +219,34 @@ export const StatisticsPage = () => {
                             className="max-w-md space-y-4"
                         >
                             <div>
-                                <Label>Tipo de insumo</Label>
+                                <Label>{m.statistics.inputType}</Label>
                                 <select name="type" className={inputCls} style={inputStyle}>
-                                    <option value="Energía Eléctrica">Energía Eléctrica</option>
-                                    <option value="Agua">Agua</option>
-                                    <option value="Gas - Combustible">Gas / Combustible</option>
+                                    <option value="Energía Eléctrica">{m.statistics.inputElectric}</option>
+                                    <option value="Agua">{m.statistics.inputWater}</option>
+                                    <option value="Gas - Combustible">{m.statistics.inputGas}</option>
                                 </select>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <Label>Consumo (kWh / m³)</Label>
-                                    <input name="consumption" type="number" placeholder="0"
+                                    <Label>{m.statistics.consumption}</Label>
+                                    <input name="consumption" type="number" placeholder={m.statistics.consumptionPh}
                                         className={inputCls} style={inputStyle} required />
                                 </div>
                                 <div>
-                                    <Label>Huella CO₂ (kg)</Label>
-                                    <input name="carbon" type="number" step="0.01" placeholder="0.00"
+                                    <Label>{m.statistics.carbon}</Label>
+                                    <input name="carbon" type="number" step="0.01" placeholder={m.statistics.carbonPh}
                                         className={inputCls} style={inputStyle} required />
                                 </div>
                             </div>
                             <div>
-                                <Label>Costo asociado ($)</Label>
-                                <input name="cost" type="number" placeholder="0.00"
+                                <Label>{m.statistics.cost}</Label>
+                                <input name="cost" type="number" placeholder={m.statistics.costPh}
                                     className={inputCls} style={inputStyle} required />
                             </div>
                             <button type="submit" disabled={isLoading}
                                 className="mt-2 w-full rounded-xl py-3 text-sm font-bold text-white transition hover:opacity-90 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                 style={{ background: activeTabData.color }}>
-                                {isLoading ? <><SmartURSpinner size={22} /> Guardando…</> : 'Guardar Indicadores'}
+                                {isLoading ? <><SmartURSpinner size={22} /> {m.statistics.saving}</> : m.statistics.btnSaveIndicators}
                             </button>
                         </form>
                     )}

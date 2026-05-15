@@ -7,6 +7,21 @@ import type {
     TouristServiceDetailResponse,
 } from '../types/types';
 
+const buildFormData = (data: CreateTouristServiceDTO | UpdateTouristServiceDTO) => {
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        if (key === 'image') {
+            if (value instanceof File) formData.append('image', value);
+            return;
+        }
+        formData.append(key, String(value));
+    });
+
+    return formData;
+};
+
 export const touristServiceApi = {
     findAll: async (
         page: number,
@@ -35,12 +50,18 @@ export const touristServiceApi = {
     },
 
     create: async (data: CreateTouristServiceDTO): Promise<TouristService> => {
-        const response = await api.post<TouristService>('/tourist-services', data);
+        const payload = buildFormData(data);
+        const response = await api.post<TouristService>('/tourist-services', payload, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return response.data;
     },
 
     update: async (id: number, data: UpdateTouristServiceDTO): Promise<TouristService> => {
-        const response = await api.patch<TouristService>(`/tourist-services/${id}`, data);
+        const payload = buildFormData(data);
+        const response = await api.patch<TouristService>(`/tourist-services/${id}`, payload, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return response.data;
     },
 

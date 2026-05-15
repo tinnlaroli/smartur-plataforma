@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { UserCircle2, BrainCircuit, Compass } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { prefersReducedMotion } from '../utils/motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,18 +18,19 @@ export const TechnologySection: React.FC = () => {
     ];
 
     useEffect(() => {
+        if (prefersReducedMotion()) return;
         const ctx = gsap.context(() => {
             gsap.fromTo('.step-card',
-                { opacity: 0, y: 40 },
-                { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out',
-                    scrollTrigger: { trigger: sectionRef.current, start: 'top 65%' } }
+                { opacity: 0, y: 60, scale: 0.92 },
+                { opacity: 1, y: 0, scale: 1, duration: 1, stagger: 0.18, ease: 'back.out(1.4)',
+                    scrollTrigger: { trigger: sectionRef.current, start: 'top 65%', once: true } }
             );
         }, sectionRef);
         return () => ctx.revert();
     }, []);
 
     return (
-        <section ref={sectionRef} id="como-funciona" className="py-24 md:py-36" style={{ background: 'var(--color-bg)' }}>
+        <section ref={sectionRef} className="py-24 md:py-36" style={{ background: 'var(--color-bg)' }}>
             <div className="mx-auto max-w-[1240px] px-6">
                 <div className="mb-20 text-center">
                     <p className="mb-3 text-xs font-black uppercase tracking-[0.25em]" style={{ color: 'var(--color-purple)' }}>
@@ -41,13 +43,13 @@ export const TechnologySection: React.FC = () => {
 
                 <div className="grid gap-12 md:grid-cols-3">
                     {STEPS.map((step, i) => (
-                        <div key={step.title} className="step-card relative text-center">
+                        <div key={step.title} className="step-card sy-lift-card group relative text-center">
                             {/* Connecting Line (Desktop) */}
                             {i < STEPS.length - 1 && (
                                 <div className="absolute top-12 left-1/2 w-full hidden md:block" style={{ borderTop: '2px dashed var(--color-border)', zIndex: 0 }} />
                             )}
-                            
-                            <div className="relative z-10 mx-auto flex h-24 w-24 items-center justify-center rounded-3xl mb-8"
+
+                            <div className="step-card-icon relative z-10 mx-auto flex h-24 w-24 items-center justify-center rounded-3xl mb-8"
                                 style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}>
                                 <step.Icon className="h-10 w-10" style={{ color: step.color }} />
                                 {/* Step number badge */}

@@ -226,3 +226,76 @@
 [data-theme="dark"] .mapcn-panel {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
 }
+
+/* ─── Scroll Indicator Bounce ────────────────────────────── */
+@keyframes bounce-arrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+.scroll-indicator-animate {
+  animation: bounce-arrow 2s var(--ease-in-out-cubic) infinite;
+}
+
+/* ─── Floating accent blobs ──────────────────────────────── */
+@keyframes float-accent {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-28px) scale(1.05); }
+}
+
+.float-accent {
+  animation: float-accent 9s var(--ease-in-out-cubic) infinite;
+}
+
+.float-accent-delayed {
+  animation: float-accent 11s var(--ease-in-out-cubic) infinite;
+  animation-delay: -5s;
+}
+
+/* ─── Step card hover glow ───────────────────────────────── */
+.step-card-icon {
+  transition: transform 0.3s var(--ease-out-back), box-shadow 0.3s var(--ease-out-cubic);
+}
+
+.step-card:hover .step-card-icon {
+  transform: scale(1.12) translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Testimonial card hover ─────────────────────────────── */
+.testimonial-card {
+  transition: transform 0.4s var(--ease-out-back), box-shadow 0.4s var(--ease-out-cubic), border-color 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.12),
+    0 0 36px -14px rgba(var(--rgb-pink-primary), 0.18);
+}
+
+/* ─── Action bridge entrance ─────────────────────────────── */
+.bridge-action {
+  will-change: transform, opacity;
+}
+
+/* Fase 3 — micro-interacciones (respeta prefers-reduced-motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .sy-lift-card {
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sy-lift-card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 24px 48px -20px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(var(--rgb-purple-accent), 0.14);
+  }
+
+  .btn-premium:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: drop-shadow(0 14px 28px rgba(var(--rgb-pink-primary), 0.22));
+  }
+}

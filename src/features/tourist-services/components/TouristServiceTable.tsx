@@ -1,6 +1,15 @@
 import { useRef } from 'react';
 import { ClipboardCheck, Eye } from 'lucide-react';
 import type { TouristService } from '../types/types';
+import { motion } from 'framer-motion';
+
+const SERVICE_TYPE_LABELS: Record<string, string> = {
+    restaurant: 'Restaurante',
+    hotel: 'Hotel',
+    tour: 'Tour',
+    transporte: 'Transporte',
+    spa: 'Spa',
+};
 
 interface Props {
     services: TouristService[];
@@ -41,9 +50,6 @@ export default function TouristServiceTable({
                             className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                         />
                     </div>
-                    <div className="w-16 flex-shrink-0 text-xs font-medium uppercase text-zinc-400">
-                        ID
-                    </div>
                     <div className="flex-1 min-w-[200px] text-xs font-medium uppercase tracking-wider text-zinc-400">
                         Nombre
                     </div>
@@ -64,9 +70,12 @@ export default function TouristServiceTable({
 
             <div ref={tableRef} className="flex-1 overflow-y-auto min-h-0">
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {services.map((service) => (
-                        <div
+                    {services.map((service, index) => (
+                        <motion.div
                             key={service.id}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.03 }}
                             className="flex items-center px-4 py-4 gap-4 hover:bg-zinc-800/50 group transition-colors"
                         >
                             <div className="w-8 flex-shrink-0">
@@ -76,9 +85,6 @@ export default function TouristServiceTable({
                                     onChange={() => onToggle(service.id)}
                                     className="size-4 rounded border-zinc-700 bg-zinc-900 text-violet-500 cursor-pointer"
                                 />
-                            </div>
-                            <div className="w-16 flex-shrink-0 text-sm font-medium text-zinc-100">
-                                {service.id}
                             </div>
                             <button
                                 type="button"
@@ -91,7 +97,7 @@ export default function TouristServiceTable({
                                 {service.description}
                             </div>
                             <div className="w-32 flex-shrink-0 text-sm text-zinc-400">
-                                {service.service_type}
+                                {SERVICE_TYPE_LABELS[service.service_type] ?? service.service_type}
                             </div>
                             <div className="w-24 flex-shrink-0 text-sm">
                                 <span
@@ -111,17 +117,15 @@ export default function TouristServiceTable({
                                 >
                                     <Eye className="size-4" />
                                 </button>
-                                {service.service_type === 'restaurant' && (
-                                    <button
-                                        onClick={() => onEvaluate(service)}
-                                        className="p-1.5 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
-                                        title="Evaluar Servicio"
-                                    >
-                                        <ClipboardCheck className="size-4" />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => onEvaluate(service)}
+                                    className="p-1.5 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                    title="Evaluar Servicio"
+                                >
+                                    <ClipboardCheck className="size-4" />
+                                </button>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>
