@@ -4,6 +4,13 @@
 
 React 19 + Vite dashboard for SMARTUR admin/management. Uses TailwindCSS 4, React Router 7, and TypeScript.
 
+## UI & design docs (required for agents)
+
+1. **[design.md](design.md)** — SMARTUR tokens (type, color, spacing, motion, components, a11y)
+2. **[.agents/AGENTS.md](.agents/AGENTS.md)** — Skill priority: **emil-design-eng** → **GSAP** → CSS/Tailwind (not Framer Motion by default)
+
+Skills in `.agents/skills/` must not override `design.md`.
+
 ## Key commands
 
 ```bash

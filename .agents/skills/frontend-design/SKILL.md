@@ -6,6 +6,8 @@ license: Complete terms in LICENSE.txt
 
 This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
 
+**On PLATAFORMA:** Read **[design.md](../../design.md)** first — it overrides generic typography/color advice here (e.g. Inter is allowed per SMARTUR stack). Follow **[.agents/AGENTS.md](../AGENTS.md)** for motion: **emil-design-eng** + **GSAP**, not this skill’s default motion rules alone.
+
 The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
 
 ## Design Thinking
@@ -29,7 +31,7 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 Focus on:
 - **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
 - **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
+- **Motion**: Follow **emil-design-eng** for whether and how to animate. Prefer CSS/Tailwind for simple UI; use **GSAP** (`gsap-react`, `gsap-scrolltrigger`) when JS timelines or scroll-driven motion are needed. Do not default to Framer Motion. High-impact moments only — avoid scattered micro-interactions Emil would reject.
 - **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
 - **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
 

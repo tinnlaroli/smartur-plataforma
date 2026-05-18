@@ -8,6 +8,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 Expert guide for building modern, responsive user interfaces with Tailwind CSS utility-first framework. Covers v4.1+ features including CSS-first configuration, custom utilities, and enhanced developer experience.
 
+**PLATAFORMA:** Map utilities to tokens in **[design.md](../../design.md)** (spacing 8px grid, radius, colors). Motion: **[.agents/AGENTS.md](../AGENTS.md)** → **emil-design-eng** → CSS or GSAP.
+
 ## Overview
 
 Provides actionable patterns for responsive, accessible UIs with Tailwind CSS v4.1+. Covers utility composition, dark mode, component patterns, and performance optimization.

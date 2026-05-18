@@ -1,5 +1,13 @@
 # SMARTUR Design System
 
+**Canonical product UI spec for PLATAFORMA.** Agents and skills must follow this file first, then [.agents/AGENTS.md](.agents/AGENTS.md) for skill routing.
+
+| Layer | Source |
+| ----- | ------ |
+| Tokens & components | This file (`design.md`) |
+| Motion philosophy | [emil-design-eng](.agents/skills/emil-design-eng/SKILL.md) (within § Motion below) |
+| JS animation code | [GSAP](.agents/skills/gsap-react/SKILL.md) — not Framer Motion by default |
+
 ## Design Principles
 - Swiss Style foundation: modular grid, restrained color, bold typography.
 - Minimalist UI with high contrast and generous whitespace.
@@ -71,9 +79,26 @@
 - Large: 0 10px 15px -3px rgba(0,0,0,0.1)
 
 ## Motion
-- Easing: cubic-bezier(0.215, 0.61, 0.355, 1)
-- Duration: 150ms / 300ms / 500ms
-- Reduced motion: disable non-essential motion using prefers-reduced-motion
+
+**Stack:** Apply [emil-design-eng](.agents/skills/emil-design-eng/SKILL.md) for *whether* and *how* to animate; implement with CSS/Tailwind or **GSAP** per [.agents/AGENTS.md](.agents/AGENTS.md).
+
+### Tokens (baseline)
+- Easing (default UI): `cubic-bezier(0.215, 0.61, 0.355, 1)` — prefer **ease-out** feel for enters/exits (see emil-design-eng for refinements)
+- Duration scale: **150ms** (micro) / **300ms** (standard UI) / **500ms** (modals, large surfaces)
+- UI interactions should stay **≤ 300ms** unless emil-design-eng justifies longer (e.g. rare onboarding)
+- **Reduced motion:** respect `prefers-reduced-motion`; disable non-essential transform motion; keep opacity/color where they aid comprehension (GSAP: `gsap.matchMedia()`)
+
+### Implementation
+| Need | Tool |
+| ---- | ---- |
+| Hover, press, focus, simple fades | CSS / Tailwind (`transition-colors`, `transition-transform`) |
+| Timelines, scroll-linked, coordinated JS | GSAP (`gsap-react`, `gsap-scrolltrigger`) |
+| Avoid by default | Framer Motion / Motion |
+
+### Frequency (emil-design-eng)
+- No animation on keyboard-heavy actions (command palette, shortcuts)
+- Minimal motion on elements used tens of times per day
+- Modals, drawers, toasts: standard motion within duration scale above
 
 ## Components
 - Buttons: Primary, Secondary, Ghost, Destructive

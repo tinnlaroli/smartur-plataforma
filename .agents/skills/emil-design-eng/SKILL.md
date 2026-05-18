@@ -1,9 +1,22 @@
 ---
 name: emil-design-eng
-description: This skill encodes Emil Kowalski's philosophy on UI polish, component design, animation decisions, and the invisible details that make software feel great.
+description: Primary skill for UI polish, component design, and animation decisions on PLATAFORMA. Use first for styling, motion, micro-interactions, and design reviews. Defers implementation to GSAP (gsap-react, gsap-core, gsap-scrolltrigger) for JS animation — not Framer Motion. Triggers on beautify UI, animation, transitions, polish, feel, or design review.
 ---
 
 # Design Engineering
+
+## PLATAFORMA stack (required reading)
+
+**Before this skill:** Read project **[design.md](../../design.md)** (typography, colors, spacing, motion tokens, a11y). Then **[.agents/AGENTS.md](../AGENTS.md)** (skill order).
+
+**This skill** owns motion *philosophy* within `design.md` constraints. Implementation order:
+
+1. **design.md** — Brand tokens and motion baseline (150/300/500ms, easing, reduced motion).
+2. **This skill** — Should it animate? Purpose? Emil refinements (ease-out, no keyboard animation, review table).
+3. **CSS / Tailwind** — Simple UI (hover, press, opacity) using `design.md` values.
+4. **GSAP** (`gsap-react`, `gsap-core`, `gsap-scrolltrigger`) — JS timelines, scroll, interruptible motion.
+
+Do not contradict `design.md` (e.g. SMARTUR fonts and palette). Do not default to Framer Motion or Motion.
 
 ## Initial Response
 
@@ -157,38 +170,47 @@ Springs feel more natural than duration-based animations because they simulate r
 
 ### Spring-based mouse interactions
 
-Tying visual changes directly to mouse position feels artificial because it lacks motion. Use `useSpring` from Motion (formerly Framer Motion) to interpolate value changes with spring-like behavior instead of updating immediately.
+Tying visual changes directly to mouse position feels artificial because it lacks motion. In React, use **GSAP `quickTo()`** (via `useGSAP`) to interpolate toward the target with momentum instead of updating instantly.
 
 ```jsx
-import { useSpring } from 'framer-motion';
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
-// Without spring: feels artificial, instant
-const rotation = mouseX * 0.1;
+// Without smoothing: feels artificial, instant
+// element.style.transform = `rotate(${mouseX * 0.1}deg)`;
 
-// With spring: feels natural, has momentum
-const springRotation = useSpring(mouseX * 0.1, {
-  stiffness: 100,
-  damping: 10,
-});
+// With quickTo: feels natural, has momentum
+const elRef = useRef(null);
+
+useGSAP(() => {
+  const quickRotate = gsap.quickTo(elRef.current, "rotation", {
+    duration: 0.6,
+    ease: "power3.out",
+  });
+  const onMove = (e: MouseEvent) => quickRotate(e.clientX * 0.1);
+  window.addEventListener("mousemove", onMove);
+  return () => window.removeEventListener("mousemove", onMove);
+}, { scope: elRef });
 ```
 
 This works because the animation is **decorative** — it doesn't serve a function. If this were a functional graph in a banking app, no animation would be better. Know when decoration helps and when it hinders.
 
-### Spring configuration
+### Spring configuration (GSAP)
 
-**Apple's approach (recommended — easier to reason about):**
-
-```js
-{ type: "spring", duration: 0.5, bounce: 0.2 }
-```
-
-**Traditional physics (more control):**
+**Subtle UI (recommended — duration + ease, easy to reason about):**
 
 ```js
-{ type: "spring", mass: 1, stiffness: 100, damping: 10 }
+gsap.to(el, { duration: 0.5, ease: "back.out(1.2)" });
 ```
 
-Keep bounce subtle (0.1-0.3) when used. Avoid bounce in most UI contexts. Use it for drag-to-dismiss and playful interactions.
+**More playful / elastic (use sparingly):**
+
+```js
+gsap.to(el, { duration: 0.5, ease: "elastic.out(1, 0.3)" });
+```
+
+Keep bounce subtle. Avoid elastic/back eases in most UI contexts. Use them for drag-to-dismiss and playful interactions.
 
 ### Interruptibility advantage
 
@@ -435,7 +457,7 @@ Use `clip-path: inset(0 100% 0 0)` on a colored overlay. On `:active`, transitio
 
 ### Image reveals on scroll
 
-Start with `clip-path: inset(0 0 100% 0)` (hidden from bottom). Animate to `inset(0 0 0 0)` when the element enters the viewport. Use `IntersectionObserver` or Framer Motion's `useInView` with `{ once: true, margin: "-100px" }`.
+Start with `clip-path: inset(0 0 100% 0)` (hidden from bottom). Animate to `inset(0 0 0 0)` when the element enters the viewport. Prefer **GSAP ScrollTrigger** (`once: true`, `start: "top 85%"`) or CSS/WAAPI for simple reveals; respect **prefers-reduced-motion** via `gsap.matchMedia()` (see **gsap-core**).
 
 ### Comparison sliders
 
@@ -497,23 +519,15 @@ element.style.setProperty('--swipe-amount', `${distance}px`);
 element.style.transform = `translateY(${distance}px)`;
 ```
 
-### Framer Motion hardware acceleration caveat
+### GSAP and the main thread
 
-Framer Motion's shorthand properties (`x`, `y`, `scale`) are NOT hardware-accelerated. They use `requestAnimationFrame` on the main thread. For hardware acceleration, use the full `transform` string:
+GSAP tweens run on `requestAnimationFrame` (main thread). Prefer **`x` / `y` / `rotation` / `opacity`** (transform-friendly props) over layout properties (`width`, `height`, `top`, `left`). Animate with `transform` and `opacity` whenever possible.
 
-```jsx
-// NOT hardware accelerated (convenient but drops frames under load)
-<motion.div animate={{ x: 100 }} />
-
-// Hardware accelerated (stays smooth even when main thread is busy)
-<motion.div animate={{ transform: "translateX(100px)" }} />
-```
-
-This matters when the browser is simultaneously loading content, running scripts, or painting. At Vercel, the dashboard tab animation used Shared Layout Animations and dropped frames during page loads. Switching to CSS animations (off main thread) fixed it.
+This matters when the browser is simultaneously loading content, running scripts, or painting. Heavy layout animation during page load will drop frames regardless of library.
 
 ### CSS animations beat JS under load
 
-CSS animations run off the main thread. When the browser is busy loading a new page, Framer Motion animations (using `requestAnimationFrame`) drop frames. CSS animations remain smooth. Use CSS for predetermined animations; JS for dynamic, interruptible ones.
+CSS animations run off the main thread. When the browser is busy loading a new page, GSAP tweens (like any rAF-based animation) can drop frames. CSS/WAAPI stays smooth for **predetermined** motion. Use GSAP when you need timelines, scroll sync, or **interruptible** motion Emil’s framework allows.
 
 ### Use WAAPI for programmatic CSS animations
 
@@ -542,9 +556,15 @@ Animations can cause motion sickness. Reduced motion means fewer and gentler ani
 }
 ```
 
-```jsx
-const shouldReduceMotion = useReducedMotion();
-const closedX = shouldReduceMotion ? 0 : '-100%';
+```js
+// GSAP — see gsap-core for full matchMedia pattern
+const mm = gsap.matchMedia();
+mm.add("(prefers-reduced-motion: reduce)", () => {
+  gsap.set(drawer, { x: 0 });
+});
+mm.add("(prefers-reduced-motion: no-preference)", () => {
+  gsap.fromTo(drawer, { x: "-100%" }, { x: 0, duration: 0.25, ease: "power3.out" });
+});
 ```
 
 ### Touch device hover states
@@ -674,6 +694,6 @@ When reviewing UI code, check for:
 | Duration > 300ms on UI element             | Reduce to 150-250ms                                              |
 | Hover animation without media query        | Add `@media (hover: hover) and (pointer: fine)`                  |
 | Keyframes on rapidly-triggered element     | Use CSS transitions for interruptibility                         |
-| Framer Motion `x`/`y` props under load     | Use `transform: "translateX()"` for hardware acceleration        |
+| GSAP animating `width`/`height` under load | Animate `transform` + `opacity` instead                          |
 | Same enter/exit transition speed           | Make exit faster than enter (e.g., enter 2s, exit 200ms)         |
 | Elements all appear at once                | Add stagger delay (30-80ms between items)                        |
