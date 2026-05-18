@@ -21,7 +21,7 @@ export const CardSkeleton = ({
                 />
 
                 <div className="mb-4 flex items-start justify-between pl-2">
-                    <div className="h-10 w-10 rounded-xl" style={{ background: 'var(--color-bg-alt)' }} />
+                    <div className="size-10 rounded-xl" style={{ background: 'var(--color-bg-alt)' }} />
                     <div className="h-5 w-16 rounded-full" style={{ background: 'var(--color-bg-alt)' }} />
                 </div>
 

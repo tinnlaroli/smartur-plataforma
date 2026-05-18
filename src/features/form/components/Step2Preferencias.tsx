@@ -98,7 +98,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             }`}
                         >
                             <div className="mb-3">
-                                <t.icon className="h-6 w-6" />
+                                <t.icon className="size-6" />
                             </div>
                             <div className="text-sm font-semibold tracking-tight">{t.label}</div>
                         </button>
@@ -123,7 +123,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             }`}
                         >
                             <div className="mb-3">
-                                <level.icon className="h-6 w-6" />
+                                <level.icon className="size-6" />
                             </div>
                             <div className="text-sm font-bold tracking-tight">{level.label}</div>
                         </button>
@@ -148,7 +148,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             }`}
                         >
                             <div className="mb-3">
-                                <lugar.icon className="h-6 w-6" />
+                                <lugar.icon className="size-6" />
                             </div>
                             <div className="text-sm font-bold tracking-tight">{lugar.label}</div>
                         </button>
@@ -165,7 +165,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                             : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
                     }`}
                 >
-                    <ChevronLeft className="h-5 w-5" />
+                    <ChevronLeft className="size-5" />
                     <span>Atrás</span>
                 </button>
                 <button
@@ -174,7 +174,7 @@ export const Step2Preferencias: React.FC<Step2Props> = ({ data = {}, onNext, onB
                     className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <span>Continuar</span>
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="size-5" />
                 </button>
             </div>
         </div>

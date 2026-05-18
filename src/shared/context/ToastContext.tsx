@@ -79,7 +79,7 @@ const NotificationItem: React.FC<{ toast: Toast; onClose: (id: string) => void }
         >
             {/* Icono */}
             <div className="flex-shrink-0 pt-0.5">
-                <Icon className={`h-5 w-5 ${style.iconColor}`} aria-hidden="true" strokeWidth={1.75} />
+                <Icon className={`size-5 ${style.iconColor}`} aria-hidden="true" strokeWidth={1.75} />
             </div>
 
             {/* Contenido */}
@@ -94,7 +94,7 @@ const NotificationItem: React.FC<{ toast: Toast; onClose: (id: string) => void }
                 className={`flex-shrink-0 rounded-lg p-1 transition-colors ${style.closeButton} focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:outline-none ${toast.type === 'success' ? 'focus:ring-green-500' : ''} ${toast.type === 'error' ? 'focus:ring-red-500' : ''} ${toast.type === 'info' ? 'focus:ring-blue-500' : ''} ${toast.type === 'warning' ? 'focus:ring-yellow-500' : ''} `}
                 aria-label="Cerrar notificación"
             >
-                <X className="h-4 w-4" aria-hidden="true" />
+                <X className="size-4" aria-hidden="true" />
             </button>
         </div>
     );

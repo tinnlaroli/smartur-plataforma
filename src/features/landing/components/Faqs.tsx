@@ -47,7 +47,7 @@ export const Faqs: React.FC = () => {
         <section id="faqs" className="relative overflow-hidden py-24 md:py-36" style={{ background: 'var(--color-bg)' }}>
             {/* Background Accent */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-                <div className="absolute -left-24 top-1/2 h-80 w-80 -translate-y-1/2 rounded-full opacity-[0.04] blur-[100px]" style={{ background: 'var(--color-purple)' }} />
+                <div className="absolute -left-24 top-1/2 size-80 -translate-y-1/2 rounded-full opacity-[0.04] blur-[100px]" style={{ background: 'var(--color-purple)' }} />
             </div>
 
             <div className="container mx-auto px-4 max-w-2xl">
@@ -73,7 +73,7 @@ export const Faqs: React.FC = () => {
                                 aria-expanded={openIndex === i}
                             >
                                 {/* Plus Icon Left */}
-                                <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                <div className="relative flex items-center justify-center size-4 shrink-0">
                                     <span 
                                         className={`absolute block w-full h-[2px] rounded-full transition-transform duration-300 ${openIndex === i ? 'rotate-45' : ''}`} 
                                         style={{ background: 'var(--color-purple)' }}

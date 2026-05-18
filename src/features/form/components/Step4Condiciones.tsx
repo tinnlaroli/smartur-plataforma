@@ -150,8 +150,8 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
     if (apiError) {
         return (
             <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-red-500/20 bg-zinc-900/50 p-8 text-center">
-                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10">
-                    <XCircle className="h-8 w-8 text-red-500" />
+                <div className="mb-6 flex size-16 items-center justify-center rounded-full bg-red-500/10">
+                    <XCircle className="size-8 text-red-500" />
                 </div>
                 <h3 className="mb-2 text-2xl font-semibold text-white">Error al generar recomendaciones</h3>
                 <p className="mb-8 max-w-md text-zinc-400">{apiError}</p>
@@ -162,7 +162,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                     }}
                     className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white"
                 >
-                    <RotateCw className="h-5 w-5" />
+                    <RotateCw className="size-5" />
                     <span>Reintentar</span>
                 </button>
             </div>
@@ -201,7 +201,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                             }`}
                         >
                             <div className="mb-3">
-                                <o.icon className="h-6 w-6" />
+                                <o.icon className="size-6" />
                             </div>
                             <div className="font-semibold">{o.label}</div>
                         </button>
@@ -233,7 +233,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                             }`}
                         >
                             <div className="mb-3">
-                                <o.icon className="h-6 w-6" />
+                                <o.icon className="size-6" />
                             </div>
                             <div className="font-semibold">{o.label}</div>
                         </button>
@@ -247,7 +247,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                     disabled={loading}
                     className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95 disabled:opacity-50"
                 >
-                    <ArrowLeft className="h-5 w-5" />
+                    <ArrowLeft className="size-5" />
                     <span>Atrás</span>
                 </button>
                 <button
@@ -256,7 +256,7 @@ export const Step4Condiciones: React.FC<Step4Props> = ({ data = {}, onBack, onCh
                     className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:opacity-50"
                 >
                     <span>Finalizar</span>
-                    <Check className="h-5 w-5" />
+                    <Check className="size-5" />
                 </button>
             </div>
         </div>

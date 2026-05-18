@@ -49,11 +49,11 @@ export const TechnologySection: React.FC = () => {
                                 <div className="absolute top-12 left-1/2 w-full hidden md:block" style={{ borderTop: '2px dashed var(--color-border)', zIndex: 0 }} />
                             )}
 
-                            <div className="step-card-icon relative z-10 mx-auto flex h-24 w-24 items-center justify-center rounded-3xl mb-8"
+                            <div className="step-card-icon relative z-10 mx-auto flex size-24 items-center justify-center rounded-3xl mb-8"
                                 style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}>
-                                <step.Icon className="h-10 w-10" style={{ color: step.color }} />
+                                <step.Icon className="size-10" style={{ color: step.color }} />
                                 {/* Step number badge */}
-                                <div className="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg"
+                                <div className="absolute -top-3 -right-3 flex size-8 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg"
                                     style={{ background: step.color }}>
                                     {i + 1}
                                 </div>

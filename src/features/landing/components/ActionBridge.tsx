@@ -44,7 +44,7 @@ export const ActionBridge: React.FC<ActionBridgeProps> = ({ handleStartExperienc
               style={{ background: 'rgba(var(--rgb-pink-primary), 0.08)', border: '1px solid rgba(var(--rgb-pink-primary), 0.22)' }}
             >
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 shrink-0 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: 'rgba(var(--rgb-pink-primary), 0.14)', color: 'var(--color-pink)' }}>
+                <div className="size-16 shrink-0 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: 'rgba(var(--rgb-pink-primary), 0.14)', color: 'var(--color-pink)' }}>
                   <Map size={32} />
                 </div>
                 <div className="text-left flex-grow min-w-0">
@@ -55,7 +55,7 @@ export const ActionBridge: React.FC<ActionBridgeProps> = ({ handleStartExperienc
                     </span>
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style={{ background: 'rgba(var(--rgb-pink-primary), 0.12)', color: 'var(--color-pink)' }}>
+                <div className="size-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style={{ background: 'rgba(var(--rgb-pink-primary), 0.12)', color: 'var(--color-pink)' }}>
                   <ArrowRight size={20} />
                 </div>
               </div>
@@ -73,7 +73,7 @@ export const ActionBridge: React.FC<ActionBridgeProps> = ({ handleStartExperienc
               style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}
             >
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 shrink-0 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: 'var(--color-bg)', color: 'var(--color-text-alt)' }}>
+                <div className="size-16 shrink-0 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110" style={{ background: 'var(--color-bg)', color: 'var(--color-text-alt)' }}>
                   <Building2 size={32} />
                 </div>
                 <div className="text-left flex-grow min-w-0">
@@ -84,7 +84,7 @@ export const ActionBridge: React.FC<ActionBridgeProps> = ({ handleStartExperienc
                     </span>
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style={{ background: 'var(--color-border)', color: 'var(--color-text-alt)' }}>
+                <div className="size-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110" style={{ background: 'var(--color-border)', color: 'var(--color-text-alt)' }}>
                   <ExternalLink size={20} />
                 </div>
               </div>

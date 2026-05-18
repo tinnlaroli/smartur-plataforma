@@ -83,7 +83,7 @@ export function FormModal({ isOpen, onClose }: FormModalProps) {
                         isDark ? 'text-zinc-400 hover:bg-zinc-800 hover:text-white' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900'
                     }`}
                 >
-                    <X className="h-6 w-6" />
+                    <X className="size-6" />
                 </button>
 
                 <div className="p-6 md:p-8 overflow-y-auto">

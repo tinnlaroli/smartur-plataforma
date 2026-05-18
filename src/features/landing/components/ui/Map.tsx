@@ -166,13 +166,16 @@ export const Map = React.forwardRef<MapRef, MapProps>(
 
     return (
       <div
-        className={cn("relative w-full h-full min-h-[400px] overflow-hidden rounded-lg border bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800", className)}
+        className={cn(
+          "relative w-full h-full min-h-[400px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)]",
+          className,
+        )}
         ref={containerRef}
         {...props}
       >
         {!loaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm z-50">
-            <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-[rgba(var(--rgb-bg),0.65)] backdrop-blur-sm">
+            <Loader2 className="size-6 animate-spin text-[var(--color-text-alt)]" />
           </div>
         )}
         <MapContext.Provider value={{ map, loaded }}>{loaded && children}</MapContext.Provider>

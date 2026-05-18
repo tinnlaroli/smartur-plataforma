@@ -54,14 +54,14 @@ export const Testimonials: React.FC = () => {
                                 style={{ background: 'rgba(var(--rgb-pink-primary), 0.08)' }}
                             />
 
-                            <Quote className="mb-6 h-8 w-8 opacity-20" style={{ color: 'var(--color-pink)' }} />
+                            <Quote className="mb-6 size-8 opacity-20" style={{ color: 'var(--color-pink)' }} />
 
                             <p className="mb-8 text-base leading-relaxed font-medium" style={{ color: 'var(--color-text-alt)' }}>
                                 "{t(item.text)}"
                             </p>
 
                             <div className="flex items-center gap-4">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full text-2xl"
+                                <div className="flex size-12 items-center justify-center rounded-full text-2xl"
                                     style={{ background: 'var(--color-bg)' }}>
                                     {item.avatar}
                                 </div>

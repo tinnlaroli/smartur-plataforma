@@ -26,7 +26,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentSte
             <div className="mb-8 flex items-center gap-4">
                 <div className={`h-3 flex-1 overflow-hidden rounded-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`}>
                     <div
-                        className="h-full bg-indigo-600 shadow-[0_0_12px_rgba(79,70,229,0.45)] transition-all duration-700 ease-out"
+                        className="h-full bg-violet-600 shadow-[0_0_12px_rgba(79,70,229,0.45)] transition-all duration-700 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
@@ -44,17 +44,17 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ currentSte
                     return (
                         <div key={step.name} className="relative z-10 flex flex-col items-center">
                             <div
-                                className={`flex h-12 w-12 items-center justify-center rounded-2xl border-2 transition-all duration-300 ${
+                                className={`flex size-12 items-center justify-center rounded-2xl border-2 transition-all duration-300 ${
                                     isCompleted
-                                        ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                        ? 'border-violet-500 bg-violet-600 text-white shadow-lg shadow-violet-500/20'
                                         : isActive
-                                          ? `scale-110 border-indigo-500 ${isDark ? 'bg-zinc-900' : 'bg-white'} text-indigo-400 shadow-lg shadow-indigo-500/10`
+                                          ? `scale-110 border-violet-500 ${isDark ? 'bg-zinc-900' : 'bg-white'} text-violet-400 shadow-lg shadow-violet-500/10`
                                           : isDark
                                               ? 'border-zinc-800 bg-zinc-900 text-zinc-600'
                                               : 'border-zinc-300 bg-white text-zinc-400'
                                 }`}
                             >
-                                {isCompleted ? <Check className="h-6 w-6 stroke-[3]" /> : <step.icon className="h-6 w-6" />}
+                                {isCompleted ? <Check className="size-6 stroke-[3]" /> : <step.icon className="size-6" />}
                             </div>
                             <span className={`mt-3 text-xs font-bold tracking-tight transition-colors duration-300 ${
                                 isActive || isCompleted

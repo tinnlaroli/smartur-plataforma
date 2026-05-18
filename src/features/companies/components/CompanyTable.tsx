@@ -30,6 +30,7 @@ export default function CompanyTable({
     const tableRef = useRef<HTMLDivElement>(null);
 
     return (
+        
         <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#121214] h-full flex flex-col overflow-hidden">
             <div className="bg-zinc-50 dark:bg-[#18181b] border-b border-zinc-200 dark:border-zinc-800">
                 <div className="flex items-center px-4 py-3.5 gap-4">
@@ -142,5 +143,6 @@ export default function CompanyTable({
                 </div>
             </div>
         </div>
+        
     );
 }

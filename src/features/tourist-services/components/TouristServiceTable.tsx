@@ -76,7 +76,7 @@ export default function TouristServiceTable({
                             initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.03 }}
-                            className="flex items-center px-4 py-4 gap-4 hover:bg-zinc-800/50 group transition-colors"
+                            className="flex items-center p-4 gap-4 hover:bg-zinc-800/50 group transition-colors"
                         >
                             <div className="w-8 flex-shrink-0">
                                 <input

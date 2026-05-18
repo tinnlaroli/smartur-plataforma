@@ -95,7 +95,7 @@ export const ImpactSection: React.FC = () => {
                             style={{ border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}
                         >
                             {/* Accent corner */}
-                            <div className="absolute top-0 right-0 h-24 w-24 rounded-full opacity-10 -translate-y-1/2 translate-x-1/2 blur-2xl" style={{ background: stat.color }} />
+                            <div className="absolute top-0 right-0 size-24 rounded-full opacity-10 -translate-y-1/2 translate-x-1/2 blur-2xl" style={{ background: stat.color }} />
 
                             <div className="relative">
                                 <div className="mb-2 text-[clamp(2.5rem,5vw,4rem)] font-black leading-none tracking-tighter" style={{ color: stat.color }}>

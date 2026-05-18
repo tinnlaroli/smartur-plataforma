@@ -147,7 +147,7 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                             }`}
                         >
                             <div className="mb-3">
-                                <o.icon className="h-6 w-6" />
+                                <o.icon className="size-6" />
                             </div>
                             <div className="mb-1 font-semibold">{o.label}</div>
                             <div className="text-xs opacity-70">{o.range}</div>
@@ -171,7 +171,7 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                             }`}
                         >
                             <div className="mb-3">
-                                <o.icon className="h-6 w-6" />
+                                <o.icon className="size-6" />
                             </div>
                             <div className="font-semibold">{o.label}</div>
                         </button>
@@ -186,7 +186,7 @@ export const Step1PerfilBasico: React.FC<Step1Props> = ({ data = {}, onNext, onC
                     className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <span>Continuar</span>
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="size-5" />
                 </button>
             </div>
         </div>

@@ -40,12 +40,12 @@ export const StatisticsPage = () => {
     const activeTabData = tabs.find((t) => t.key === activeTab)!;
 
     return (
-        <div className="space-y-6">
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+            <div className="flex items-center gap-3 shrink-0">
+                <div className="flex size-10 items-center justify-center rounded-xl"
                     style={{ background: 'var(--color-purple)' }}>
-                    <BarChart3 className="h-5 w-5 text-white" />
+                    <BarChart3 className="size-5 text-white" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
@@ -76,7 +76,7 @@ export const StatisticsPage = () => {
                                     transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                                 />
                             )}
-                            <tab.icon className="relative h-4 w-4" />
+                            <tab.icon className="relative size-4" />
                             <span className="relative">{tab.label}</span>
                         </button>
                     );
@@ -96,9 +96,9 @@ export const StatisticsPage = () => {
                 >
                     {/* Panel title */}
                     <div className="mb-6 flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl"
+                        <div className="flex size-9 items-center justify-center rounded-xl"
                             style={{ background: activeTabData.color }}>
-                            <activeTabData.icon className="h-4 w-4 text-white" />
+                            <activeTabData.icon className="size-4 text-white" />
                         </div>
                         <div>
                             <h2 className="font-semibold" style={{ color: 'var(--color-text)' }}>

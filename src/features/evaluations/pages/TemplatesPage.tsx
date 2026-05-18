@@ -17,8 +17,8 @@ export const TemplatesPage = () => {
     const limit = Number(searchParams.get('limit')) || 10;
 
     return (
-        <div className="space-y-4">
-            <div className="sm:flex sm:items-center sm:justify-between">
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
+            <div className="sm:flex sm:items-center sm:justify-between shrink-0">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">{m.templates.title}</h1>
                     <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{m.templates.subtitle}</p>

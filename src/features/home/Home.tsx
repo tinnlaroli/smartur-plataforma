@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { dashboardApi, type DashboardStats } from './api/dashboardApi';
 import {
     DashboardHeader,
@@ -23,16 +23,16 @@ const DashboardLoader = ({ label }: { label: string }) => (
         animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center gap-4"
     >
-        <div className="relative h-14 w-14">
+        <div className="relative size-14">
             <div
                 className="absolute inset-0 animate-ping rounded-full"
                 style={{ background: `${DASHBOARD_COLORS.purple}33` }}
             />
             <div
-                className="relative flex h-14 w-14 items-center justify-center rounded-full"
+                className="relative flex size-14 items-center justify-center rounded-full"
                 style={{ background: `${DASHBOARD_COLORS.purple}18` }}
             >
-                <Loader2 className="h-7 w-7 animate-spin" style={{ color: DASHBOARD_COLORS.purple }} />
+                <Loader2 className="size-7 animate-spin" style={{ color: DASHBOARD_COLORS.purple }} />
             </div>
         </div>
         <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
@@ -138,7 +138,7 @@ export const Home = () => {
                     className="rounded-[28px] border p-8 text-center shadow-sm"
                     style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
                 >
-                    <AlertCircle className="mx-auto h-10 w-10" style={{ color: DASHBOARD_COLORS.danger }} />
+                    <AlertCircle className="mx-auto size-10" style={{ color: DASHBOARD_COLORS.danger }} />
                     <p className="mt-3 font-semibold" style={{ color: 'var(--color-text)' }}>
                         {copy.home.dashboardError}
                     </p>

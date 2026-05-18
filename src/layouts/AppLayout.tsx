@@ -114,7 +114,7 @@ const NotificationPanel = ({
 
         {notifications.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-4 text-center">
-                <Bell className="h-8 w-8 text-zinc-300" />
+                <Bell className="size-8 text-zinc-300" />
                 <p className="text-sm font-medium text-zinc-400">{emptyTitle}</p>
                 <p className="max-w-[16rem] text-xs text-zinc-400">{emptyHint}</p>
             </div>
@@ -126,16 +126,16 @@ const NotificationPanel = ({
                     return (
                         <div
                             key={notification.id}
-                            className={`rounded-2xl border px-3 py-3 ${notification.read ? 'opacity-75' : ''}`}
+                            className={`rounded-2xl border p-3 ${notification.read ? 'opacity-75' : ''}`}
                             style={{
                                 background: notification.read ? 'var(--color-bg-alt)' : 'rgba(var(--rgb-purple-accent), 0.08)',
                                 borderColor: 'var(--color-border)',
                             }}
                         >
                             <div className="flex items-start gap-3">
-                                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+                                <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl"
                                     style={{ background: 'rgba(var(--rgb-text), 0.06)' }}>
-                                    <Icon className="h-4 w-4" />
+                                    <Icon className="size-4" />
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-start justify-between gap-3">
@@ -143,7 +143,7 @@ const NotificationPanel = ({
                                             {notification.title}
                                         </p>
                                         {!notification.read && (
-                                            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
+                                            <span className="mt-1 size-2 shrink-0 rounded-full bg-rose-500" />
                                         )}
                                     </div>
                                     {notification.description && (
@@ -195,6 +195,7 @@ export default function AppLayout() {
     };
 
     return (
+        
         <div className="flex min-h-screen" style={{ background: 'var(--color-bg)' }}>
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -222,7 +223,7 @@ export default function AppLayout() {
                         >
                             {theme === 'dark'
                                 ? <Sun className="size-[18px] text-amber-400" />
-                                : <Moon className="size-[18px] text-indigo-400" />}
+                                : <Moon className="size-[18px] text-violet-400" />}
                         </button>
 
                         {/* Notification bell */}
@@ -363,10 +364,10 @@ export default function AppLayout() {
 
                 {/* ── Main content ── */}
                 <main
-                    className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8"
+                    className="flex min-h-0 flex-1 p-4 sm:p-6 lg:p-8"
                     style={{ background: 'var(--color-bg-alt)' }}
                 >
-                    <div className="mx-auto w-full max-w-400 min-h-full">
+                    <div className="mx-auto h-full w-full max-w-400">
                         <Outlet />
                     </div>
                 </main>
@@ -374,8 +375,9 @@ export default function AppLayout() {
 
             {/* Click-away for notification panel */}
             {notifOpen && (
-                <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
+                <div className="fixed inset-0 z-10" role="presentation" onClick={() => setNotifOpen(false)} onKeyDown={(e) => e.key === 'Escape' && setNotifOpen(false)} tabIndex={-1} />
             )}
         </div>
+        
     );
 }

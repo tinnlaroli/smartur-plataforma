@@ -253,7 +253,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                             className="cta group relative inline-flex items-center justify-center gap-3 rounded-full bg-[var(--color-pink)] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 active:scale-95"
                             >
                                 <span>{t('heroSection.cta')}</span>
-                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                             </button>
 
                             <div
@@ -289,7 +289,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 }}
             >
                 <span className="text-[11px] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--color-text-alt)' }}>{t('heroSection.scrollIndicator')}</span>
-                <ChevronDown className="h-8 w-8 scroll-indicator-animate" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
+                <ChevronDown className="size-8 scroll-indicator-animate" style={{ color: 'var(--color-pink)' }} strokeWidth={2.5} />
             </button>
         </section>
     );

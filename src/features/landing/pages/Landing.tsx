@@ -171,7 +171,7 @@ export default function Landing() {
     // const openInfoCards = () => setShowInfoCards(true);
 
     return (
-        <div className="relative min-h-screen bg-white font-sans text-zinc-800 dark:bg-[var(--color-bg)] dark:text-[var(--color-text)]">
+        <div className="relative min-h-screen bg-[var(--color-bg)] font-sans text-[var(--color-text)]">
             {loading && <SmartURLoader onFinished={() => setLoading(false)} />}
 
             {!isStandalonePwa && (
@@ -227,12 +227,12 @@ export default function Landing() {
             )}
 
             {showCordobaMap && (
-                <div className="fixed inset-0 z-[1000] overflow-y-auto bg-white dark:bg-zinc-950">
+                <div className="fixed inset-0 z-[1000] overflow-y-auto bg-[var(--color-bg)]">
                     <button
                         onClick={() => setShowCordobaMap(false)}
-                        className="fixed top-6 right-6 z-[1001] rounded-full border border-zinc-100 bg-white p-4 shadow-2xl transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-200"
+                        className="fixed top-6 right-6 z-[1001] rounded-full border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-4 shadow-2xl transition-colors hover:opacity-95 text-[var(--color-text)]"
                     >
-                        <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -255,35 +255,35 @@ export default function Landing() {
 
             {focusedCard && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md">
-                    <div className="relative w-full max-w-sm rounded-[40px] bg-white p-8 shadow-2xl dark:bg-zinc-950 dark:text-zinc-200 border border-gray-100 dark:border-zinc-800">
-                        <button onClick={() => setFocusedCard(null)} className="absolute top-6 right-6 font-black text-gray-400 text-2xl dark:text-zinc-500">✕</button>
+                    <div className="relative w-full max-w-sm rounded-[40px] border border-[var(--color-border)] bg-[var(--color-bg)] p-8 text-[var(--color-text)] shadow-2xl">
+                        <button onClick={() => setFocusedCard(null)} className="absolute top-6 right-6 text-2xl font-black text-[var(--color-text-alt)]">✕</button>
                         <span className={`mb-6 inline-flex rounded-full border px-4 py-1.5 text-[10px] font-black tracking-widest uppercase ${focusedCard.badgeColor}`}>{focusedCard.highlight}</span>
-                        <h3 className="mb-4 text-2xl leading-tight font-black text-gray-900 dark:text-zinc-100">{focusedCard.title}</h3>
-                        <p className="mb-8 leading-relaxed font-medium text-gray-600 dark:text-zinc-300">{focusedCard.description}</p>
-                        <button onClick={() => setFocusedCard(null)} className="w-full rounded-full bg-[var(--color-pink)] py-4 font-black text-white shadow-lg">{t('pwa.modal.understood')}</button>
+                        <h3 className="mb-4 text-2xl leading-tight font-black text-[var(--color-text)]">{focusedCard.title}</h3>
+                        <p className="mb-8 leading-relaxed font-medium text-[var(--color-text-alt)]">{focusedCard.description}</p>
+                        <button onClick={() => setFocusedCard(null)} className="w-full rounded-full bg-[var(--color-pink)] py-4 font-black text-[var(--color-text-on-vivid)] shadow-lg">{t('pwa.modal.understood')}</button>
                     </div>
                 </div>
             )}
 
             {showInfoCards && (
                 <div className="fixed inset-0 z-[9900] flex items-center justify-center bg-black/80 p-5 backdrop-blur-md">
-                    <div className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-[40px] border border-gray-50 bg-white shadow-2xl dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-200">
-                        <button onClick={() => setShowInfoCards(false)} className="absolute top-6 right-6 z-50 font-black text-gray-400 text-2xl dark:text-zinc-500">✕</button>
-                        <div className="border-b border-gray-50 p-8 pt-10 dark:border-zinc-800">
+                    <div className="relative flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-[40px] border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] shadow-2xl">
+                        <button onClick={() => setShowInfoCards(false)} className="absolute top-6 right-6 z-50 text-2xl font-black text-[var(--color-text-alt)]">✕</button>
+                        <div className="border-b border-[var(--color-border)] p-8 pt-10">
                             <p className="mb-2 text-xs font-black tracking-[0.2em] text-[var(--color-pink)] uppercase">{t('pwa.modal.aboutLabel')}</p>
-                            <h3 className="mb-2 text-3xl leading-none font-black text-gray-900 dark:text-zinc-100">{t('pwa.modal.title')}</h3>
-                            <p className="text-sm font-medium text-gray-400 dark:text-zinc-300">{t('pwa.modal.subtitle')}</p>
+                            <h3 className="mb-2 text-3xl leading-none font-black text-[var(--color-text)]">{t('pwa.modal.title')}</h3>
+                            <p className="text-sm font-medium text-[var(--color-text-alt)]">{t('pwa.modal.subtitle')}</p>
                         </div>
                         <div className="flex-1 space-y-4 overflow-y-auto p-6 pb-10">
                             {infoCards.map((card) => (
                                 <div
                                     key={card.id}
                                     onClick={() => setFocusedCard(card)}
-                                    className="cursor-pointer rounded-[32px] border-2 border-transparent bg-gray-50 p-6 transition-all hover:border-indigo-100 active:scale-95 dark:bg-zinc-900 dark:hover:border-indigo-200"
+                                    className="cursor-pointer rounded-[32px] border-2 border-transparent bg-[var(--color-bg-alt)] p-6 transition-all hover:border-[rgba(var(--rgb-purple-accent),0.25)] active:scale-95"
                                 >
                                     <span className={`mb-4 inline-flex rounded-full border px-3 py-1 text-[9px] font-black tracking-widest uppercase ${card.badgeColor}`}>{card.highlight}</span>
-                                    <h4 className="mb-2 text-xl font-black text-gray-900 dark:text-zinc-100">{card.title}</h4>
-                                    <p className="line-clamp-2 text-sm font-medium text-gray-500 dark:text-zinc-300">{card.description}</p>
+                                    <h4 className="mb-2 text-xl font-black text-[var(--color-text)]">{card.title}</h4>
+                                    <p className="line-clamp-2 text-sm font-medium text-[var(--color-text-alt)]">{card.description}</p>
                                 </div>
                             ))}
                         </div>

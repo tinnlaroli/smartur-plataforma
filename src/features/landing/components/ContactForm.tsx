@@ -80,7 +80,7 @@ export const ContactForm: React.FC = () => {
 
                         {submitted ? (
                             <div className="flex items-center gap-3 py-4 font-semibold" style={{ color: 'var(--color-green)' }}>
-                                <CheckCircle className="h-6 w-6" />
+                                <CheckCircle className="size-6" />
                                 <span>{t('contact.success')}</span>
                                 <button 
                                     onClick={() => setSubmitted(false)}
@@ -117,11 +117,11 @@ export const ContactForm: React.FC = () => {
                                     <span>
                                         <span className="btn-base gap-2 py-3 sm:py-4 px-8 text-base font-semibold whitespace-nowrap" style={{ '--bg-color': 'var(--color-pink)' } as any}>
                                             {submitting ? '...' : t('contact.cta.button')}
-                                            <ArrowRight className="h-5 w-5" />
+                                            <ArrowRight className="size-5" />
                                         </span>
                                         <span className="btn-hover gap-2 py-3 sm:py-4 px-8 text-base font-semibold whitespace-nowrap" aria-hidden style={{ '--hover-text': 'var(--color-pink)' } as any}>
                                             {t('contact.cta.button')}
-                                            <ArrowRight className="h-5 w-5" />
+                                            <ArrowRight className="size-5" />
                                         </span>
                                     </span>
                                 </button>

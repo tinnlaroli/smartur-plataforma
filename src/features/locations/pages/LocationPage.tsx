@@ -61,13 +61,13 @@ export const LocationPage = () => {
     };
 
     return (
-        <div className="space-y-5">
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
             {/* Header */}
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-4 shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    <div className="flex size-10 items-center justify-center rounded-xl"
                         style={{ background: 'var(--color-orange)' }}>
-                        <MapPin className="h-5 w-5 text-white" />
+                        <MapPin className="size-5 text-white" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
@@ -91,7 +91,7 @@ export const LocationPage = () => {
                                 onClick={handleDeleteSelected}
                                 className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
                             >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="size-4" />
                                 {m.common.deleteCount(selectedLocations.length)}
                             </motion.button>
                         )}
@@ -102,7 +102,7 @@ export const LocationPage = () => {
                         className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-95"
                         style={{ background: 'var(--color-orange)' }}
                     >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="size-4" />
                         {m.locations.add}
                     </button>
                 </div>
@@ -118,7 +118,7 @@ export const LocationPage = () => {
                 )}
                 {error && (
                     <div className="flex h-64 flex-col items-center justify-center gap-3">
-                        <AlertCircle className="h-8 w-8 text-rose-400" />
+                        <AlertCircle className="size-8 text-rose-400" />
                         <p className="text-sm font-medium text-rose-500">{error}</p>
                     </div>
                 )}

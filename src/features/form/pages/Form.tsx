@@ -35,7 +35,7 @@ export default function Form() {
                 onClick={handleLogout}
                 className="absolute top-8 right-8 z-20 flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all active:scale-95 group"
             >
-                <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                <LogOut className="size-4 transition-transform group-hover:-translate-x-1" />
                 <span className="text-sm font-semibold">{t('header.logout')}</span>
             </button>
 
@@ -46,8 +46,8 @@ export default function Form() {
             </div>
 
             <div className="z-10 w-full max-w-2xl text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="mx-auto w-20 h-20 bg-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20 rotate-3">
-                    <ClipboardList className="h-10 w-10 text-white" />
+                <div className="mx-auto size-20 bg-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20 rotate-3">
+                    <ClipboardList className="size-10 text-white" />
                 </div>
                 
                 <h1 className="text-4xl md:text-5xl font-semibold text-white tracking-tight">
@@ -60,15 +60,15 @@ export default function Form() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
                     <div className="p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col items-center gap-2">
-                        <LayoutGrid className="h-5 w-5 text-violet-400" />
+                        <LayoutGrid className="size-5 text-violet-400" />
                         <span className="text-sm font-medium text-zinc-300 italic">IA Adaptativa</span>
                     </div>
                     <div className="p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col items-center gap-2">
-                        <Info className="h-5 w-5 text-blue-400" />
+                        <Info className="size-5 text-blue-400" />
                         <span className="text-sm font-medium text-zinc-300 italic">4 Simples Pasos</span>
                     </div>
                     <div className="p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col items-center gap-2">
-                        <ClipboardList className="h-5 w-5 text-emerald-400" />
+                        <ClipboardList className="size-5 text-emerald-400" />
                         <span className="text-sm font-medium text-zinc-300 italic">Resultados al instante</span>
                     </div>
                 </div>
@@ -80,7 +80,7 @@ export default function Form() {
                     >
                         <span className="relative z-10 flex items-center gap-2 justify-center">
                             ¡Comenzar Formulario!
-                            <div className="w-2 h-2 rounded-full bg-white animate-ping" />
+                            <div className="size-2 rounded-full bg-white animate-ping" />
                         </span>
                     </button>
 

@@ -6,7 +6,7 @@ import { ForgotPasswordView } from '../views/ForgotPasswordView';
 import { TwoFactorView } from '../views/TwoFactorView';
 import { ResetPasswordView } from '../views/ResetPasswordView';
 import { X } from 'lucide-react';
-import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../../contexts/ThemeContext';
 import type { AuthStep } from '../context/AuthModalContext';
 
@@ -40,18 +40,18 @@ export const AuthModal: React.FC = () => {
     const isDark = theme === 'dark';
 
     return (
-        <LazyMotion features={domAnimation}>
+        
             <AnimatePresence>
                 {isOpen && (
                     <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-                        <m.div
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={closeModal}
                             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
                         />
-                        <m.div
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -80,10 +80,10 @@ export const AuthModal: React.FC = () => {
                             <p className={`mt-8 text-center text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-500'}`}>
                                 © 2024 Smartur. Todos los derechos reservados.
                             </p>
-                        </m.div>
+                        </motion.div>
                     </div>
                 )}
             </AnimatePresence>
-        </LazyMotion>
+        
     );
 };

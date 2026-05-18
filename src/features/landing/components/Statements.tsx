@@ -39,7 +39,7 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
             title: () => t('story.conflict.title'),
             text: () => t('story.conflict.text'),
             bg: 'var(--color-pink)',
-            textColor: '#fff',
+            textColor: 'var(--color-text-on-vivid)',
             accentColor: 'rgba(255,255,255,0.7)',
         },
         {
@@ -47,7 +47,7 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
             title: () => t('story.guide.title'),
             text: () => t('story.guide.text'),
             bg: 'var(--color-cyan)',
-            textColor: '#fff',
+            textColor: 'var(--color-text-on-vivid)',
             accentColor: 'rgba(255,255,255,0.7)',
         },
         {
@@ -176,12 +176,12 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                                             <span className="btn-base gap-3 px-10 py-5 text-xl font-semibold"
                                                 style={{ '--bg-color': 'var(--color-pink)' } as React.CSSProperties}>
                                                 {t('story.cta.button')}
-                                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                                             </span>
                                             <span className="btn-hover gap-3 px-10 py-5 text-xl font-semibold" aria-hidden
                                                 style={{ '--hover-text': 'var(--color-pink)' } as React.CSSProperties}>
                                                 {t('story.cta.button')}
-                                                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                                             </span>
                                         </span>
                                     </button>

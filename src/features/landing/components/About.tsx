@@ -148,7 +148,7 @@ export const About: React.FC = () => {
                             data-reveal
                         >
                             <div className="seal-badge flex flex-col items-center gap-2">
-                                <svg className="w-10 h-10" style={{ color: 'var(--color-green)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                <svg className="size-10" style={{ color: 'var(--color-green)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                                 </svg>
                                 <span className="text-[10px] font-black uppercase" style={{ color: 'var(--color-green)' }}>{t('about.award.badge')}</span>
@@ -188,7 +188,7 @@ export const About: React.FC = () => {
                                 >
                                     {/* Dot Indicator */}
                                     <div
-                                        className={`absolute -left-[39px] top-2 w-4 h-4 rounded-full border-2 transition-all duration-300 ${i === activeStep ? 'scale-125' : ''}`}
+                                        className={`absolute -left-[39px] top-2 size-4 rounded-full border-2 transition-all duration-300 ${i === activeStep ? 'scale-125' : ''}`}
                                         style={i === activeStep
                                             ? { background: 'var(--color-purple)', borderColor: 'var(--color-purple)', boxShadow: '0 0 0 4px rgba(var(--rgb-purple-accent), 0.2)' }
                                             : { background: 'var(--color-bg)', borderColor: 'var(--color-border)' }

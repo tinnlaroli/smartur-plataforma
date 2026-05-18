@@ -175,11 +175,7 @@ export const VideoSection: React.FC = () => {
 
         <div
           ref={containerRef}
-          className={`map-container relative max-w-[1000px] mx-auto rounded-3xl overflow-hidden transition-all duration-500 ${
-            isDark
-              ? 'shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5'
-              : 'shadow-[0_0_50px_rgba(0,0,0,0.15)] border border-black/10'
-          }`}
+          className="map-container relative max-w-[1000px] mx-auto rounded-3xl overflow-hidden border border-[var(--color-border)] shadow-[0_0_50px_rgba(var(--rgb-text),0.12)] transition-all duration-500"
           style={{ height: 'clamp(320px, 45vw, 560px)' }}
         >
           <Map
@@ -209,17 +205,17 @@ export const VideoSection: React.FC = () => {
                 >
                   <div className="relative flex items-center justify-center -translate-y-1/2 transition-all duration-300">
                     <div 
-                      className="absolute inset-0 w-8 h-8 rounded-full opacity-30 blur-md transition-opacity group-hover:opacity-60"
+                      className="absolute inset-0 size-8 rounded-full opacity-30 blur-md transition-opacity group-hover:opacity-60"
                       style={{ background: mun.color }}
                     />
                     
                     <div 
-                      className="absolute w-6 h-6 rounded-full opacity-20 animate-ping"
+                      className="absolute size-6 rounded-full opacity-20 animate-ping"
                       style={{ background: mun.color }}
                     />
                     
                     <div 
-                      className="marker-pro relative w-4 h-4 rounded-full border-2 border-white/90 shadow-[0_0_15px_rgba(0,0,0,1)] transition-all duration-300"
+                      className="marker-pro relative size-4 rounded-full border-2 border-white/90 shadow-[0_0_15px_rgba(0,0,0,1)] transition-all duration-300"
                       style={{ 
                         background: mun.color,
                         boxShadow: `0 0 20px ${mun.color}CC` 
@@ -238,10 +234,10 @@ export const VideoSection: React.FC = () => {
                   >
                     <div className="p-1 min-w-[140px]">
                       <div className="flex items-center gap-2.5 mb-1.5">
-                        <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: mun.color, color: mun.color }} />
-                        <span className={`font-bold text-sm ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>{mun.nombre}</span>
+                        <div className="size-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: mun.color, color: mun.color }} />
+                        <span className="font-bold text-sm text-[var(--color-text)]">{mun.nombre}</span>
                       </div>
-                      <p className={`text-[11px] font-medium ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>
+                      <p className="text-[11px] font-medium text-[var(--color-text-alt)]">
                         {t('map.popup.subtitle')}
                       </p>
                     </div>
@@ -254,18 +250,14 @@ export const VideoSection: React.FC = () => {
           <div className="absolute top-6 right-6 z-10 mapcn-panel rounded-xl p-2 flex items-center gap-2">
             <button
               type="button"
-              className={`rounded-lg border px-3 py-2 text-[11px] font-semibold transition-colors ${
-                isDark ? 'border-white/10 bg-zinc-900/80 text-zinc-200 hover:bg-zinc-800' : 'border-black/10 bg-white/80 text-slate-800 hover:bg-white'
-              }`}
+              className="rounded-lg border border-[var(--color-border)] bg-[rgba(var(--rgb-bg-alt),0.95)] px-3 py-2 text-[11px] font-semibold text-[var(--color-text)] transition-colors hover:bg-[var(--color-bg)]"
               onClick={resetView}
             >
               {t('map.actions.centerRegion')}
             </button>
             <button
               type="button"
-              className={`rounded-lg border px-3 py-2 text-[11px] font-semibold transition-colors ${
-                isDark ? 'border-white/10 bg-zinc-900/80 text-zinc-300 hover:bg-zinc-800' : 'border-black/10 bg-white/80 text-slate-700 hover:bg-white'
-              } disabled:cursor-not-allowed disabled:opacity-40`}
+              className="rounded-lg border border-[var(--color-border)] bg-[rgba(var(--rgb-bg-alt),0.95)] px-3 py-2 text-[11px] font-semibold text-[var(--color-text-alt)] transition-colors hover:bg-[var(--color-bg)] disabled:cursor-not-allowed disabled:opacity-40"
               onClick={() => setActivePopup(null)}
               disabled={!activePopup}
             >
@@ -276,18 +268,14 @@ export const VideoSection: React.FC = () => {
           <div
             className="absolute top-6 left-6 z-10 rounded-2xl p-5 flex flex-col gap-3.5 min-w-[200px] mapcn-panel"
           >
-            <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-0.5 ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}>
+            <p className="mb-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-text-alt)]">
               {t('map.panel.title')}
             </p>
             <div className="flex items-center gap-2">
-              <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${
-                isDark ? 'border-white/10 bg-zinc-900/70 text-zinc-300' : 'border-black/10 bg-white/70 text-slate-700'
-              }`}>
+              <span className="rounded-full border border-[var(--color-border)] bg-[rgba(var(--rgb-bg-alt),0.92)] px-2 py-1 text-[10px] font-semibold text-[var(--color-text-alt)]">
                 {MUNICIPIOS.length} {t('map.municipios')}
               </span>
-              <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold ${
-                isDark ? 'border-white/10 bg-zinc-900/70 text-zinc-300' : 'border-black/10 bg-white/70 text-slate-700'
-              }`}>
+              <span className="rounded-full border border-[var(--color-border)] bg-[rgba(var(--rgb-bg-alt),0.92)] px-2 py-1 text-[10px] font-semibold text-[var(--color-text-alt)]">
                 {selectedMunicipio ? `${t('map.selection.prefix')}${selectedMunicipio.nombre}` : t('map.selection.none')}
               </span>
             </div>
@@ -298,12 +286,8 @@ export const VideoSection: React.FC = () => {
                   key={m.id} 
                   className={`flex w-full items-center gap-3 group/item cursor-pointer rounded-lg px-2 py-1.5 transition-colors ${
                     activePopup === m.id
-                      ? isDark
-                        ? 'bg-white/10 ring-1 ring-white/20'
-                        : 'bg-black/5 ring-1 ring-black/10'
-                      : isDark
-                        ? 'hover:bg-white/5'
-                        : 'hover:bg-black/5'
+                      ? 'bg-[rgba(var(--rgb-purple-accent),0.14)] ring-1 ring-[var(--color-border)]'
+                      : 'hover:bg-[rgba(var(--rgb-text),0.06)]'
                   }`}
                   onClick={() => focusMunicipio(m.id)}
                 >
@@ -311,12 +295,8 @@ export const VideoSection: React.FC = () => {
                   <span
                     className={`text-[11px] font-bold leading-none transition-colors ${
                       activePopup === m.id
-                        ? isDark
-                          ? 'text-white'
-                          : 'text-slate-900'
-                        : isDark
-                          ? 'text-zinc-400 group-hover/item:text-white'
-                          : 'text-slate-500 group-hover/item:text-slate-900'
+                        ? 'text-[var(--color-text)]'
+                        : 'text-[var(--color-text-alt)] group-hover/item:text-[var(--color-text)]'
                     }`}
                   >
                     {m.nombre}
@@ -327,10 +307,10 @@ export const VideoSection: React.FC = () => {
           </div>
 
           <div className="absolute bottom-6 right-6 z-10 mapcn-panel rounded-xl px-4 py-3 text-left max-w-[260px]">
-            <p className={`text-[10px] uppercase tracking-[0.18em] font-black mb-1 ${isDark ? 'text-zinc-500' : 'text-slate-600'}`}>
+            <p className="mb-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--color-text-alt)]">
               {t('map.visualization.title')}
             </p>
-            <p className={`text-xs leading-relaxed ${isDark ? 'text-zinc-300' : 'text-slate-600'}`}>
+            <p className="text-xs leading-relaxed text-[var(--color-text-alt)]">
               {t('map.visualization.hint')}
             </p>
           </div>

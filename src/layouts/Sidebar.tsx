@@ -77,6 +77,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     };
 
     return (
+        
         <>
             {/* Mobile overlay */}
             <AnimatePresence>
@@ -112,7 +113,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.7 }}
                                 transition={{ duration: 0.2 }}
-                                className="h-9 w-9 object-contain"
+                                className="size-9 object-contain"
                             />
                         ) : (
                             <motion.img
@@ -305,5 +306,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </div>
             </aside>
         </>
+        
     );
 }

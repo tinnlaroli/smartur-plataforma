@@ -262,7 +262,7 @@ export const InstrumentEditorPage = () => {
     if (loading) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                <Loader2 className="size-8 animate-spin text-violet-500" />
             </div>
         );
     }
@@ -271,9 +271,9 @@ export const InstrumentEditorPage = () => {
         return (
             <div className="flex min-h-[60vh] items-center justify-center">
                 <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-                    <AlertCircle className="mx-auto h-12 w-12 text-rose-400" />
+                    <AlertCircle className="mx-auto size-12 text-rose-400" />
                     <p className="mt-4 text-lg font-medium text-zinc-900 dark:text-zinc-100">{error}</p>
-                    <button onClick={fetchRubric} className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">
+                    <button onClick={fetchRubric} className="mt-4 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white">
                         {ie.retryLoad}
                     </button>
                 </div>
@@ -289,7 +289,7 @@ export const InstrumentEditorPage = () => {
                         onClick={() => navigate('/dashboard/instrumentos')}
                         className="rounded-xl border border-zinc-200 bg-white p-2.5 text-zinc-600 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
                     >
-                        <ArrowLeft className="h-4 w-4" />
+                        <ArrowLeft className="size-4" />
                     </button>
                     <div>
                         <h1 className="text-xl font-semibold text-zinc-900 dark:text-white">
@@ -303,11 +303,11 @@ export const InstrumentEditorPage = () => {
                         onClick={() => setPreview(!preview)}
                         className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                             preview
-                                ? 'border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/30 dark:text-indigo-400'
+                                ? 'border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-800 dark:bg-violet-950/30 dark:text-violet-400'
                                 : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400'
                         }`}
                     >
-                        {preview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {preview ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                         {preview ? ie.editMode : ie.previewMode}
                     </button>
                 </div>
@@ -361,15 +361,15 @@ export const InstrumentEditorPage = () => {
                             }`}
                             disabled={preview}
                         >
-                            {templateActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
+                            {templateActive ? <ToggleRight className="size-4" /> : <ToggleLeft className="size-4" />}
                             {templateActive ? ie.active : ie.inactive}
                         </button>
                         <button
                             onClick={handleSaveTemplate}
                             disabled={saving || preview}
-                            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:opacity-50"
+                            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500 disabled:opacity-50"
                         >
-                            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                            {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
                             {ie.saveMetadata}
                         </button>
                     </div>
@@ -406,7 +406,7 @@ export const InstrumentEditorPage = () => {
                                         {[1, 2, 3, 4, 5].map((n) => (
                                             <button
                                                 key={n}
-                                                className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-sm dark:border-zinc-700"
+                                                className="flex size-10 items-center justify-center rounded-full border border-zinc-200 text-sm dark:border-zinc-700"
                                                 disabled
                                             >
                                                 {n}
@@ -419,7 +419,7 @@ export const InstrumentEditorPage = () => {
                                     <div className="space-y-2">
                                         {(c.levels || []).map((l, li) => (
                                             <label key={li} className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                                                <input type="radio" name={`preview-${c.id_criterion}`} disabled className="text-indigo-600" />
+                                                <input type="radio" name={`preview-${c.id_criterion}`} disabled className="text-violet-600" />
                                                 {l.description} {l.score > 0 && <span className="text-xs text-zinc-400">({l.score} {ie.ptsWord})</span>}
                                             </label>
                                         ))}
@@ -432,7 +432,7 @@ export const InstrumentEditorPage = () => {
                                     <div className="space-y-2">
                                         {(c.levels || []).map((l, li) => (
                                             <label key={li} className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                                                <input type="checkbox" disabled className="rounded text-indigo-600" />
+                                                <input type="checkbox" disabled className="rounded text-violet-600" />
                                                 {l.description} {l.score > 0 && <span className="text-xs text-zinc-400">({l.score} {ie.ptsWord})</span>}
                                             </label>
                                         ))}
@@ -475,9 +475,9 @@ export const InstrumentEditorPage = () => {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={addCriterion}
-                                className="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:bg-indigo-500 hover:scale-[1.02] active:scale-[0.98]"
+                                className="flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:bg-violet-500 hover:scale-[1.02] active:scale-[0.98]"
                             >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="size-4" />
                                 {ie.addQuestion}
                             </button>
                             <button
@@ -486,9 +486,9 @@ export const InstrumentEditorPage = () => {
                                 className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:bg-emerald-500 disabled:opacity-50"
                             >
                                 {saving ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <Loader2 className="size-4 animate-spin" />
                                 ) : (
-                                    <Check className="h-4 w-4" />
+                                    <Check className="size-4" />
                                 )}
                                 {ie.saveAll}
                             </button>
@@ -497,7 +497,7 @@ export const InstrumentEditorPage = () => {
 
                     {criteria.length === 0 ? (
                         <div className="flex min-h-[30vh] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-                            <Plus className="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-600" />
+                            <Plus className="mb-4 size-12 text-zinc-300 dark:text-zinc-600" />
                             <p className="text-zinc-500 dark:text-zinc-400">
                                 {ie.emptyQuestionsHint}
                             </p>
@@ -528,7 +528,7 @@ export const InstrumentEditorPage = () => {
                                                 <ChevronDown className="h-3.5 w-3.5" />
                                             </button>
                                         </div>
-                                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-sm shrink-0">
+                                        <span className="flex size-7 items-center justify-center rounded-full bg-violet-600 text-xs font-bold text-white shadow-sm shrink-0">
                                             {i + 1}
                                         </span>
                                         <input
@@ -536,11 +536,11 @@ export const InstrumentEditorPage = () => {
                                             value={c.name}
                                             onChange={(e) => updateCriterion(i, { name: e.target.value })}
                                             placeholder={ie.questionNamePlaceholder}
-                                            className="flex-1 border-0 border-b-2 border-transparent bg-transparent py-1 text-base font-medium text-zinc-900 placeholder:text-zinc-300 focus:border-indigo-500 focus:ring-0 dark:text-white dark:placeholder:text-zinc-600"
+                                            className="flex-1 border-0 border-b-2 border-transparent bg-transparent py-1 text-base font-medium text-zinc-900 placeholder:text-zinc-300 focus:border-violet-500 focus:ring-0 dark:text-white dark:placeholder:text-zinc-600"
                                         />
                                         {LEVELS_FIELD_TYPES.has(c.field_type) && (!c.levels || c.levels.length === 0) && (
                                             <span className="shrink-0 flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" title={ie.noLevelsTooltip}>
-                                                <TriangleAlert className="h-3 w-3" />
+                                                <TriangleAlert className="size-3" />
                                                 {ie.noLevelsShort}
                                             </span>
                                         )}
@@ -557,13 +557,13 @@ export const InstrumentEditorPage = () => {
                                                     : 'text-zinc-300 hover:bg-zinc-100 dark:text-zinc-600 dark:hover:bg-zinc-800'
                                             }`}
                                         >
-                                            {c.active ? <ToggleRight className="h-5 w-5" /> : <ToggleLeft className="h-5 w-5" />}
+                                            {c.active ? <ToggleRight className="size-5" /> : <ToggleLeft className="size-5" />}
                                         </button>
                                         <button
                                             onClick={() => removeCriterion(i)}
                                             className="rounded-lg p-1.5 text-rose-400 opacity-0 transition-all hover:bg-rose-50 group-hover:opacity-100 dark:hover:bg-rose-950/30"
                                         >
-                                            <Trash2 className="h-4 w-4" />
+                                            <Trash2 className="size-4" />
                                         </button>
                                     </div>
 
@@ -621,7 +621,7 @@ export const InstrumentEditorPage = () => {
                                                     id={`required-${i}`}
                                                     checked={c.is_required}
                                                     onChange={(e) => updateCriterion(i, { is_required: e.target.checked })}
-                                                    className="rounded border-zinc-300 text-indigo-600 dark:border-zinc-600"
+                                                    className="rounded border-zinc-300 text-violet-600 dark:border-zinc-600"
                                                 />
                                                 <label htmlFor={`required-${i}`} className="text-sm text-zinc-600 dark:text-zinc-400">
                                                     {ie.requiredFieldLabel}
@@ -649,9 +649,9 @@ export const InstrumentEditorPage = () => {
                                                     </label>
                                                     <button
                                                         onClick={() => addLevel(i)}
-                                                        className="flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                                                        className="flex items-center gap-1 text-xs font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400"
                                                     >
-                                                        <Plus className="h-3 w-3" />
+                                                        <Plus className="size-3" />
                                                         {ie.addOption}
                                                     </button>
                                                 </div>
@@ -678,7 +678,7 @@ export const InstrumentEditorPage = () => {
                                                                 onClick={() => removeLevel(i, li)}
                                                                 className="text-rose-400 hover:text-rose-600"
                                                             >
-                                                                <Trash2 className="h-4 w-4" />
+                                                                <Trash2 className="size-4" />
                                                             </button>
                                                         </div>
                                                     ))}

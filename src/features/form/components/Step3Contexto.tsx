@@ -84,7 +84,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                             }`}
                         >
                             <div className="mb-3">
-                                <c.icon className="h-8 w-8" />
+                                <c.icon className="size-8" />
                             </div>
                             <div className="font-semibold">{c.label}</div>
                         </button>
@@ -107,7 +107,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                             }`}
                         >
                             <div className="mb-3">
-                                <s.icon className="h-8 w-8" />
+                                <s.icon className="size-8" />
                             </div>
                             <div className="font-bold">{s.label}</div>
                         </button>
@@ -120,7 +120,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                     onClick={onBack}
                     className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-3 font-semibold text-zinc-400 transition-all hover:border-zinc-700 active:scale-95"
                 >
-                    <ChevronLeft className="h-5 w-5" />
+                    <ChevronLeft className="size-5" />
                     <span>Atrás</span>
                 </button>
                 <button
@@ -129,7 +129,7 @@ export const Step3Contexto: React.FC<Step3Props> = ({ data = {}, onNext, onBack,
                     className="flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <span>Continuar</span>
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="size-5" />
                 </button>
             </div>
         </div>

@@ -89,39 +89,39 @@ export const InstrumentBuilderPage = () => {
                 </div>
                 <button
                     onClick={() => setShowCreate(true)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] hover:bg-indigo-500 hover:shadow-xl active:scale-[0.98]"
+                    className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition-all hover:scale-[1.02] hover:bg-violet-500 hover:shadow-xl active:scale-[0.98]"
                 >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="size-4" />
                     {m.instruments.newButton}
                 </button>
             </div>
 
             {error && (
                 <div className="mb-6 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/20 dark:text-rose-400">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                    <AlertCircle className="size-5 flex-shrink-0" />
                     {error}
                     <button onClick={() => setError(null)} className="ml-auto text-rose-500 hover:text-rose-700">X</button>
                 </div>
             )}
 
             <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
                 <input
                     type="text"
                     placeholder={m.instruments.searchPlaceholder}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-200 bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+                    className="w-full rounded-xl border border-zinc-200 bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
                 />
             </div>
 
             {loading ? (
                 <div className="flex min-h-[40vh] items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                    <Loader2 className="size-8 animate-spin text-violet-500" />
                 </div>
             ) : filtered.length === 0 ? (
                 <div className="flex min-h-[40vh] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-                    <ListChecks className="mb-4 h-16 w-16 text-zinc-300 dark:text-zinc-600" />
+                    <ListChecks className="mb-4 size-16 text-zinc-300 dark:text-zinc-600" />
                     <p className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
                         {search ? m.instruments.emptyNoResults : m.instruments.emptyDefaultTitle}
                     </p>
@@ -137,8 +137,8 @@ export const InstrumentBuilderPage = () => {
                             className="group relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
                         >
                             <div className="mb-4 flex items-start justify-between">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
-                                    <FileText className="h-5 w-5" />
+                                <div className="flex size-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm">
+                                    <FileText className="size-5" />
                                 </div>
                                 <span
                                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
@@ -172,7 +172,7 @@ export const InstrumentBuilderPage = () => {
                             <div className="mt-4 flex items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
                                 <button
                                     onClick={() => navigate(`/dashboard/instrumentos/${t.id}`)}
-                                    className="flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:hover:bg-indigo-950/50"
+                                    className="flex items-center gap-1.5 rounded-lg bg-violet-50 px-3 py-1.5 text-xs font-medium text-violet-600 transition-colors hover:bg-violet-100 dark:bg-violet-950/30 dark:text-violet-400 dark:hover:bg-violet-950/50"
                                 >
                                     <Edit3 className="h-3.5 w-3.5" />
                                     {m.instruments.edit}
@@ -248,7 +248,7 @@ export const InstrumentBuilderPage = () => {
                                     id="new-active"
                                     checked={newTemplate.active}
                                     onChange={(e) => setNewTemplate((prev) => ({ ...prev, active: e.target.checked }))}
-                                    className="rounded border-zinc-300 text-indigo-600 dark:border-zinc-600"
+                                    className="rounded border-zinc-300 text-violet-600 dark:border-zinc-600"
                                 />
                                 <label htmlFor="new-active" className="text-sm text-zinc-700 dark:text-zinc-300">{m.instruments.checkboxActive}</label>
                             </div>

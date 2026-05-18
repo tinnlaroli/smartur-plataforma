@@ -74,13 +74,13 @@ export const TouristServicePage = () => {
     const selectedServiceType = selectedService?.service_type || '';
 
     return (
-        <div className="space-y-5">
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
             {/* Header */}
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-4 shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    <div className="flex size-10 items-center justify-center rounded-xl"
                         style={{ background: 'var(--color-green)' }}>
-                        <Wrench className="h-5 w-5 text-white" />
+                        <Wrench className="size-5 text-white" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
@@ -105,7 +105,7 @@ export const TouristServicePage = () => {
                                 onClick={handleDeleteSelected}
                                 className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-500 active:scale-95"
                             >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="size-4" />
                                 {m.common.deleteCount(selectedServices.length)}
                             </motion.button>
                         )}
@@ -118,7 +118,7 @@ export const TouristServicePage = () => {
                                 onClick={() => dispatchModal({ type: 'OPEN_EVALUATION' })}
                                 className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500 active:scale-95"
                             >
-                                <ClipboardCheck className="h-4 w-4" />
+                                <ClipboardCheck className="size-4" />
                                 {m.touristServices.evaluate}
                             </motion.button>
                         )}
@@ -129,7 +129,7 @@ export const TouristServicePage = () => {
                         className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-95"
                         style={{ background: 'var(--color-green)' }}
                     >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="size-4" />
                         {m.touristServices.add}
                     </button>
                 </div>
@@ -145,7 +145,7 @@ export const TouristServicePage = () => {
                 )}
                 {error && (
                     <div className="flex h-64 flex-col items-center justify-center gap-3">
-                        <AlertCircle className="h-8 w-8 text-rose-400" />
+                        <AlertCircle className="size-8 text-rose-400" />
                         <p className="text-sm font-medium text-rose-500">{error}</p>
                     </div>
                 )}

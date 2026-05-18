@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Activity,
     BarChart3,
@@ -227,7 +227,7 @@ const ToggleRow = ({
     <button
         type="button"
         onClick={onClick}
-        className="flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-left transition hover:opacity-90"
+        className="flex w-full items-center justify-between rounded-2xl border p-3 text-left transition hover:opacity-90"
         style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
     >
         <div className="pr-4">
@@ -243,7 +243,7 @@ const ToggleRow = ({
             style={{ background: checked ? DASHBOARD_COLORS.purple : 'rgba(var(--rgb-text), 0.12)' }}
         >
             <span
-                className="h-5 w-5 rounded-full bg-white shadow-sm transition"
+                className="size-5 rounded-full bg-white shadow-sm transition"
                 style={{ transform: checked ? 'translateX(20px)' : 'translateX(0)' }}
             />
         </div>
@@ -275,10 +275,10 @@ const PanelCard = ({
             <div className="min-w-0">
                 <div className="flex items-center gap-2">
                     <div
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl"
+                        className="flex size-9 shrink-0 items-center justify-center rounded-2xl"
                         style={{ background: `${DASHBOARD_COLORS.purple}16` }}
                     >
-                        <Icon className="h-4 w-4" style={{ color: DASHBOARD_COLORS.purple }} />
+                        <Icon className="size-4" style={{ color: DASHBOARD_COLORS.purple }} />
                     </div>
                     <div className="min-w-0">
                         <h2 className="truncate text-sm font-bold" style={{ color: 'var(--color-text)' }}>
@@ -473,7 +473,7 @@ export const DashboardHeader = ({
                         color: preferencesOpen ? DASHBOARD_COLORS.purple : 'var(--color-text)',
                     }}
                 >
-                    <Settings2 className="h-4 w-4" />
+                    <Settings2 className="size-4" />
                     {copy.personalize}
                 </button>
                 <button
@@ -482,7 +482,7 @@ export const DashboardHeader = ({
                     className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                     style={{ background: DASHBOARD_COLORS.purple }}
                 >
-                    <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`size-4 ${refreshing ? 'animate-spin' : ''}`} />
                     {copy.refresh}
                 </button>
             </div>
@@ -630,7 +630,7 @@ export const KpiStrip = ({ metrics, density }: KpiStripProps) => {
                                 </p>
                             </div>
                             <div
-                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+                                className="flex size-10 shrink-0 items-center justify-center rounded-2xl"
                                 style={{ background: tone.glow }}
                             >
                                 <Icon className="h-4.5 w-4.5" style={{ color: tone.accent }} />
@@ -699,7 +699,7 @@ export const OperationalMixCard = ({
             </div>
 
             <div
-                className="relative h-[13rem] md:h-[14rem] overflow-hidden rounded-[24px] border px-2 py-2"
+                className="relative h-[13rem] md:h-[14rem] overflow-hidden rounded-[24px] border p-2"
                 style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
             >
                 <ResponsiveContainer width="100%" height="100%">
@@ -786,13 +786,13 @@ export const TrendChartCard = ({
                 <div className="flex flex-wrap justify-end gap-2">
                     {(chartMode === 'mixed' || chartMode === 'volume') && (
                         <span className={pillClassName} style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-alt)' }}>
-                            <span className="h-2 w-2 rounded-full" style={{ background: DASHBOARD_COLORS.purple }} />
+                            <span className="size-2 rounded-full" style={{ background: DASHBOARD_COLORS.purple }} />
                             {copy.evaluationsLegend}
                         </span>
                     )}
                     {(chartMode === 'mixed' || chartMode === 'score') && (
                         <span className={pillClassName} style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-alt)' }}>
-                            <span className="h-2 w-2 rounded-full" style={{ background: DASHBOARD_COLORS.cyan }} />
+                            <span className="size-2 rounded-full" style={{ background: DASHBOARD_COLORS.cyan }} />
                             {copy.averageScoreLegend}
                         </span>
                     )}
@@ -822,7 +822,7 @@ export const TrendChartCard = ({
 
                     <div className="h-[18rem] md:h-[20rem]">
                         <div
-                            className="h-full overflow-hidden rounded-[24px] border px-2 py-2"
+                            className="h-full overflow-hidden rounded-[24px] border p-2"
                             style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
                         >
                             <ResponsiveContainer width="100%" height="100%">
@@ -994,12 +994,12 @@ export const TopServicesCard = ({
                     return (
                         <div
                             key={service.id}
-                            className="rounded-2xl border px-3 py-3"
+                            className="rounded-2xl border p-3"
                             style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
                         >
                             <div className="flex items-start gap-3">
                                 <div
-                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-bold text-white"
+                                    className="flex size-8 shrink-0 items-center justify-center rounded-2xl text-xs font-bold text-white"
                                     style={{ background: DASHBOARD_COLORS.purple }}
                                 >
                                     {index + 1}
@@ -1011,7 +1011,7 @@ export const TopServicesCard = ({
                                                 {service.name}
                                             </p>
                                             <p className="mt-1 flex items-center gap-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
-                                                <MapPin className="h-3 w-3" />
+                                                <MapPin className="size-3" />
                                                 {service.company}
                                             </p>
                                         </div>
@@ -1078,10 +1078,10 @@ export const RecentActivityCard = ({
                             style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
                         >
                             <div
-                                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl"
+                                className="flex size-9 shrink-0 items-center justify-center rounded-2xl"
                                 style={{ background: `${accent}1a` }}
                             >
-                                <Activity className="h-4 w-4" style={{ color: accent }} />
+                                <Activity className="size-4" style={{ color: accent }} />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="truncate text-sm font-semibold" style={{ color: 'var(--color-text)' }}>

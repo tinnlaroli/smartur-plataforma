@@ -13,9 +13,9 @@ export const NotFound = () => {
             <div className="relative">
                 <h1 className="animate-pulse text-8xl font-black text-zinc-200">404</h1>
                 <div className="absolute -top-3 -right-3">
-                    <span className="relative flex h-3 w-3">
+                    <span className="relative flex size-3">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                        <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
                     </span>
                 </div>
             </div>
@@ -28,12 +28,12 @@ export const NotFound = () => {
                     onClick={() => window.history.back()}
                     className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-6 py-3 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="size-4" />
                     Volver atrás
                 </button>
 
                 <Link to="/" className="inline-flex items-center justify-center gap-2 rounded-lg bg-zinc-700 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-600">
-                    <Home className="h-4 w-4" />
+                    <Home className="size-4" />
                     Ir al inicio
                 </Link>
             </div>

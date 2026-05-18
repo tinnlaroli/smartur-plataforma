@@ -157,7 +157,7 @@ export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperie
                 </svg>
 
                 {/* Paper Plane (Lottie) */}
-                <div ref={planeRef} id="divider-plane" className="absolute top-0 left-0 z-10 h-60 w-60 origin-center opacity-0 pointer-events-none">
+                <div ref={planeRef} id="divider-plane" className="absolute top-0 left-0 z-10 size-60 origin-center opacity-0 pointer-events-none">
                     {/* @ts-ignore */}
                     <lottie-player
                         src={paperPlaneUrl}

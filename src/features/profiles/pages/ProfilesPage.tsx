@@ -56,10 +56,10 @@ export const ProfilesPage = () => {
     const limit = Number(searchParams.get('limit')) || 10;
 
     return (
-        <div className="space-y-5">
-            <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'var(--color-purple)' }}>
-                    <UserCircle className="h-5 w-5 text-white" />
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
+            <div className="flex items-center gap-3 shrink-0">
+                <div className="flex size-10 items-center justify-center rounded-xl" style={{ background: 'var(--color-purple)' }}>
+                    <UserCircle className="size-5 text-white" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
@@ -71,18 +71,18 @@ export const ProfilesPage = () => {
                 </div>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border shadow-sm" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
+            <div className="flex h-full flex-col overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-[#121214]">
                 {profiles.length === 0 && !isLoading ? (
-                    <div className="flex h-64 flex-col items-center justify-center gap-3">
-                        <UserCircle className="h-12 w-12" style={{ color: 'var(--color-border)' }} />
+                    <div className="flex flex-1 flex-col items-center justify-center gap-3">
+                        <UserCircle className="size-12" style={{ color: 'var(--color-border)' }} />
                         <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>
                             {m.profiles.empty}
                         </p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <div className="flex-1 overflow-y-auto min-h-0">
                         <table className="min-w-full">
-                            <thead style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-alt)' }}>
+                            <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#18181b]">
                                 <tr>
                                     <TH>{m.profiles.colOrder}</TH>
                                     <TH>{m.profiles.colUser}</TH>
@@ -150,7 +150,7 @@ export const ProfilesPage = () => {
                                             >
                                                 <TD>
                                                     <span
-                                                        className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-white"
+                                                        className="flex size-7 items-center justify-center rounded-lg text-xs font-bold text-white"
                                                         style={{ background: 'var(--color-purple)' }}
                                                     >
                                                         {rowNumber}
@@ -162,12 +162,12 @@ export const ProfilesPage = () => {
                                                             <img
                                                                 src={profile.user.photo_url}
                                                                 alt={userName}
-                                                                className="mt-0.5 h-10 w-10 rounded-full border object-cover"
+                                                                className="mt-0.5 size-10 rounded-full border object-cover"
                                                                 style={{ borderColor: 'var(--color-border)' }}
                                                             />
                                                         ) : (
                                                             <div
-                                                                className="flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
+                                                                className="flex size-10 items-center justify-center rounded-full text-xs font-bold text-white"
                                                                 style={{ background: 'var(--color-purple)' }}
                                                             >
                                                                 {getInitials(userName)}
@@ -191,7 +191,7 @@ export const ProfilesPage = () => {
                                                         {travelTypeLabel ? (
                                                             <Badge
                                                                 text={travelTypeLabel}
-                                                                color="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+                                                                color="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
                                                             />
                                                         ) : (
                                                             <span className="text-xs text-zinc-400">{m.profiles.notAvailable}</span>
@@ -282,7 +282,9 @@ export const ProfilesPage = () => {
                 )}
             </div>
 
-            <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />
+            {profiles.length > 0 && (
+                <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />
+            )}
         </div>
     );
 };

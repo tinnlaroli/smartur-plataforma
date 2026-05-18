@@ -42,7 +42,7 @@ const PreferenceToggle = ({ checked, description, label, onChange }: PreferenceT
         type="button"
         onClick={onChange}
         aria-pressed={checked}
-        className="flex w-full items-start justify-between gap-4 rounded-2xl border px-4 py-4 text-left transition-colors hover:border-violet-400/50"
+        className="flex w-full items-start justify-between gap-4 rounded-2xl border p-4 text-left transition-colors hover:border-violet-400/50"
         style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
     >
         <div>
@@ -58,7 +58,7 @@ const PreferenceToggle = ({ checked, description, label, onChange }: PreferenceT
                 checked ? 'justify-end bg-violet-600' : 'justify-start bg-zinc-300 dark:bg-zinc-700'
             }`}
         >
-            <span className="h-4 w-4 rounded-full bg-white shadow-sm" />
+            <span className="size-4 rounded-full bg-white shadow-sm" />
         </span>
     </button>
 );
@@ -111,13 +111,13 @@ export const SettingsPage = () => {
     };
 
     return (
-        <div className="space-y-8">
-            <div className="flex items-center gap-3">
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-6 overflow-hidden">
+            <div className="flex items-center gap-3 shrink-0">
                 <div
-                    className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    className="flex size-10 items-center justify-center rounded-xl"
                     style={{ background: 'var(--color-purple)' }}
                 >
-                    <Settings className="h-5 w-5 text-white" />
+                    <Settings className="size-5 text-white" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
@@ -129,8 +129,8 @@ export const SettingsPage = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.65fr_1fr]">
-                <div className="space-y-6">
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 xl:grid-cols-[1.65fr_1fr]">
+                <div className="space-y-6 overflow-y-auto min-h-0">
                     <motion.section
                         initial={{ opacity: 0, y: 14 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -139,10 +139,10 @@ export const SettingsPage = () => {
                     >
                         <div className="mb-4 flex items-start gap-3">
                             <div
-                                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                className="flex size-10 items-center justify-center rounded-xl"
                                 style={{ background: 'rgba(var(--rgb-cyan-accent), 0.18)' }}
                             >
-                                <Globe className="h-4 w-4" style={{ color: 'var(--color-cyan)' }} />
+                                <Globe className="size-4" style={{ color: 'var(--color-cyan)' }} />
                             </div>
                             <div>
                                 <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -191,10 +191,10 @@ export const SettingsPage = () => {
                     >
                         <div className="mb-4 flex items-start gap-3">
                             <div
-                                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                className="flex size-10 items-center justify-center rounded-xl"
                                 style={{ background: 'rgba(var(--rgb-purple-accent), 0.16)' }}
                             >
-                                <Palette className="h-4 w-4" style={{ color: 'var(--color-purple)' }} />
+                                <Palette className="size-4" style={{ color: 'var(--color-purple)' }} />
                             </div>
                             <div>
                                 <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -217,7 +217,7 @@ export const SettingsPage = () => {
                                 }}
                             >
                                 <div className="flex items-center gap-2">
-                                    <Sun className="h-4 w-4 text-amber-500" />
+                                    <Sun className="size-4 text-amber-500" />
                                     <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                                         {copy.settings.lightLabel}
                                     </p>
@@ -237,7 +237,7 @@ export const SettingsPage = () => {
                                 }}
                             >
                                 <div className="flex items-center gap-2">
-                                    <Moon className="h-4 w-4 text-indigo-400" />
+                                    <Moon className="size-4 text-violet-400" />
                                     <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                                         {copy.settings.darkLabel}
                                     </p>
@@ -258,10 +258,10 @@ export const SettingsPage = () => {
                     >
                         <div className="mb-4 flex items-start gap-3">
                             <div
-                                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                className="flex size-10 items-center justify-center rounded-xl"
                                 style={{ background: 'rgba(var(--rgb-orange-cta), 0.16)' }}
                             >
-                                <Bell className="h-4 w-4" style={{ color: 'var(--color-orange)' }} />
+                                <Bell className="size-4" style={{ color: 'var(--color-orange)' }} />
                             </div>
                             <div>
                                 <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -302,7 +302,7 @@ export const SettingsPage = () => {
                                 className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
                                 style={{ background: 'var(--color-purple)' }}
                             >
-                                <Save className="h-4 w-4" />
+                                <Save className="size-4" />
                                 {copy.settings.savePreferences}
                             </button>
                         </div>
@@ -319,10 +319,10 @@ export const SettingsPage = () => {
                     >
                         <div className="mb-4 flex items-start gap-3">
                             <div
-                                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                className="flex size-10 items-center justify-center rounded-xl"
                                 style={{ background: 'rgba(var(--rgb-green-accent), 0.14)' }}
                             >
-                                <Shield className="h-4 w-4" style={{ color: 'var(--color-green)' }} />
+                                <Shield className="size-4" style={{ color: 'var(--color-green)' }} />
                             </div>
                             <div>
                                 <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -344,7 +344,7 @@ export const SettingsPage = () => {
                                 </p>
                             </div>
                             <div className="flex items-start gap-2">
-                                <Mail className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--color-text-alt)' }} />
+                                <Mail className="mt-0.5 size-4 shrink-0" style={{ color: 'var(--color-text-alt)' }} />
                                 <p className="text-sm" style={{ color: 'var(--color-text)' }}>
                                     {user?.email || copy.settings.unavailable}
                                 </p>

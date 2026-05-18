@@ -610,8 +610,8 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
             <div className="animate-in zoom-in-95 relative flex h-[92vh] max-h-[860px] w-full max-w-[1380px] flex-col overflow-hidden rounded-[2rem] border border-zinc-200 bg-white shadow-2xl duration-300 dark:border-zinc-800 dark:bg-zinc-950">
                 <div className="flex items-start justify-between gap-4 border-b border-zinc-200 bg-white/85 p-6 backdrop-blur-xl md:p-8 dark:border-zinc-800 dark:bg-zinc-950/80">
                     <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-500/20">
-                            <MapPin className="h-6 w-6 text-white" />
+                        <div className="flex size-12 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-500/20">
+                            <MapPin className="size-6 text-white" />
                         </div>
                         <div className="space-y-3">
                             <div>
@@ -637,7 +637,7 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                         onClick={onClose}
                         className="rounded-full p-2 text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
                     >
-                        <X className="h-6 w-6" />
+                        <X className="size-6" />
                     </button>
                 </div>
 
@@ -654,7 +654,7 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                                         onClick={() => resetMapView()}
                                         className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
                                     >
-                                        <LocateFixed className="h-4 w-4" />
+                                        <LocateFixed className="size-4" />
                                         <span>Ver todos</span>
                                     </button>
                                 </div>
@@ -696,17 +696,17 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                                                         <div className="relative flex items-center justify-center -translate-y-1/2 transition-all duration-300">
                                                             <div
                                                                 className={`absolute rounded-full blur-md transition-all duration-300 ${
-                                                                    isActive ? 'h-14 w-14 opacity-70' : isSelected ? 'h-12 w-12 opacity-55' : 'h-10 w-10 opacity-35'
+                                                                    isActive ? 'size-14 opacity-70' : isSelected ? 'size-12 opacity-55' : 'size-10 opacity-35'
                                                                 }`}
                                                                 style={{ background: recommendation.accentColor }}
                                                             />
                                                             <div
-                                                                className={`absolute rounded-full ${isActive ? 'h-10 w-10 opacity-30' : 'h-8 w-8 opacity-15'} ${isActive || isSelected ? 'animate-ping' : ''}`}
+                                                                className={`absolute rounded-full ${isActive ? 'size-10 opacity-30' : 'size-8 opacity-15'} ${isActive || isSelected ? 'animate-ping' : ''}`}
                                                                 style={{ background: recommendation.accentColor }}
                                                             />
                                                             <div
                                                                 className={`relative flex items-center justify-center rounded-full border text-[11px] font-black text-white transition-all duration-300 ${
-                                                                    isActive ? 'h-10 w-10 scale-110 border-white shadow-[0_0_28px_rgba(0,0,0,0.55)]' : 'h-8 w-8 border-white/85'
+                                                                    isActive ? 'size-10 scale-110 border-white shadow-[0_0_28px_rgba(0,0,0,0.55)]' : 'size-8 border-white/85'
                                                                 }`}
                                                                 style={{
                                                                     background: recommendation.accentColor,
@@ -828,7 +828,7 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                                             <div className="absolute inset-y-0 left-0 w-1.5" style={{ background: recommendation.accentColor }} />
 
                                             <div className="flex gap-4 p-4">
-                                                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+                                                <div className="relative size-24 shrink-0 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
                                                     {recommendation.image_url ? (
                                                         <img
                                                             src={recommendation.image_url}
@@ -842,7 +842,7 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                                                     {!recommendation.image_url && (
                                                         <div className="absolute inset-0 bg-black/30" />
                                                     )}
-                                                    <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-2xl border border-white/20 bg-black/35 text-xs font-bold text-white">
+                                                    <div className="absolute left-3 top-3 flex size-8 items-center justify-center rounded-2xl border border-white/20 bg-black/35 text-xs font-bold text-white">
                                                         {recommendation.rank}
                                                     </div>
                                                 </div>
@@ -864,7 +864,7 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                                                             </h4>
                                                         </div>
                                                         <div className="flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-                                                            <Star className="h-4 w-4 fill-current" />
+                                                            <Star className="size-4 fill-current" />
                                                             <span className="text-xs font-semibold">{recommendation.scoreLabel}</span>
                                                         </div>
                                                     </div>
@@ -915,14 +915,14 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                             onClick={handleDownload}
                             className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-6 py-3 font-semibold text-zinc-900 transition-all hover:bg-zinc-100 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                         >
-                            <Download className="h-5 w-5" />
+                            <Download className="size-5" />
                             <span>Descargar</span>
                         </button>
                         <button
                             onClick={handleShare}
                             className="flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-6 py-3 font-semibold text-violet-700 transition-all hover:bg-violet-100 active:scale-95 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/15"
                         >
-                            <Share2 className="h-5 w-5" />
+                            <Share2 className="size-5" />
                             <span>Compartir</span>
                         </button>
                     </div>
@@ -931,7 +931,7 @@ export const RecommendationsResult: React.FC<RecommendationsResultProps> = ({ re
                         className="flex items-center gap-2 rounded-xl bg-violet-600 px-10 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-500 active:scale-95"
                     >
                         <span>Finalizar</span>
-                        <ArrowRight className="h-5 w-5" />
+                        <ArrowRight className="size-5" />
                     </button>
                 </div>
             </div>

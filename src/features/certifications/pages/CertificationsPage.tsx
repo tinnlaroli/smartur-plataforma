@@ -17,10 +17,10 @@ export const CertificationsPage = () => {
     const limit = Number(searchParams.get('limit')) || 10;
 
     return (
-        <div className="space-y-5">
-            <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: 'var(--color-orange)' }}>
-                    <Award className="h-5 w-5 text-white" />
+        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
+            <div className="flex items-center gap-3 shrink-0">
+                <div className="flex size-10 items-center justify-center rounded-xl" style={{ background: 'var(--color-orange)' }}>
+                    <Award className="size-5 text-white" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
@@ -36,16 +36,17 @@ export const CertificationsPage = () => {
                 <CardSkeleton count={6} />
             ) : certifications.length === 0 ? (
                 <div
-                    className="flex h-64 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed"
+                    className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed"
                     style={{ borderColor: 'var(--color-border)' }}
                 >
-                    <Award className="h-12 w-12" style={{ color: 'var(--color-border)' }} />
+                    <Award className="size-12" style={{ color: 'var(--color-border)' }} />
                     <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>
                         {m.certifications.empty}
                     </p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="flex-1 overflow-y-auto min-h-0">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {certifications.map((cert, i) => {
                         const isActive = cert.status === 'Activo';
                         return (
@@ -67,15 +68,15 @@ export const CertificationsPage = () => {
 
                                 <div className="mb-4 flex items-start justify-between pl-2">
                                     <div
-                                        className="flex h-10 w-10 items-center justify-center rounded-xl"
+                                        className="flex size-10 items-center justify-center rounded-xl"
                                         style={{
                                             background: isActive ? 'var(--color-green)' : 'var(--color-bg-alt)',
                                         }}
                                     >
                                         {isActive ? (
-                                            <ShieldCheck className="h-5 w-5 text-white" />
+                                            <ShieldCheck className="size-5 text-white" />
                                         ) : (
-                                            <ShieldOff className="h-5 w-5" style={{ color: 'var(--color-text-alt)' }} />
+                                            <ShieldOff className="size-5" style={{ color: 'var(--color-text-alt)' }} />
                                         )}
                                     </div>
                                     <span
@@ -141,10 +142,13 @@ export const CertificationsPage = () => {
                             </motion.div>
                         );
                     })}
+                    </div>
                 </div>
             )}
 
-            <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />
+            {certifications.length > 0 && (
+                <Pagination page={page} limit={limit} totalPages={totalPages} setSearchParams={setSearchParams} />
+            )}
         </div>
     );
 };

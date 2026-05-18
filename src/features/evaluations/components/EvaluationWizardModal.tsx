@@ -320,7 +320,7 @@ const EvaluationWizardModal: React.FC<Props> = ({
                     {/* Template error */}
                     {showTemplateError && (
                         <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-900/20">
+                            <div className="flex size-16 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-900/20">
                                 <AlertCircle className="size-8 text-amber-500" />
                             </div>
                             <p className="text-base font-semibold text-zinc-700 dark:text-zinc-200 max-w-sm">{templateError}</p>
@@ -350,7 +350,7 @@ const EvaluationWizardModal: React.FC<Props> = ({
                                         }}
                                         className="flex items-start gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 text-left transition-all hover:border-violet-400 hover:shadow-md active:scale-[0.98]"
                                     >
-                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm">
+                                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm">
                                             <FileText className="size-5" />
                                         </div>
                                         <div className="min-w-0">
