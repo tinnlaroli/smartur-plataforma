@@ -115,13 +115,13 @@ export const ContactForm: React.FC = () => {
                                     className="btn-premium w-full sm:w-auto"
                                 >
                                     <span>
-                                        <span className="btn-base gap-2 py-3 sm:py-4 px-8 text-base font-semibold whitespace-nowrap" style={{ '--bg-color': 'var(--color-pink)' } as any}>
+                                        <span className="btn-base gap-2 py-2.5 px-6 text-sm font-semibold text-center leading-snug" style={{ '--bg-color': 'var(--color-pink)' } as any}>
                                             {submitting ? '...' : t('contact.cta.button')}
-                                            <ArrowRight className="size-5" />
+                                            <ArrowRight className="size-4 shrink-0" />
                                         </span>
-                                        <span className="btn-hover gap-2 py-3 sm:py-4 px-8 text-base font-semibold whitespace-nowrap" aria-hidden style={{ '--hover-text': 'var(--color-pink)' } as any}>
+                                        <span className="btn-hover gap-2 py-2.5 px-6 text-sm font-semibold text-center leading-snug" aria-hidden style={{ '--hover-text': 'var(--color-pink)' } as any}>
                                             {t('contact.cta.button')}
-                                            <ArrowRight className="size-5" />
+                                            <ArrowRight className="size-4 shrink-0" />
                                         </span>
                                     </span>
                                 </button>

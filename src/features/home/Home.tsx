@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { dashboardApi, type DashboardStats } from './api/dashboardApi';
 import {
     DashboardHeader,
@@ -18,11 +17,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { getDashboardText } from '../../shared/i18n/dashboardLocale';
 
 const DashboardLoader = ({ label }: { label: string }) => (
-    <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center gap-4"
-    >
+    <div className="flex flex-col items-center gap-4 sy-fade-up">
         <div className="relative size-14">
             <div
                 className="absolute inset-0 animate-ping rounded-full"
@@ -38,7 +33,7 @@ const DashboardLoader = ({ label }: { label: string }) => (
         <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>
             {label}
         </p>
-    </motion.div>
+    </div>
 );
 
 export const Home = () => {
@@ -132,10 +127,8 @@ export const Home = () => {
     if (error && !stats) {
         return (
             <div className="flex h-full items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-[28px] border p-8 text-center shadow-sm"
+                <div
+                    className="rounded-[28px] border p-8 text-center shadow-sm sy-fade-up"
                     style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
                 >
                     <AlertCircle className="mx-auto size-10" style={{ color: DASHBOARD_COLORS.danger }} />
@@ -151,7 +144,7 @@ export const Home = () => {
                         <RefreshCw className="h-3.5 w-3.5" />
                         {copy.home.retry}
                     </button>
-                </motion.div>
+                </div>
             </div>
         );
     }
@@ -215,10 +208,8 @@ export const Home = () => {
                         {supportWidgets}
                     </div>
                 ) : !showOperationalChart ? (
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="rounded-[28px] border p-5 shadow-[0_10px_35px_rgba(15,23,42,0.06)]"
+                    <div
+                        className="rounded-[28px] border p-5 shadow-[0_10px_35px_rgba(15,23,42,0.06)] sy-fade-up"
                         style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
                     >
                         <p className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
@@ -227,23 +218,21 @@ export const Home = () => {
                         <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--color-text-alt)' }}>
                             {copy.home.hiddenWidgetsDescription}
                         </p>
-                    </motion.div>
+                    </div>
                 ) : null}
             </div>
 
-            <AnimatePresence>
-                {refreshing && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[32px] backdrop-blur-[2px]"
-                        style={{ background: 'rgba(var(--rgb-bg), 0.58)' }}
-                    >
-                        <DashboardLoader label={copy.home.loadingRefreshLabel} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <div
+                aria-hidden={!refreshing}
+                className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[32px] backdrop-blur-[2px]"
+                style={{
+                    background: 'rgba(var(--rgb-bg), 0.58)',
+                    opacity: refreshing ? 1 : 0,
+                    transition: 'opacity 0.3s var(--ease-out-cubic)',
+                }}
+            >
+                {refreshing && <DashboardLoader label={copy.home.loadingRefreshLabel} />}
+            </div>
         </div>
     );
 };

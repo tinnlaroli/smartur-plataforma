@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { initPhoneScene } from '../../../assets/3D/phone';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { prefersReducedMotion } from '../utils/motion';
 
 interface HeroSectionProps {
     handleStartExperience: () => void;
@@ -60,6 +61,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             if (heroAnimated) return;
             heroAnimated = true;
 
+            // Respect user's motion preference — skip all JS animation
+            if (prefersReducedMotion()) {
+                setIsRevealed(true);
+                return;
+            }
+
             const titleEl = hero.querySelector('.hero-title') as HTMLElement;
             const subtitleEl = hero.querySelector('.hero-subtitle') as HTMLElement;
             const ctaEl = hero.querySelector('.hero-cta') as HTMLElement;
@@ -68,7 +75,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
             const ctaShimmerEl = hero.querySelector('.cta-shimmer') as HTMLElement | null;
             const scrollIndicatorEl = hero.querySelector('.scroll-indicator') as HTMLElement;
 
-            const isMobile = window.matchMedia('(max-width: 767px)').matches;
+            const isMobile = !window.matchMedia('(min-width: 1024px)').matches;
 
             // Initial states
             gsap.set([titleEl, subtitleEl, ctaEl], { opacity: 0 });
@@ -98,54 +105,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 tl.to(shimmerEl, { opacity: 0, duration: 0.5 }, 1.2);
             }
 
-            // Title cascade
+            // Title — animate as a block to preserve all renderTitle() HTML colors
             if (titleEl) {
-                if (isMobile) {
-                    tl.to(titleEl, { opacity: 1, y: 0, duration: 0.6 }, 0.1);
-                } else {
-                    // Prevent parent from hiding words that will fade in
-                    gsap.set(titleEl, { opacity: 1 });
-                    
-                    // Wrap words for cascade
-                    const text = titleEl.innerText;
-                    const wordsArr = text.split(/(\s+)/);
-                    titleEl.innerHTML = '';
-                    wordsArr.forEach((w) => {
-                        if (w.trim()) {
-                            const span = document.createElement('span');
-                            span.className = 'hero-word inline-block perspective-[1000px]';
-
-                            const wl = w.toLowerCase();
-                            // Colores de "palabras destacadas" en ES/EN/FR.
-                            if (wl.includes('guía') || wl.includes('guia') || wl.includes('guides') || wl.includes('guide')) span.style.color = 'var(--color-pink)';
-                            if (wl.includes('turismo') || wl.includes('tourism') || wl.includes('tourisme')) span.style.color = 'var(--color-cyan)';
-
-                            if (w.includes(',')) {
-                                span.innerHTML = w.replace(',', ',<br/>');
-                            } else {
-                                span.innerText = w;
-                            }
-                            titleEl.appendChild(span);
-                        } else {
-                            titleEl.appendChild(document.createTextNode(w));
-                        }
-                    });
-
-                    const words = titleEl.querySelectorAll('.hero-word');
-                    gsap.set(words, { opacity: 0, y: 50, rotateX: 45 });
-                    tl.to(
-                        words,
-                        {
-                            opacity: 1,
-                            y: 0,
-                            rotateX: 0,
-                            duration: 0.8,
-                            stagger: 0.08,
-                            ease: 'back.out(1.2)',
-                        },
-                        0.1,
-                    );
-                }
+                tl.to(titleEl, { opacity: 1, y: 0, duration: 0.7 }, 0.1);
             }
 
             // Subtitle
@@ -190,9 +152,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
         // Global listener for site load - Fallback since we don't have the custom event yet
         const heroTimer = setTimeout(animateHero, 1000);
 
-        // Initialize 3D on Desktop only
+        // Initialize 3D on desktop only — matches lg:flex breakpoint (1024px+)
         let cleanup3D: (() => void) | undefined;
-        if (window.matchMedia('(min-width: 768px)').matches && phoneContainerRef.current) {
+        if (window.matchMedia('(min-width: 1024px)').matches && phoneContainerRef.current) {
             try {
                 cleanup3D = initPhoneScene(phoneContainerRef.current);
             } catch (e) {
@@ -222,18 +184,59 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                 }}
             />
 
-            {/* Background accents */}
+            {/* Ambient depth orbs — match LANDING identity */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-                <div className="float-accent absolute -left-20 top-1/4 h-[400px] w-[400px] rounded-full opacity-[0.07] blur-[100px]" style={{ background: 'var(--color-cyan)' }} />
-                <div className="float-accent-delayed absolute -right-20 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-[0.08] blur-[120px]" style={{ background: 'var(--color-pink)' }} />
+                <div
+                    className="hero-orb-1 absolute rounded-full"
+                    style={{
+                        width: 'min(52vw, 620px)',
+                        height: 'min(52vw, 620px)',
+                        background: 'rgba(var(--rgb-purple-accent), 0.1)',
+                        filter: 'blur(100px)',
+                        top: '-18%',
+                        right: '-4%',
+                    }}
+                />
+                <div
+                    className="hero-orb-2 absolute rounded-full"
+                    style={{
+                        width: 'min(42vw, 500px)',
+                        height: 'min(42vw, 500px)',
+                        background: 'rgba(var(--rgb-pink-primary), 0.09)',
+                        filter: 'blur(100px)',
+                        bottom: '-12%',
+                        left: '-6%',
+                    }}
+                />
+                <div
+                    className="hero-orb-3 absolute rounded-full"
+                    style={{
+                        width: 'min(32vw, 380px)',
+                        height: 'min(32vw, 380px)',
+                        background: 'rgba(var(--rgb-cyan-accent), 0.06)',
+                        filter: 'blur(80px)',
+                        top: '35%',
+                        left: '28%',
+                    }}
+                />
+                {/* Dot grid texture */}
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage: 'radial-gradient(circle, rgba(var(--rgb-text), 0.04) 1px, transparent 1px)',
+                        backgroundSize: '28px 28px',
+                        maskImage: 'radial-gradient(ellipse 80% 65% at 40% 50%, black 20%, transparent 78%)',
+                        WebkitMaskImage: 'radial-gradient(ellipse 80% 65% at 40% 50%, black 20%, transparent 78%)',
+                    }}
+                />
             </div>
 
             <div className="relative z-10 mx-auto w-full max-w-[1280px] px-6 md:px-10 lg:px-16 pt-0">
-                <div className="inner flex flex-row items-start justify-between gap-[4rem] pt-[2rem] pb-[3.5rem] lg:flex-row lg:items-start lg:gap-[3rem] lg:pt-[1.5rem] lg:pb-[3rem] md:flex-col md:items-start md:gap-[3rem] md:pt-[2rem] md:pb-[2rem] max-[767px]:flex-col max-[767px]:items-start max-[767px]:gap-[2rem] max-[767px]:pt-[3.5rem] max-[767px]:pb-[1rem]">
+                <div className="inner flex flex-row items-start justify-between gap-[4rem] pt-[2rem] pb-[3.5rem] lg:flex-row lg:items-start lg:gap-[3rem] lg:pt-[1.5rem] lg:pb-[3rem] max-[1023px]:flex-col max-[1023px]:items-start max-[1023px]:gap-[2.5rem] max-[1023px]:pt-[2.5rem] max-[1023px]:pb-[2rem] max-[767px]:pt-[3.5rem] max-[767px]:pb-[1rem]">
                     <div className="content z-20 flex-1 max-w-none md:max-w-full">
                         <h1
-                            className="u-heading title hero-title mb-0 font-['Outfit'] text-[5.5rem] leading-[0.92] font-black lg:text-[4.8rem] md:text-[3.8rem] max-[767px]:text-[2.8rem]"
-                            style={{ color: 'var(--color-text)' }}
+                            className="u-heading title hero-title mb-0 font-['Cal_Sans'] text-[5.5rem] leading-[0.92] font-black lg:text-[4.8rem] md:text-[3.8rem] max-[767px]:text-[2.8rem]"
+                            style={{ color: 'var(--color-text)', fontFamily: 'var(--font-heading)' }}
                         >
                             {renderTitle(title)}
                         </h1>
@@ -247,26 +250,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ handleStartExperience 
                             </p>
                         ) : null}
 
-                        <div className="cta-wrapper hero-cta relative inline-block overflow-hidden mt-[2rem]">
+                        <div className="cta-wrapper hero-cta relative mt-[2rem] inline-block overflow-hidden rounded-full">
+                            {/* Shimmer overlay — one-time GSAP animation on mount */}
+                            <div
+                                className="cta-shimmer pointer-events-none absolute top-0 left-[-100%] z-[10] h-full w-[60%] -skew-x-[20deg]"
+                                aria-hidden="true"
+                                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent)' }}
+                            />
                             <button
                                 onClick={handleStartExperience}
-                            className="cta group relative inline-flex items-center justify-center gap-3 rounded-full bg-[var(--color-pink)] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 active:scale-95"
+                                className="hero-cta-btn btn-premium group"
+                                style={{ '--bg-color': 'var(--color-pink)', '--hover-text': 'var(--color-pink)' } as React.CSSProperties}
                             >
-                                <span>{t('heroSection.cta')}</span>
-                                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                                <span>
+                                    <span className="btn-base gap-3 px-8 py-4 text-base font-bold">
+                                        {t('heroSection.cta')}
+                                        <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                                    </span>
+                                    <span className="btn-hover gap-3 px-8 py-4 text-base font-bold" aria-hidden>
+                                        {t('heroSection.cta')}
+                                        <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                                    </span>
+                                </span>
                             </button>
-
-                            <div
-                                className="cta-shimmer pointer-events-none absolute top-0 left-[-100%] z-[5] h-full w-[60%] -skew-x-[20deg]"
-                                aria-hidden="true"
-                                style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }}
-                            />
                         </div>
                     </div>
 
                     <div
                         ref={phoneContainerRef}
-                        className="video-wrapper hero-video-wrap relative z-0 hidden aspect-square w-1/2 max-w-[700px] flex-shrink-0 md:flex"
+                        className="video-wrapper hero-video-wrap relative z-0 hidden aspect-square w-1/2 max-w-[700px] flex-shrink-0 lg:flex"
                         style={{
                             maskImage:
                                 'radial-gradient(ellipse 92% 92% at center, black 40%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0) 100%)',

@@ -244,22 +244,6 @@ export default function AppLayout() {
                                     </motion.span>
                                 )}
                             </button>
-
-                            <AnimatePresence>
-                                {notifOpen && (
-                                    <NotificationPanel
-                                        clearLabel={copy.layout.clearAll}
-                                        emptyHint={copy.layout.notificationEmptyHint}
-                                        emptyTitle={copy.layout.notificationEmpty}
-                                        justNowLabel={copy.layout.justNow}
-                                        locale={copy.locale}
-                                        notifications={notifications}
-                                        recentLabel={copy.layout.recentLabel}
-                                        title={copy.layout.notificationTitle}
-                                        onClear={clearNotifications}
-                                    />
-                                )}
-                            </AnimatePresence>
                         </div>
 
                         {/* Divider */}
@@ -296,6 +280,25 @@ export default function AppLayout() {
                         </button>
                     </div>
                 </header>
+
+                {/* Notification panel - outside header for proper z-index */}
+                <AnimatePresence>
+                    {notifOpen && (
+                        <div className="absolute right-6 top-20 z-[100]">
+                            <NotificationPanel
+                                clearLabel={copy.layout.clearAll}
+                                emptyHint={copy.layout.notificationEmptyHint}
+                                emptyTitle={copy.layout.notificationEmpty}
+                                justNowLabel={copy.layout.justNow}
+                                locale={copy.locale}
+                                notifications={notifications}
+                                recentLabel={copy.layout.recentLabel}
+                                title={copy.layout.notificationTitle}
+                                onClear={clearNotifications}
+                            />
+                        </div>
+                    )}
+                </AnimatePresence>
 
                 {/* ── Mobile header ── */}
                 <div
@@ -343,24 +346,6 @@ export default function AppLayout() {
                         </div>
                     </div>
                 </div>
-
-                <AnimatePresence>
-                    {notifOpen && (
-                        <div className="relative px-4 pt-3 md:hidden">
-                            <NotificationPanel
-                                clearLabel={copy.layout.clearAll}
-                                emptyHint={copy.layout.notificationEmptyHint}
-                                emptyTitle={copy.layout.notificationEmpty}
-                                justNowLabel={copy.layout.justNow}
-                                locale={copy.locale}
-                                notifications={notifications}
-                                recentLabel={copy.layout.recentLabel}
-                                title={copy.layout.notificationTitle}
-                                onClear={clearNotifications}
-                            />
-                        </div>
-                    )}
-                </AnimatePresence>
 
                 {/* ── Main content ── */}
                 <main

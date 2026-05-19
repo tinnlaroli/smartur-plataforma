@@ -2,14 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { ActionBridge } from './ActionBridge';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import paperPlaneUrl from '../assets/paper-plane.json?url';
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 interface FlightDividerProps {
-  handleStartExperience: () => void;
+  handleStartExperience?: () => void;
 }
 
 export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperience }) => {
@@ -170,12 +169,6 @@ export const FlightDivider: React.FC<FlightDividerProps> = ({ handleStartExperie
                 </div>
             </div>
 
-            {/* ActionBridge Container */}
-            <div className="relative z-50 flex h-full w-full items-center justify-center pointer-events-none">
-                <div className="translate-y-48 pointer-events-auto md:translate-y-50">
-                    <ActionBridge handleStartExperience={handleStartExperience} />
-                </div>
-            </div>
         </section>
     );
 };

@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import {
     Activity,
     BarChart3,
@@ -12,7 +11,7 @@ import {
     Star,
     Users,
 } from 'lucide-react';
-import { useEffect, useState, type CSSProperties, type ElementType, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ElementType, type ReactNode } from 'react';
 import {
     Bar,
     BarChart as RechartsBarChart,
@@ -265,10 +264,8 @@ const PanelCard = ({
     children: ReactNode;
     footer?: ReactNode;
 }) => (
-    <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`${formatCardClassName(density)} flex min-h-0 flex-col`}
+    <section
+        className={`${formatCardClassName(density)} flex min-h-0 flex-col sy-fade-up`}
         style={cardSurface}
     >
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -293,7 +290,7 @@ const PanelCard = ({
             {footer}
         </div>
         <div className="min-h-0 flex-1">{children}</div>
-    </motion.section>
+    </section>
 );
 
 const EmptyState = ({ message }: { message: string }) => (
@@ -311,13 +308,40 @@ const ShimmerBlock = ({
     className: string;
     style?: CSSProperties;
 }) => (
-    <motion.div
-        className={`rounded-2xl ${className}`}
+    <div
+        className={`rounded-2xl sy-shimmer-pulse ${className}`}
         style={style}
-        animate={{ opacity: [0.45, 0.82, 0.45] }}
-        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
     />
 );
+
+const AnimatedBar = ({
+    width,
+    color,
+    delayMs = 0,
+}: {
+    width: string;
+    color: string;
+    delayMs?: number;
+}) => {
+    const ref = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const id = setTimeout(() => { el.style.width = width; }, delayMs + 50);
+        return () => clearTimeout(id);
+    }, [width, delayMs]);
+    return (
+        <div
+            ref={ref}
+            className="h-full rounded-full"
+            style={{
+                width: 0,
+                background: color,
+                transition: `width 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) ${delayMs}ms`,
+            }}
+        />
+    );
+};
 
 export const DashboardLoadingShell = ({ density }: { density: DensityMode }) => (
     <div className="flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
@@ -335,19 +359,16 @@ export const DashboardLoadingShell = ({ density }: { density: DensityMode }) => 
 
         <div className="grid shrink-0 grid-cols-12 gap-4">
             {Array.from({ length: 4 }).map((_, index) => (
-                <motion.div
+                <div
                     key={index}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.06 }}
-                    className={`col-span-12 md:col-span-6 xl:col-span-3 ${formatCardClassName(density)} relative`}
+                    className={`col-span-12 md:col-span-6 xl:col-span-3 ${formatCardClassName(density)} relative sy-fade-up sy-fade-up-${(index + 1) as 1 | 2 | 3 | 4}`}
                     style={cardSurface}
                 >
                     <ShimmerBlock className="h-4 w-20" style={{ background: 'var(--color-bg-alt)' }} />
                     <ShimmerBlock className="mt-5 h-10 w-28" style={{ background: 'var(--color-bg-alt)' }} />
                     <ShimmerBlock className="mt-3 h-3 w-full" style={{ background: 'var(--color-bg-alt)' }} />
                     <ShimmerBlock className="mt-4 h-1.5 w-full rounded-full" style={{ background: 'rgba(var(--rgb-text), 0.08)' }} />
-                </motion.div>
+                </div>
             ))}
         </div>
 
@@ -363,22 +384,19 @@ export const DashboardLoadingShell = ({ density }: { density: DensityMode }) => 
                         <ShimmerBlock className="h-14 w-full" style={{ background: 'var(--color-bg-alt)' }} />
                     </div>
                     <div className="relative mt-4 min-h-0 flex-1 overflow-hidden rounded-[24px]" style={{ background: 'var(--color-bg-alt)' }}>
-                        <motion.div
+                        <div
                             aria-hidden
-                            className="absolute inset-x-8 bottom-10 top-8 rounded-[20px]"
+                            className="absolute inset-x-8 bottom-10 top-8 rounded-[20px] sy-shimmer-pulse"
                             style={{ background: 'rgba(152, 78, 253, 0.08)' }}
-                            animate={{ opacity: [0.26, 0.42, 0.26] }}
-                            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
                         />
-                        <motion.div
+                        <div
                             aria-hidden
-                            className="absolute inset-x-10 bottom-12 top-10 rounded-[20px] border-b-2"
+                            className="absolute inset-x-10 bottom-12 top-10 rounded-[20px] border-b-2 sy-shimmer-pulse"
                             style={{
                                 borderBottomColor: DASHBOARD_COLORS.cyan,
                                 borderBottomStyle: 'solid',
+                                animationDelay: '0.3s',
                             }}
-                            animate={{ opacity: [0.4, 0.75, 0.4] }}
-                            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
                         />
                     </div>
                 </div>
@@ -502,15 +520,18 @@ export const DashboardPreferencesPanel = ({
     const copy = getDashboardText(lang).widgets;
 
     return (
-        <AnimatePresence>
-            {open && (
-                <motion.aside
-                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                    className="absolute right-0 top-20 z-30 w-[22rem] rounded-[28px] border p-5 shadow-2xl"
-                    style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
-                >
+        <aside
+            aria-hidden={!open}
+            className="absolute right-0 top-16 z-[90] w-[22rem] rounded-[28px] border p-5 shadow-2xl"
+            style={{
+                background: 'var(--color-bg)',
+                borderColor: 'var(--color-border)',
+                opacity: open ? 1 : 0,
+                transform: open ? 'translateY(0) scale(1)' : 'translateY(-8px) scale(0.98)',
+                pointerEvents: open ? 'auto' : 'none',
+                transition: 'opacity 0.22s var(--ease-out-cubic), transform 0.22s var(--ease-out-cubic)',
+            }}
+        >
                     <div className="mb-5 flex items-start justify-between gap-3">
                         <div>
                             <p className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
@@ -594,9 +615,7 @@ export const DashboardPreferencesPanel = ({
                             </div>
                         </div>
                     </div>
-                </motion.aside>
-            )}
-        </AnimatePresence>
+        </aside>
     );
 };
 
@@ -610,14 +629,12 @@ export const KpiStrip = ({ metrics, density }: KpiStripProps) => {
                 const meta = METRIC_META[metric.id];
                 const tone = TONE_STYLES[metric.tone];
                 const Icon = meta.icon;
+                const delayClass = index < 4 ? `sy-fade-up-${(index + 1) as 1 | 2 | 3 | 4}` : '';
 
                 return (
-                    <motion.article
+                    <article
                         key={metric.id}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className={`col-span-12 md:col-span-6 xl:col-span-3 ${formatCardClassName(density)}`}
+                        className={`col-span-12 md:col-span-6 xl:col-span-3 ${formatCardClassName(density)} sy-fade-up ${delayClass}`}
                         style={cardSurface}
                     >
                         <div className="flex items-start justify-between gap-3">
@@ -649,15 +666,12 @@ export const KpiStrip = ({ metrics, density }: KpiStripProps) => {
                         </p>
 
                         <div className="mt-4 h-1.5 overflow-hidden rounded-full" style={{ background: 'var(--color-bg-alt)' }}>
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: '100%' }}
-                                transition={{ duration: 0.8, delay: 0.2 + index * 0.05 }}
-                                className="h-full rounded-full"
-                                style={{ width: '100%', background: tone.accent }}
+                            <div
+                                className={`h-full rounded-full sy-bar-fill sy-bar-fill-${(index + 1) as 1 | 2 | 3 | 4}`}
+                                style={{ background: tone.accent }}
                             />
                         </div>
-                    </motion.article>
+                    </article>
                 );
             })}
         </div>
@@ -1026,12 +1040,10 @@ export const TopServicesCard = ({
                                     </div>
 
                                     <div className="mt-3 h-2 overflow-hidden rounded-full" style={{ background: 'rgba(var(--rgb-text), 0.08)' }}>
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: progress }}
-                                            transition={{ duration: 0.8, delay: 0.15 + index * 0.05 }}
-                                            className="h-full rounded-full"
-                                            style={{ background: accent }}
+                                        <AnimatedBar
+                                            width={progress}
+                                            color={accent}
+                                            delayMs={150 + index * 50}
                                         />
                                     </div>
                                 </div>
@@ -1069,12 +1081,9 @@ export const RecentActivityCard = ({
                     const accent = scoreTone(item.score);
 
                     return (
-                        <motion.div
+                        <div
                             key={item.id}
-                            initial={{ opacity: 0, x: 12 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.08 * index, duration: 0.32 }}
-                            className="flex items-center gap-3 rounded-2xl border px-3 py-2.5"
+                            className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 sy-fade-up ${index < 4 ? `sy-fade-up-${(index + 1) as 1 | 2 | 3 | 4}` : ''}`}
                             style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
                         >
                             <div
@@ -1099,7 +1108,7 @@ export const RecentActivityCard = ({
                                     {item.relativeTime}
                                 </p>
                             </div>
-                        </motion.div>
+                        </div>
                     );
                 })}
                 </div>

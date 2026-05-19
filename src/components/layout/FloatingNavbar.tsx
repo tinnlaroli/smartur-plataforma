@@ -140,18 +140,31 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
         if (langDropdownRef.current) {
             if (langDropdownOpen) {
                 gsap.fromTo(langDropdownRef.current,
-                    { opacity: 0, y: 10, scale: 0.95 },
-                    { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'power3.out' }
+                    { opacity: 0, y: -8, scale: 0.97 },
+                    { opacity: 1, y: 0, scale: 1, duration: 0.25, ease: 'power3.out' }
                 );
             } else {
                 gsap.to(langDropdownRef.current, {
                     opacity: 0,
-                    y: 10,
-                    duration: 0.2,
+                    y: -8,
+                    duration: 0.18,
                     ease: 'power3.in'
                 });
             }
         }
+    }, [langDropdownOpen]);
+
+    // Close lang dropdown on outside click
+    useEffect(() => {
+        if (!langDropdownOpen) return;
+        const handler = (e: MouseEvent) => {
+            const switcher = document.querySelector('.language-switcher');
+            if (switcher && !switcher.contains(e.target as Node)) {
+                setLangDropdownOpen(false);
+            }
+        };
+        document.addEventListener('click', handler);
+        return () => document.removeEventListener('click', handler);
     }, [langDropdownOpen]);
 
     const toggleMobileMenu = () => {
@@ -175,7 +188,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                     ${isNavSmall ? 'is-nav-small pt-2' : 'pt-6'}`}>
 
                     <div className="container mx-auto px-4 max-w-[1360px]">
-                        <div ref={bgRef} className="nav-small-bg relative flex items-center justify-between px-6 py-3 rounded-[50px]">
+                        <div ref={bgRef} className="nav-small-bg relative flex items-center justify-between px-6 py-4 rounded-[50px]">
 
                             {/* Logo */}
                             <a
@@ -184,8 +197,9 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                     e.preventDefault();
                                     scrollToSection('inicio');
                                 }}
+                                className="flex-shrink-0 mr-6"
                                 >
-                                    <img src={logoSrc} alt="SMARTUR" className="h-10 w-auto transition-all duration-300 group-hover:brightness-110" />
+                                    <img src={logoSrc} alt="SMARTUR" className="h-11 w-auto transition-all duration-300" />
                                 </a>
 
                             {/* Desktop Menu */}
@@ -197,10 +211,10 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                                         key={item.target}
                                                         onClick={() => scrollToSection(item.target)}
                                                         className={`relative text-[15px] font-bold tracking-wide transition-colors duration-300 group`}
-                                                        style={{ color: isActive ? 'var(--color-pink)' : 'var(--color-text)' }}
+                                                        style={{ color: isActive ? 'var(--color-purple)' : 'var(--color-text)' }}
                                                     >
                                                         {item.label}
-                                                        <span className={`absolute -bottom-1 left-0 h-[2px] w-full transition-transform duration-300 origin-right ${isActive ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`} style={{ background: 'var(--color-pink)' }} />
+                                                        <span className={`absolute -bottom-1 left-0 h-[2px] w-full transition-transform duration-300 origin-right ${isActive ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100 group-hover:origin-left'}`} style={{ background: 'var(--color-purple)' }} />
                                                     </button>
                                                 );
                                             })}
@@ -249,26 +263,48 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                                 <div className="language-switcher relative">
                                                     <button
                                                         onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                                                        className="control-btn flex items-center gap-2 px-3 py-2 text-[14px] font-bold"
+                                                        className="control-btn flex items-center gap-[0.3rem] px-[0.5rem] py-[0.4rem] text-[0.7rem] font-semibold"
                                                     >
-                                                        <Globe className="size-4" />
-                                                        <span>{lang.toUpperCase()}</span>
+                                                        <Globe className="size-[18px]" />
+                                                        <span className="tracking-[0.05em]">{lang.toUpperCase()}</span>
+                                                        <svg
+                                                            className={`size-[12px] transition-transform duration-300 ${langDropdownOpen ? 'rotate-180' : ''}`}
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                                        >
+                                                            <polyline points="6 9 12 15 18 9" />
+                                                        </svg>
                                                     </button>
                                                     {langDropdownOpen && (
                                                         <div
                                                             ref={langDropdownRef}
-                                                            className="absolute top-full right-0 mt-2 rounded-xl shadow-2xl py-2 min-w-[140px]"
-                                                            style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}
+                                                            className="absolute top-[calc(100%+0.5rem)] right-[-10px] rounded-lg overflow-hidden min-w-[150px] z-50"
+                                                            style={{ background: 'var(--color-bg)', border: '1px solid rgba(var(--rgb-text), 0.1)', boxShadow: '0 4px 20px rgba(var(--rgb-text), 0.15)' }}
                                                         >
                                                             {Object.entries(languages).map(([code, name]) => (
                                                                 <button
                                                                     key={code}
                                                                     onClick={() => { changeLanguage(code); setLangDropdownOpen(false); }}
-                                                                    className="flex w-full items-center justify-between px-4 py-2 text-sm font-bold transition-colors"
-                                                                    style={{ color: lang === code ? 'var(--color-pink)' : 'var(--color-text)' }}
+                                                                    className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors"
+                                                                    style={{
+                                                                        background: lang === code ? 'rgba(var(--rgb-purple-accent), 0.12)' : 'transparent',
+                                                                        color: lang === code ? 'var(--color-purple)' : 'var(--color-text)',
+                                                                        borderBottom: '1px solid rgba(var(--rgb-text), 0.05)',
+                                                                    }}
+                                                                    onMouseEnter={e => {
+                                                                        if (lang !== code) {
+                                                                            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(var(--rgb-purple-accent), 0.08)';
+                                                                            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-purple)';
+                                                                        }
+                                                                    }}
+                                                                    onMouseLeave={e => {
+                                                                        if (lang !== code) {
+                                                                            (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                                                                            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text)';
+                                                                        }
+                                                                    }}
                                                                 >
-                                                                    <span>{name}</span>
-                                                                    <span className="text-[10px] uppercase opacity-50">{code}</span>
+                                                                    <span className="text-[0.875rem]">{name}</span>
+                                                                    <span className="text-[0.7rem] font-bold tracking-[0.05em] opacity-60">{code.toUpperCase()}</span>
                                                                 </button>
                                                             ))}
                                                         </div>
@@ -300,7 +336,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                                 className="text-4xl font-black tracking-tighter transition-colors"
                                 style={{
                                     transitionDelay: `${idx * 0.1}s`,
-                                    color: activeSection === item.target ? 'var(--color-pink)' : 'var(--color-text)'
+                                    color: activeSection === item.target ? 'var(--color-purple)' : 'var(--color-text)'
                                 }}
                             >
                                 {item.label}
@@ -316,6 +352,32 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ navLinks, handle
                             </button>
                         )}
                     </nav>
+
+                    {/* Theme + Language controls at the bottom of mobile menu */}
+                    <div className="absolute bottom-12 flex items-center gap-4">
+                        <button
+                            onClick={toggleTheme}
+                            className="control-btn p-3 rounded-xl"
+                            aria-label="Toggle theme"
+                        >
+                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                        </button>
+                        <div className="flex items-center gap-2">
+                            {Object.entries(languages).map(([code, name]) => (
+                                <button
+                                    key={code}
+                                    onClick={() => changeLanguage(code)}
+                                    className="px-3 py-2 rounded-xl text-sm font-bold transition-colors"
+                                    style={{
+                                        background: lang === code ? 'rgba(var(--rgb-purple-accent), 0.15)' : 'rgba(var(--rgb-text), 0.06)',
+                                        color: lang === code ? 'var(--color-purple)' : 'var(--color-text-alt)',
+                                    }}
+                                >
+                                    {code.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
         </>
     );

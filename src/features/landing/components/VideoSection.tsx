@@ -176,7 +176,7 @@ export const VideoSection: React.FC = () => {
         <div
           ref={containerRef}
           className="map-container relative max-w-[1000px] mx-auto rounded-3xl overflow-hidden border border-[var(--color-border)] shadow-[0_0_50px_rgba(var(--rgb-text),0.12)] transition-all duration-500"
-          style={{ height: 'clamp(320px, 45vw, 560px)' }}
+          style={{ height: 'clamp(280px, 50vw, 560px)' }}
         >
           <Map
             initialViewport={REGION_CENTER}
@@ -247,7 +247,7 @@ export const VideoSection: React.FC = () => {
             ))}
           </Map>
 
-          <div className="absolute top-6 right-6 z-10 mapcn-panel rounded-xl p-2 flex items-center gap-2">
+          <div className="absolute top-4 right-4 z-10 mapcn-panel rounded-xl p-1.5 flex items-center gap-1.5 md:top-6 md:right-6 md:p-2 md:gap-2">
             <button
               type="button"
               className="rounded-lg border border-[var(--color-border)] bg-[rgba(var(--rgb-bg-alt),0.95)] px-3 py-2 text-[11px] font-semibold text-[var(--color-text)] transition-colors hover:bg-[var(--color-bg)]"
@@ -266,7 +266,7 @@ export const VideoSection: React.FC = () => {
           </div>
 
           <div
-            className="absolute top-6 left-6 z-10 rounded-2xl p-5 flex flex-col gap-3.5 min-w-[200px] mapcn-panel"
+            className="absolute top-4 left-4 z-10 rounded-2xl p-4 flex flex-col gap-3 min-w-0 w-[min(180px,42vw)] mapcn-panel md:top-6 md:left-6 md:p-5 md:gap-3.5 md:min-w-[200px] md:w-auto"
           >
             <p className="mb-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-text-alt)]">
               {t('map.panel.title')}
@@ -306,7 +306,7 @@ export const VideoSection: React.FC = () => {
             </div>
           </div>
 
-          <div className="absolute bottom-6 right-6 z-10 mapcn-panel rounded-xl px-4 py-3 text-left max-w-[260px]">
+          <div className="absolute bottom-4 right-4 z-10 mapcn-panel rounded-xl px-3 py-2.5 text-left max-w-[200px] hidden md:block md:bottom-6 md:right-6 md:px-4 md:py-3 md:max-w-[260px]">
             <p className="mb-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--color-text-alt)]">
               {t('map.visualization.title')}
             </p>

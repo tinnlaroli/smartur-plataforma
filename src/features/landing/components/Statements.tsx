@@ -28,35 +28,47 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
     const SECTIONS = [
         {
             id: 'hook',
+            label: () => t('story.hook.label'),
             title: () => t('story.hook.title'),
             text: () => t('story.hook.text'),
             bg: 'var(--color-bg)',
             textColor: 'var(--color-text)',
             accentColor: 'var(--color-purple)',
+            labelColor: 'var(--color-purple)',
+            isVivid: false,
         },
         {
             id: 'conflict',
+            label: () => t('story.conflict.label'),
             title: () => t('story.conflict.title'),
             text: () => t('story.conflict.text'),
             bg: 'var(--color-pink)',
             textColor: 'var(--color-text-on-vivid)',
-            accentColor: 'rgba(255,255,255,0.7)',
+            accentColor: 'rgba(255,255,255,0.9)',
+            labelColor: 'rgba(255,255,255,0.65)',
+            isVivid: true,
         },
         {
             id: 'guide',
+            label: () => t('story.guide.label'),
             title: () => t('story.guide.title'),
             text: () => t('story.guide.text'),
             bg: 'var(--color-cyan)',
             textColor: 'var(--color-text-on-vivid)',
-            accentColor: 'rgba(255,255,255,0.7)',
+            accentColor: 'rgba(255,255,255,0.9)',
+            labelColor: 'rgba(255,255,255,0.65)',
+            isVivid: true,
         },
         {
             id: 'cta',
+            label: () => t('story.cta.label'),
             title: () => t('story.cta.title'),
             text: () => t('story.cta.text'),
             bg: 'var(--color-bg)',
             textColor: 'var(--color-text)',
             accentColor: 'var(--color-purple)',
+            labelColor: 'var(--color-purple)',
+            isVivid: false,
         },
     ];
 
@@ -142,44 +154,70 @@ export const Statements: React.FC<StatementsProps> = ({ handleStartExperience })
                             color: section.textColor,
                         }}
                     >
-                        <div style={{ maxWidth: '56rem', width: '100%' }}>
+                        <div className="flex flex-col items-center" style={{ maxWidth: '62rem', width: '100%' }}>
+
+                            {/* Title */}
                             <h2
-                                className="landing-heading mb-4 font-black uppercase"
+                                className="landing-heading mb-6 font-black uppercase text-center"
                                 style={{
-                                    fontSize: 'clamp(2.5rem, 7vw, 6.5rem)',
-                                    lineHeight: 1.1,
-                                    letterSpacing: '-0.04em',
+                                    fontSize: 'clamp(2.8rem, 7.5vw, 7rem)',
+                                    lineHeight: 1.05,
+                                    letterSpacing: '-0.035em',
                                     color: section.textColor,
                                 }}
                             >
                                 {section.title().split('\n').map((line, i) => (
                                     <React.Fragment key={i}>
-                                        {i === 0 ? line : <><br /><span style={{ color: section.accentColor }}>{line}</span></>}
+                                        {i === 0
+                                            ? line
+                                            : (
+                                                <>
+                                                    <br />
+                                                    <span style={{ color: section.accentColor }}>
+                                                        {line}
+                                                    </span>
+                                                </>
+                                            )
+                                        }
                                     </React.Fragment>
                                 ))}
                             </h2>
+
+                            {/* Body */}
                             <p
-                                className="mx-auto max-w-[40em] font-medium opacity-85"
+                                className="text-center font-medium"
                                 style={{
-                                    fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-                                    lineHeight: 1.6,
+                                    fontSize: 'clamp(1.05rem, 2.2vw, 1.3rem)',
+                                    lineHeight: 1.7,
                                     color: section.textColor,
+                                    opacity: section.isVivid ? 0.88 : 0.72,
+                                    maxWidth: '52ch',
                                 }}
                             >
                                 {section.text()}
                             </p>
 
+                            {/* CTA — último panel */}
                             {idx === SECTIONS.length - 1 && handleStartExperience && (
                                 <div style={{ marginTop: '3rem', display: 'inline-block' }}>
-                                    <button onClick={handleStartExperience} className="btn-premium group">
+                                    <button
+                                        type="button"
+                                        onClick={handleStartExperience}
+                                        className="btn-premium group"
+                                    >
                                         <span>
-                                            <span className="btn-base gap-3 px-10 py-5 text-xl font-semibold"
-                                                style={{ '--bg-color': 'var(--color-pink)' } as React.CSSProperties}>
+                                            <span
+                                                className="btn-base gap-3 px-10 py-5 text-lg font-bold"
+                                                style={{ '--bg-color': 'var(--color-pink)' } as React.CSSProperties}
+                                            >
                                                 {t('story.cta.button')}
                                                 <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                                             </span>
-                                            <span className="btn-hover gap-3 px-10 py-5 text-xl font-semibold" aria-hidden
-                                                style={{ '--hover-text': 'var(--color-pink)' } as React.CSSProperties}>
+                                            <span
+                                                className="btn-hover gap-3 px-10 py-5 text-lg font-bold"
+                                                aria-hidden
+                                                style={{ '--hover-text': 'var(--color-pink)' } as React.CSSProperties}
+                                            >
                                                 {t('story.cta.button')}
                                                 <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                                             </span>

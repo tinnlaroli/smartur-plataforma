@@ -63,3 +63,47 @@ button {
 .control-btn:hover {
   background: rgba(var(--rgb-text), 0.12);
 }
+
+/* ─── Dashboard / UI animation utilities (replaces Framer Motion) ─── */
+@keyframes sy-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sy-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sy-shimmer-pulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.82; }
+}
+
+@keyframes sy-bar-fill {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+
+.sy-fade-up   { animation: sy-fade-up 0.35s var(--ease-out-cubic) both; }
+.sy-fade-up-1 { animation-delay: 0.05s; }
+.sy-fade-up-2 { animation-delay: 0.10s; }
+.sy-fade-up-3 { animation-delay: 0.15s; }
+.sy-fade-up-4 { animation-delay: 0.20s; }
+
+.sy-shimmer-pulse { animation: sy-shimmer-pulse 1.2s ease-in-out infinite; }
+.sy-bar-fill      { animation: sy-bar-fill 0.8s var(--ease-out-cubic) both; }
+.sy-bar-fill-1    { animation-delay: 0.20s; }
+.sy-bar-fill-2    { animation-delay: 0.25s; }
+.sy-bar-fill-3    { animation-delay: 0.30s; }
+.sy-bar-fill-4    { animation-delay: 0.35s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sy-fade-up,
+  .sy-shimmer-pulse,
+  .sy-bar-fill {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

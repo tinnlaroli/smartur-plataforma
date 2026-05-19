@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Quote } from 'lucide-react';
@@ -16,6 +16,8 @@ const TESTIMONIAL_KEYS = [
 export const Testimonials: React.FC = () => {
     const { t } = useLanguage();
     const sectionRef = useRef<HTMLElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
+    const [activeDot, setActiveDot] = useState(0);
 
     useEffect(() => {
         if (prefersReducedMotion()) return;
@@ -31,6 +33,38 @@ export const Testimonials: React.FC = () => {
         return () => ctx.revert();
     }, []);
 
+    // Sync dot indicator with mobile horizontal scroll
+    useEffect(() => {
+        const track = trackRef.current;
+        if (!track) return;
+
+        let rafId = 0;
+        const onScroll = () => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const cards = Array.from(track.querySelectorAll<HTMLElement>('.testimonial-card'));
+                const center = track.scrollLeft + track.clientWidth / 2;
+                let closest = 0;
+                let minDist = Infinity;
+                cards.forEach((card, i) => {
+                    const dist = Math.abs((card.offsetLeft + card.offsetWidth / 2) - center);
+                    if (dist < minDist) { minDist = dist; closest = i; }
+                });
+                setActiveDot(closest);
+            });
+        };
+
+        track.addEventListener('scroll', onScroll, { passive: true });
+        return () => track.removeEventListener('scroll', onScroll);
+    }, []);
+
+    const scrollToCard = (index: number) => {
+        const track = trackRef.current;
+        if (!track) return;
+        const card = track.querySelectorAll<HTMLElement>('.testimonial-card')[index];
+        card?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    };
+
     return (
         <section ref={sectionRef} id="testimonios" className="py-24 md:py-36" style={{ background: 'var(--color-bg)' }}>
             <div className="mx-auto max-w-[1240px] px-6">
@@ -42,11 +76,18 @@ export const Testimonials: React.FC = () => {
                         {t('testimonials.title')}
                     </h2>
                 </div>
-                <div className="grid gap-6 md:grid-cols-3">
+
+                {/* Grid on md+, horizontal scroll on mobile */}
+                <div
+                    ref={trackRef}
+                    data-testimonial-track
+                    className="grid gap-6 md:grid-cols-3 max-[767px]:flex max-[767px]:flex-row max-[767px]:overflow-x-auto max-[767px]:snap-x max-[767px]:snap-mandatory max-[767px]:pb-4 max-[767px]:-mx-6 max-[767px]:px-0"
+                    style={{ scrollbarWidth: 'none' }}
+                >
                     {TESTIMONIAL_KEYS.map((item, i) => (
                         <article
                             key={item.name}
-                            className="testimonial-card group relative overflow-hidden rounded-[2rem] p-8"
+                            className="testimonial-card group relative overflow-hidden rounded-[2rem] p-8 max-[767px]:flex-none max-[767px]:w-[80vw] max-[767px]:snap-center"
                             style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}
                         >
                             <div
@@ -71,6 +112,22 @@ export const Testimonials: React.FC = () => {
                                 </div>
                             </div>
                         </article>
+                    ))}
+                </div>
+
+                {/* Mobile scroll indicator dots */}
+                <div className="mt-5 flex items-center justify-center gap-2 md:hidden" aria-hidden="true">
+                    {TESTIMONIAL_KEYS.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => scrollToCard(i)}
+                            className="h-[6px] rounded-full border-none p-0 transition-all duration-[250ms]"
+                            style={{
+                                width: activeDot === i ? '20px' : '6px',
+                                background: activeDot === i ? 'var(--color-purple)' : 'rgba(var(--rgb-text), 0.2)',
+                                transitionTimingFunction: 'var(--ease-out-cubic)',
+                            }}
+                        />
                     ))}
                 </div>
             </div>
