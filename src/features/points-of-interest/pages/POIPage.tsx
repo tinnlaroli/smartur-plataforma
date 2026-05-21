@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { usePOI } from '../hooks/usePOI';
 import { useSearchParams } from 'react-router-dom';
 import Pagination from '../../users/components/Pagination';
@@ -10,12 +10,17 @@ import {
     DataTableCell,
     DataTableHead,
     DataTableHeadCell,
+    DataTableHeaderSelect,
     DataTableRow,
     DataTableScroll,
     DataTableShell,
+    SortableHeadCell,
     TABLE_BADGE_COLORS,
     TableBadge,
+    nextSort,
+    sortRows,
 } from '../../../components/ui/DataTable';
+import type { SortState } from '../../../components/ui/DataTable';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 
@@ -26,6 +31,10 @@ export const POIPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const page = Number(searchParams.get('page')) || 1;
     const limit = Number(searchParams.get('limit')) || 10;
+    const [sort, setSort] = useState<SortState | null>(null);
+    const [sustainableFilter, setSustainableFilter] = useState('');
+    const handleSort = (key: string) => setSort(prev => nextSort(prev, key));
+    const displayData = useMemo(() => sortRows(points.filter(p => !sustainableFilter || String(p.sustainability) === sustainableFilter), sort), [points, sort, sustainableFilter]);
 
     return (
         <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
@@ -65,19 +74,26 @@ export const POIPage = () => {
                         <DataTable>
                             <DataTableHead>
                                 <tr>
-                                    <DataTableHeadCell>{m.poi.colName}</DataTableHeadCell>
+                                    <SortableHeadCell sortKey="name" sort={sort} onSort={handleSort}>{m.poi.colName}</SortableHeadCell>
                                     <DataTableHeadCell>{m.poi.colDescription}</DataTableHeadCell>
-                                    <DataTableHeadCell>
+                                    <SortableHeadCell sortKey="price_level" sort={sort} onSort={handleSort}>
                                         <span className="flex items-center gap-1.5">
                                             <Tag className="h-3.5 w-3.5" />
                                             {m.poi.colType}
                                         </span>
-                                    </DataTableHeadCell>
+                                    </SortableHeadCell>
                                     <DataTableHeadCell>
-                                        <span className="flex items-center gap-1.5">
-                                            <Leaf className="h-3.5 w-3.5" />
-                                            {m.poi.colSustainable}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="flex items-center gap-1.5">
+                                                <Leaf className="h-3.5 w-3.5" />
+                                                {m.poi.colSustainable}
+                                            </span>
+                                            <DataTableHeaderSelect value={sustainableFilter} onChange={setSustainableFilter}>
+                                                <option value="">Todos</option>
+                                                <option value="true">Sostenibles</option>
+                                                <option value="false">Estándar</option>
+                                            </DataTableHeaderSelect>
+                                        </div>
                                     </DataTableHeadCell>
                                 </tr>
                             </DataTableHead>
@@ -85,7 +101,7 @@ export const POIPage = () => {
                                 {isLoading ? (
                                     <TableBodyRows rows={9} colWidths={['w-36', 'flex-1', 'w-24', 'w-24']} />
                                 ) : (
-                                    points.map((poi, i) => (
+                                    displayData.map((poi, i) => (
                                         <DataTableRow key={poi.id} index={i}>
                                             <DataTableCell>
                                                 <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
