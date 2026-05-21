@@ -17,31 +17,13 @@ interface MenuItem {
     path: string; end?: boolean; roles: number[];
 }
 
-const MENU_GROUPS = [
-    {
-        label: 'Principal',
-        items: ['home'],
-    },
-    {
-        label: 'Gestión',
-        items: ['users', 'companies', 'services', 'poi', 'locations'],
-    },
-    {
-        label: 'Mobile & Engagement',
-        items: ['community', 'contacts', 'profiles', 'activities'],
-    },
-    {
-        label: 'Certificaciones',
-        items: ['certifications', 'instruments'],
-    },
-    {
-        label: 'Reportes',
-        items: ['stats'],
-    },
-    {
-        label: 'Sistema',
-        items: ['ml', 'settings'],
-    },
+const MENU_GROUP_KEYS = [
+    { labelKey: 'sidebar.group.principal',      items: ['home'] },
+    { labelKey: 'sidebar.group.gestion',        items: ['users', 'companies', 'services', 'poi', 'locations'] },
+    { labelKey: 'sidebar.group.mobile',         items: ['community', 'contacts', 'profiles', 'activities'] },
+    { labelKey: 'sidebar.group.certifications', items: ['certifications', 'instruments'] },
+    { labelKey: 'sidebar.group.reports',        items: ['stats'] },
+    { labelKey: 'sidebar.group.system',         items: ['ml', 'settings'] },
 ];
 
 const getInitials = (name: string) =>
@@ -74,8 +56,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     ];
 
     const itemMap = Object.fromEntries(allItems.map((i) => [i.id, i]));
-    const filteredGroups = MENU_GROUPS.map((g) => ({
-        ...g,
+    const filteredGroups = MENU_GROUP_KEYS.map((g) => ({
+        label: t(g.labelKey),
         items: g.items.map((id) => itemMap[id]).filter((i) => i && i.roles.includes(userRole)),
     })).filter((g) => g.items.length > 0);
 

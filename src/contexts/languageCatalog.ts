@@ -11,6 +11,13 @@ export const defaultLang: LanguageCode = 'es';
 
 export const ui: Record<LanguageCode, Record<string, string>> = {
     es: {
+        // Sidebar group labels
+        'sidebar.group.principal': 'Principal',
+        'sidebar.group.gestion': 'Gestión',
+        'sidebar.group.mobile': 'Móvil y Engagement',
+        'sidebar.group.certifications': 'Certificaciones',
+        'sidebar.group.reports': 'Reportes',
+        'sidebar.group.system': 'Sistema',
         // Sidebar / Layout
         'sidebar.home': 'Inicio',
         'sidebar.users': 'Usuarios',
@@ -342,6 +349,13 @@ export const ui: Record<LanguageCode, Record<string, string>> = {
         'auth.resetPassword.error.body': 'Algo salió mal al restablecer tu contraseña',
     },
     en: {
+        // Sidebar group labels
+        'sidebar.group.principal': 'Main',
+        'sidebar.group.gestion': 'Management',
+        'sidebar.group.mobile': 'Mobile & Engagement',
+        'sidebar.group.certifications': 'Certifications',
+        'sidebar.group.reports': 'Reports',
+        'sidebar.group.system': 'System',
         // Sidebar / Layout
         'sidebar.home': 'Home',
         'sidebar.users': 'Users',
@@ -673,6 +687,13 @@ export const ui: Record<LanguageCode, Record<string, string>> = {
         'auth.resetPassword.error.body': 'Something went wrong resetting your password',
     },
     fr: {
+        // Sidebar group labels
+        'sidebar.group.principal': 'Principal',
+        'sidebar.group.gestion': 'Gestion',
+        'sidebar.group.mobile': 'Mobile & Engagement',
+        'sidebar.group.certifications': 'Certifications',
+        'sidebar.group.reports': 'Rapports',
+        'sidebar.group.system': 'Système',
         // Sidebar / Layout
         'sidebar.home': 'Accueil',
         'sidebar.users': 'Utilisateurs',

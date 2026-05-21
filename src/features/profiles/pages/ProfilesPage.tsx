@@ -66,6 +66,15 @@ export const ProfilesPage = () => {
                 </div>
             </div>
 
+            {/* Info banner */}
+            <div className="rounded-xl border px-5 py-4 flex items-start gap-3 shrink-0" style={{ background: 'var(--color-bg-alt)', borderColor: 'var(--color-border)' }}>
+                <UserCircle className="size-5 mt-0.5 shrink-0" style={{ color: 'var(--color-purple)' }} />
+                <div>
+                    <p className="text-sm font-semibold mb-0.5" style={{ color: 'var(--color-text)' }}>Perfiles de viajero</p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-alt)' }}>Los perfiles agrupan preferencias de viaje recopiladas mediante el formulario inteligente. Se usan para personalizar las recomendaciones del motor de IA.</p>
+                </div>
+            </div>
+
             <DataTableShell className="h-full">
                 {profiles.length === 0 && !isLoading ? (
                     <div className="flex flex-1 flex-col items-center justify-center gap-3">
