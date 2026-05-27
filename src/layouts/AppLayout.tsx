@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Menu, Bell, LogOut, ChevronRight, Sun, Moon, CheckCircle, XCircle, AlertCircle, Info, Trash2, HelpCircle } from 'lucide-react';
@@ -86,7 +86,7 @@ const NotificationPanel = ({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 6, scale: 0.96 }}
         transition={{ duration: 0.18 }}
-        className="absolute right-0 top-11 z-30 w-80 rounded-2xl border p-4 shadow-xl"
+        className="fixed right-6 top-16 z-[200] w-80 rounded-2xl border p-4 shadow-2xl"
         style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
     >
         <div className="mb-3 flex items-center justify-between gap-3">
@@ -115,9 +115,9 @@ const NotificationPanel = ({
 
         {notifications.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-4 text-center">
-                <Bell className="size-8 text-zinc-300" />
-                <p className="text-sm font-medium text-zinc-400">{emptyTitle}</p>
-                <p className="max-w-[16rem] text-xs text-zinc-400">{emptyHint}</p>
+                <Bell className="size-8 opacity-30" style={{ color: 'var(--color-text)' }} />
+                <p className="text-sm font-medium" style={{ color: 'var(--color-text-alt)' }}>{emptyTitle}</p>
+                <p className="max-w-[16rem] text-xs" style={{ color: 'var(--color-text-alt)' }}>{emptyHint}</p>
             </div>
         ) : (
             <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
@@ -169,6 +169,18 @@ const NotificationPanel = ({
 export default function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notifOpen, setNotifOpen] = useState(false);
+    const notifWrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!notifOpen) return;
+        const handleOutside = (e: MouseEvent) => {
+            if (notifWrapperRef.current && !notifWrapperRef.current.contains(e.target as Node)) {
+                setNotifOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutside);
+        return () => document.removeEventListener('mousedown', handleOutside);
+    }, [notifOpen]);
     const navigate = useNavigate();
     const { openModal } = useAuthModal();
     const { lang, t } = useLanguage();
@@ -177,7 +189,7 @@ export default function AppLayout() {
     const { theme, toggleTheme } = useTheme();
     const { notifications, unreadCount, markAllAsRead, clearNotifications } = useToast();
     const copy = getDashboardText(lang);
-    const { startTour } = useDashboardTour();
+    const { startTour } = useDashboardTour(lang, navigate);
 
     const userRole = user?.role_id || 2;
 
@@ -238,13 +250,13 @@ export default function AppLayout() {
                         </button>
 
                         {/* Notification bell */}
-                        <div className="relative">
+                        <div className="relative" ref={notifWrapperRef}>
                             <button
                                 onClick={handleToggleNotifications}
                                 className="relative rounded-xl p-2 transition-colors nav-item-idle hover:bg-zinc-100 dark:hover:bg-zinc-800"
                                 title={copy.layout.notificationTitle}
                             >
-                                <Bell className="size-[18px]" />
+                                <Bell className="size-[18px]" style={{ color: 'var(--color-purple)' }} />
                                 {unreadCount > 0 && (
                                     <motion.span
                                         animate={{ scale: [1, 1.3, 1] }}
@@ -255,6 +267,22 @@ export default function AppLayout() {
                                     </motion.span>
                                 )}
                             </button>
+
+                            <AnimatePresence>
+                                {notifOpen && (
+                                    <NotificationPanel
+                                        clearLabel={copy.layout.clearAll}
+                                        emptyHint={copy.layout.notificationEmptyHint}
+                                        emptyTitle={copy.layout.notificationEmpty}
+                                        justNowLabel={copy.layout.justNow}
+                                        locale={copy.locale}
+                                        notifications={notifications}
+                                        recentLabel={copy.layout.recentLabel}
+                                        title={copy.layout.notificationTitle}
+                                        onClear={clearNotifications}
+                                    />
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Divider */}
@@ -287,29 +315,10 @@ export default function AppLayout() {
                             title={t('header.logout')}
                             className="rounded-xl p-2 text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/20"
                         >
-                            <LogOut className="size-4" />
+                            <LogOut className="size-4" style={{ color: 'var(--color-pink)' }} />
                         </button>
                     </div>
                 </header>
-
-                {/* Notification panel - outside header for proper z-index */}
-                <AnimatePresence>
-                    {notifOpen && (
-                        <div className="absolute right-6 top-20 z-[100]">
-                            <NotificationPanel
-                                clearLabel={copy.layout.clearAll}
-                                emptyHint={copy.layout.notificationEmptyHint}
-                                emptyTitle={copy.layout.notificationEmpty}
-                                justNowLabel={copy.layout.justNow}
-                                locale={copy.locale}
-                                notifications={notifications}
-                                recentLabel={copy.layout.recentLabel}
-                                title={copy.layout.notificationTitle}
-                                onClear={clearNotifications}
-                            />
-                        </div>
-                    )}
-                </AnimatePresence>
 
                 {/* ── Mobile header ── */}
                 <div
@@ -369,10 +378,6 @@ export default function AppLayout() {
                 </main>
             </div>
 
-            {/* Click-away for notification panel */}
-            {notifOpen && (
-                <div className="fixed inset-0 z-10" role="presentation" onClick={() => setNotifOpen(false)} onKeyDown={(e) => e.key === 'Escape' && setNotifOpen(false)} tabIndex={-1} />
-            )}
         </div>
         
     );

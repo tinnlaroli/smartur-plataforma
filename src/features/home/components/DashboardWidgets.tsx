@@ -1,13 +1,17 @@
 import {
     Activity,
+    Award,
     BarChart3,
+    Briefcase,
     Building2,
+    Check,
     Gauge,
+    LayoutGrid,
     Layers3,
     LineChart,
     MapPin,
+    Plus,
     RefreshCw,
-    Settings2,
     Star,
     Users,
 } from 'lucide-react';
@@ -30,13 +34,16 @@ import {
     DASHBOARD_COLORS,
     type ActivityFeedItem,
     type ChartMode,
+    type CompanyRankingItem,
     type DashboardInsight,
     type DashboardMetric,
     type DashboardPreferences,
     type DensityMode,
     type DistributionPoint,
     type OperationalPoint,
+    type ScoreRangeBand,
     type ServiceRankingItem,
+    type TimeRangeMode,
     type TrendPoint,
     type WidgetPreferenceKey,
     scoreTone,
@@ -47,8 +54,17 @@ import { getDashboardText } from '../../../shared/i18n/dashboardLocale';
 interface DashboardHeaderProps {
     onRefresh: () => void;
     refreshing: boolean;
-    preferencesOpen: boolean;
-    onTogglePreferences: () => void;
+    /** @deprecated — no longer renders a preferences button; kept for compatibility */
+    preferencesOpen?: boolean;
+    /** @deprecated — no longer used; kept for compatibility */
+    onTogglePreferences?: () => void;
+    /** Whether the widget grid is in edit/rearrange mode */
+    isEditing?: boolean;
+    onToggleEditing?: () => void;
+    /** Opens the widget catalog drawer */
+    onOpenCatalog?: () => void;
+    /** Resets grid to default layout */
+    onResetGrid?: () => void;
 }
 
 interface DashboardPreferencesPanelProps {
@@ -56,6 +72,7 @@ interface DashboardPreferencesPanelProps {
     preferences: DashboardPreferences;
     onChartModeChange: (mode: ChartMode) => void;
     onDensityChange: (density: DensityMode) => void;
+    onTimeRangeChange: (range: TimeRangeMode) => void;
     onToggleWidget: (widget: WidgetPreferenceKey) => void;
     onReset: () => void;
 }
@@ -70,6 +87,19 @@ interface TrendChartCardProps {
     data: TrendPoint[];
     summary: string;
     insights: DashboardInsight[];
+    density: DensityMode;
+    timeRange: TimeRangeMode;
+}
+
+interface ScoreDistributionCardProps {
+    data: ScoreRangeBand[];
+    summary: string;
+    density: DensityMode;
+}
+
+interface TopCompaniesCardProps {
+    companies: CompanyRankingItem[];
+    summary: string;
     density: DensityMode;
 }
 
@@ -118,15 +148,12 @@ const METRIC_META: Record<DashboardMetric['id'], { icon: ElementType; eyebrowKey
 };
 
 const WIDGET_OPTIONS: Array<{ key: WidgetPreferenceKey }> = [
-    {
-        key: 'showTopServices',
-    },
-    {
-        key: 'showUserDistribution',
-    },
-    {
-        key: 'showRecentActivity',
-    },
+    { key: 'showTopServices' },
+    { key: 'showUserDistribution' },
+    { key: 'showRecentActivity' },
+    { key: 'showOperationalMix' },
+    { key: 'showScoreDistribution' },
+    { key: 'showTopCompanies' },
 ];
 
 const cardPadding = (density: DensityMode) => density === 'compact' ? 'p-4' : 'p-5';
@@ -189,8 +216,12 @@ const SegmentedControl = <T extends string>({
     onChange: (value: T) => void;
 }) => (
     <div
-        className="grid grid-cols-3 gap-1 rounded-2xl border p-1"
-        style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
+        className="grid gap-1 rounded-2xl border p-1"
+        style={{
+            gridTemplateColumns: `repeat(${options.length}, 1fr)`,
+            borderColor: 'var(--color-border)',
+            background: 'var(--color-bg-alt)',
+        }}
     >
         {options.map((option) => {
             const active = option.value === value;
@@ -265,7 +296,7 @@ const PanelCard = ({
     footer?: ReactNode;
 }) => (
     <section
-        className={`${formatCardClassName(density)} flex min-h-0 flex-col sy-fade-up`}
+        className={`${formatCardClassName(density)} flex h-full min-h-0 flex-col sy-fade-up`}
         style={cardSurface}
     >
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -460,8 +491,10 @@ const TrendTooltip = ({ active, label, payload }: TrendTooltipProps) => {
 export const DashboardHeader = ({
     onRefresh,
     refreshing,
-    preferencesOpen,
-    onTogglePreferences,
+    isEditing = false,
+    onToggleEditing,
+    onOpenCatalog,
+    onResetGrid,
 }: DashboardHeaderProps) => {
     const { lang } = useLanguage();
     const copy = getDashboardText(lang).widgets;
@@ -480,29 +513,88 @@ export const DashboardHeader = ({
                 </p>
             </div>
 
-            <div className="relative flex shrink-0 items-center gap-2">
-                <button
-                    type="button"
-                    onClick={onTogglePreferences}
-                    className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition hover:opacity-90"
-                    style={{
-                        borderColor: preferencesOpen ? DASHBOARD_COLORS.purple : 'var(--color-border)',
-                        background: preferencesOpen ? `${DASHBOARD_COLORS.purple}12` : 'var(--color-bg)',
-                        color: preferencesOpen ? DASHBOARD_COLORS.purple : 'var(--color-text)',
-                    }}
-                >
-                    <Settings2 className="size-4" />
-                    {copy.personalize}
-                </button>
-                <button
-                    type="button"
-                    onClick={onRefresh}
-                    className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-                    style={{ background: DASHBOARD_COLORS.purple }}
-                >
-                    <RefreshCw className={`size-4 ${refreshing ? 'animate-spin' : ''}`} />
-                    {copy.refresh}
-                </button>
+            <div className="relative flex shrink-0 flex-wrap items-center gap-2">
+                {isEditing ? (
+                    /* ── Edit-mode toolbar ───────────────────────────────── */
+                    <>
+                        {/* Add widget from catalog */}
+                        {onOpenCatalog && (
+                            <button
+                                type="button"
+                                onClick={onOpenCatalog}
+                                className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition hover:opacity-90"
+                                style={{
+                                    borderColor: DASHBOARD_COLORS.purple,
+                                    background: `${DASHBOARD_COLORS.purple}12`,
+                                    color: DASHBOARD_COLORS.purple,
+                                }}
+                            >
+                                <Plus className="size-4" />
+                                {copy.editAdd}
+                            </button>
+                        )}
+
+                        {/* Reset to default layout */}
+                        {onResetGrid && (
+                            <button
+                                type="button"
+                                onClick={onResetGrid}
+                                className="inline-flex items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-semibold transition hover:opacity-90"
+                                style={{
+                                    borderColor: 'var(--color-border)',
+                                    background: 'var(--color-bg)',
+                                    color: 'var(--color-text-alt)',
+                                }}
+                            >
+                                {copy.editRestore}
+                            </button>
+                        )}
+
+                        {/* Done — exit edit mode */}
+                        {onToggleEditing && (
+                            <button
+                                type="button"
+                                onClick={onToggleEditing}
+                                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                                style={{ background: DASHBOARD_COLORS.purple }}
+                            >
+                                <Check className="size-4" />
+                                {copy.editDone}
+                            </button>
+                        )}
+                    </>
+                ) : (
+                    /* ── Normal toolbar ──────────────────────────────────── */
+                    <>
+                        {/* Actualizar */}
+                        <button
+                            type="button"
+                            onClick={onRefresh}
+                            className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                            style={{ background: DASHBOARD_COLORS.purple }}
+                        >
+                            <RefreshCw className={`size-4 ${refreshing ? 'animate-spin' : ''}`} />
+                            {copy.refresh}
+                        </button>
+
+                        {/* Personalizar — opens edit / rearrange mode */}
+                        {onToggleEditing && (
+                            <button
+                                type="button"
+                                onClick={onToggleEditing}
+                                className="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition hover:opacity-90"
+                                style={{
+                                    borderColor: 'var(--color-border)',
+                                    background: 'var(--color-bg)',
+                                    color: 'var(--color-text)',
+                                }}
+                            >
+                                <LayoutGrid className="size-4" />
+                                {copy.personalize}
+                            </button>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );
@@ -513,6 +605,7 @@ export const DashboardPreferencesPanel = ({
     preferences,
     onChartModeChange,
     onDensityChange,
+    onTimeRangeChange,
     onToggleWidget,
     onReset,
 }: DashboardPreferencesPanelProps) => {
@@ -530,91 +623,92 @@ export const DashboardPreferencesPanel = ({
                 transform: open ? 'translateY(0) scale(1)' : 'translateY(-8px) scale(0.98)',
                 pointerEvents: open ? 'auto' : 'none',
                 transition: 'opacity 0.22s var(--ease-out-cubic), transform 0.22s var(--ease-out-cubic)',
+                maxHeight: 'calc(100vh - 12rem)',
+                overflowY: 'auto',
             }}
         >
-                    <div className="mb-5 flex items-start justify-between gap-3">
-                        <div>
-                            <p className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
-                                {copy.preferencesTitle}
-                            </p>
-                            <p className="mt-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
-                                {copy.preferencesSubtitle}
-                            </p>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={onReset}
-                            className="rounded-xl px-3 py-1 text-xs font-semibold transition hover:opacity-90"
-                            style={{ background: 'var(--color-bg-alt)', color: 'var(--color-text)' }}
-                        >
-                            {copy.reset}
-                        </button>
-                    </div>
+            <div className="mb-5 flex items-start justify-between gap-3">
+                <div>
+                    <p className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
+                        {copy.preferencesTitle}
+                    </p>
+                    <p className="mt-1 text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                        {copy.preferencesSubtitle}
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    onClick={onReset}
+                    className="rounded-xl px-3 py-1 text-xs font-semibold transition hover:opacity-90"
+                    style={{ background: 'var(--color-bg-alt)', color: 'var(--color-text)' }}
+                >
+                    {copy.reset}
+                </button>
+            </div>
 
-                    <div className="space-y-5">
-                        <div>
-                            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
-                                {copy.mainView}
-                            </p>
-                            <SegmentedControl
-                                options={[
-                                    { label: copy.mixed, value: 'mixed' },
-                                    { label: copy.volume, value: 'volume' },
-                                    { label: copy.score, value: 'score' },
-                                ]}
-                                value={preferences.chartMode}
-                                onChange={onChartModeChange}
+            <div className="space-y-5">
+                <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
+                        {copy.mainView}
+                    </p>
+                    <SegmentedControl
+                        options={[
+                            { label: copy.mixed, value: 'mixed' },
+                            { label: copy.volume, value: 'volume' },
+                            { label: copy.score, value: 'score' },
+                        ]}
+                        value={preferences.chartMode}
+                        onChange={onChartModeChange}
+                    />
+                </div>
+
+                <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
+                        {copy.timeRangeLabel}
+                    </p>
+                    <SegmentedControl
+                        options={[
+                            { label: copy.timeRange3m, value: '3m' },
+                            { label: copy.timeRange6m, value: '6m' },
+                            { label: copy.timeRange12m, value: '12m' },
+                            { label: copy.timeRangeAll, value: 'all' },
+                        ]}
+                        value={preferences.timeRange}
+                        onChange={onTimeRangeChange}
+                    />
+                </div>
+
+                <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
+                        {copy.visualDensity}
+                    </p>
+                    <SegmentedControl
+                        options={[
+                            { label: copy.comfortable, value: 'comfortable' },
+                            { label: copy.compact, value: 'compact' },
+                        ]}
+                        value={preferences.density}
+                        onChange={onDensityChange}
+                    />
+                </div>
+
+                <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
+                        {copy.sideWidgets}
+                    </p>
+                    <div className="space-y-2">
+                        {WIDGET_OPTIONS.map((widget) => (
+                            <ToggleRow
+                                key={widget.key}
+                                checked={preferences[widget.key]}
+                                label={copy.widgetOptions[widget.key].label}
+                                description={copy.widgetOptions[widget.key].description}
+                                onClick={() => onToggleWidget(widget.key)}
                             />
-                        </div>
-
-                        <div>
-                            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
-                                {copy.visualDensity}
-                            </p>
-                            <div
-                                className="grid grid-cols-2 gap-1 rounded-2xl border p-1"
-                                style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
-                            >
-                                {[
-                                    { label: copy.comfortable, value: 'comfortable' },
-                                    { label: copy.compact, value: 'compact' },
-                                ].map((option) => {
-                                    const active = preferences.density === option.value;
-
-                                    return (
-                                        <button
-                                            key={option.value}
-                                            type="button"
-                                            onClick={() => onDensityChange(option.value as DensityMode)}
-                                            className="rounded-xl px-3 py-2 text-xs font-semibold transition"
-                                            style={active
-                                                ? { background: 'var(--color-bg)', color: 'var(--color-text)' }
-                                                : { color: 'var(--color-text-alt)' }}
-                                        >
-                                            {option.label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        <div>
-                            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--color-text-alt)' }}>
-                                {copy.sideWidgets}
-                            </p>
-                            <div className="space-y-2">
-                                {WIDGET_OPTIONS.map((widget) => (
-                                    <ToggleRow
-                                        key={widget.key}
-                                        checked={preferences[widget.key]}
-                                        label={copy.widgetOptions[widget.key].label}
-                                        description={copy.widgetOptions[widget.key].description}
-                                        onClick={() => onToggleWidget(widget.key)}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                        ))}
                     </div>
+                </div>
+            </div>
         </aside>
     );
 };
@@ -694,8 +788,8 @@ export const OperationalMixCard = ({
             subtitle={summary}
             icon={BarChart3}
         >
-            <div className="flex h-full min-h-[19rem] flex-col gap-3">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex h-full min-h-0 flex-col gap-3">
+            <div className="grid shrink-0 grid-cols-2 gap-2">
                 {data.map((item) => (
                     <div
                         key={item.name}
@@ -713,7 +807,7 @@ export const OperationalMixCard = ({
             </div>
 
             <div
-                className="relative h-[13rem] md:h-[14rem] overflow-hidden rounded-[24px] border p-2"
+                className="relative min-h-0 max-h-[18rem] flex-1 overflow-hidden rounded-[24px] border p-2"
                 style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
             >
                 <ResponsiveContainer width="100%" height="100%">
@@ -786,9 +880,17 @@ export const TrendChartCard = ({
     summary,
     insights,
     density,
+    timeRange,
 }: TrendChartCardProps) => {
     const { lang } = useLanguage();
     const copy = getDashboardText(lang).widgets;
+
+    const timeRangeLabel: Record<typeof timeRange, string> = {
+        '3m': copy.timeRange3m,
+        '6m': copy.timeRange6m,
+        '12m': copy.timeRange12m,
+        all: copy.timeRangeAll,
+    };
 
     return (
         <PanelCard
@@ -797,7 +899,13 @@ export const TrendChartCard = ({
             subtitle={summary}
             icon={chartMode === 'score' ? LineChart : BarChart3}
             footer={
-                <div className="flex flex-wrap justify-end gap-2">
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                    <span
+                        className={pillClassName}
+                        style={{ borderColor: `${DASHBOARD_COLORS.purple}40`, background: `${DASHBOARD_COLORS.purple}10`, color: DASHBOARD_COLORS.purple }}
+                    >
+                        {timeRangeLabel[timeRange]}
+                    </span>
                     {(chartMode === 'mixed' || chartMode === 'volume') && (
                         <span className={pillClassName} style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-alt)' }}>
                             <span className="size-2 rounded-full" style={{ background: DASHBOARD_COLORS.purple }} />
@@ -816,8 +924,8 @@ export const TrendChartCard = ({
             {data.length === 0 ? (
                 <EmptyState message={copy.mainChartEmpty} />
             ) : (
-                <div className="flex h-full min-h-[24rem] flex-col gap-4">
-                    <div className="grid gap-2 lg:grid-cols-2">
+                <div className="flex h-full min-h-0 flex-col gap-4">
+                    <div className="grid shrink-0 gap-2 lg:grid-cols-2">
                         {insights.map((insight) => (
                             <div
                                 key={insight.label}
@@ -834,11 +942,10 @@ export const TrendChartCard = ({
                         ))}
                     </div>
 
-                    <div className="h-[18rem] md:h-[20rem]">
-                        <div
-                            className="h-full overflow-hidden rounded-[24px] border p-2"
-                            style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
-                        >
+                    <div
+                        className="min-h-0 flex-1 overflow-hidden rounded-[24px] border p-2"
+                        style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
+                    >
                             <ResponsiveContainer width="100%" height="100%">
                                 <ComposedChart data={data} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
                                     <CartesianGrid vertical={false} stroke="rgba(148, 163, 184, 0.16)" />
@@ -898,7 +1005,6 @@ export const TrendChartCard = ({
                                 </ComposedChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
                 </div>
             )}
         </PanelCard>
@@ -1111,6 +1217,134 @@ export const RecentActivityCard = ({
                         </div>
                     );
                 })}
+                </div>
+            )}
+        </PanelCard>
+    );
+};
+
+export const ScoreDistributionCard = ({
+    data,
+    summary,
+    density,
+}: ScoreDistributionCardProps) => {
+    const { lang } = useLanguage();
+    const copy = getDashboardText(lang).widgets;
+
+    return (
+        <PanelCard
+            density={density}
+            title={copy.scoreDistributionTitle}
+            subtitle={summary}
+            icon={Award}
+        >
+            {data.length === 0 ? (
+                <EmptyState message={copy.scoreDistributionEmpty} />
+            ) : (
+                <div className="flex h-full min-h-0 flex-col justify-center gap-4">
+                    <div className="flex h-4 overflow-hidden rounded-full">
+                        {data.map((band) => (
+                            <div
+                                key={band.label}
+                                className="h-full"
+                                style={{ width: `${band.percentage}%`, background: band.fill }}
+                                title={`${band.label}: ${band.count}`}
+                            />
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        {data.map((band) => (
+                            <div key={band.label} className="flex items-center gap-2">
+                                <span className="size-2.5 shrink-0 rounded-full" style={{ background: band.fill }} />
+                                <span className="min-w-0 truncate text-xs" style={{ color: 'var(--color-text-alt)' }}>
+                                    {band.label}
+                                </span>
+                                <span className="ml-auto text-xs font-bold" style={{ color: 'var(--color-text)' }}>
+                                    {band.count}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                        {data.map((band) => (
+                            <div key={band.label} className="flex items-center gap-2">
+                                <div className="h-1.5 flex-1 overflow-hidden rounded-full" style={{ background: 'var(--color-bg-alt)' }}>
+                                    <div
+                                        className="h-full rounded-full sy-bar-fill"
+                                        style={{ width: `${band.percentage}%`, background: band.fill }}
+                                    />
+                                </div>
+                                <span className="w-8 shrink-0 text-right text-[11px] font-semibold" style={{ color: band.fill }}>
+                                    {Math.round(band.percentage)}%
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </PanelCard>
+    );
+};
+
+export const TopCompaniesCard = ({
+    companies,
+    summary,
+    density,
+}: TopCompaniesCardProps) => {
+    const { lang } = useLanguage();
+    const copy = getDashboardText(lang).widgets;
+    const locale = getDashboardText(lang).locale;
+
+    return (
+        <PanelCard
+            density={density}
+            title={copy.topCompaniesTitle}
+            subtitle={summary}
+            icon={Briefcase}
+        >
+            {companies.length === 0 ? (
+                <EmptyState message={copy.topCompaniesEmpty} />
+            ) : (
+                <div className="flex h-full min-h-0 flex-col gap-2 overflow-hidden">
+                    {companies.slice(0, density === 'compact' ? 3 : 5).map((company, index) => {
+                        const accent = scoreTone(company.averageScore);
+                        const progress = `${(company.averageScore / 5) * 100}%`;
+
+                        return (
+                            <div
+                                key={company.name}
+                                className="rounded-2xl border px-3 py-2"
+                                style={{ borderColor: 'var(--color-border)', background: 'var(--color-bg-alt)' }}
+                            >
+                                <div className="flex items-center gap-2.5">
+                                    <div
+                                        className="flex size-7 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
+                                        style={{ background: DASHBOARD_COLORS.purple }}
+                                    >
+                                        {index + 1}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="truncate text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+                                                {company.name}
+                                            </p>
+                                            <span className="shrink-0 text-sm font-bold" style={{ color: accent }}>
+                                                {company.averageScore.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}★
+                                            </span>
+                                        </div>
+                                        <div className="mt-1.5 flex items-center gap-2">
+                                            <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full" style={{ background: 'rgba(var(--rgb-text), 0.08)' }}>
+                                                <AnimatedBar width={progress} color={accent} delayMs={100 + index * 60} />
+                                            </div>
+                                            <p className="shrink-0 text-[11px]" style={{ color: 'var(--color-text-alt)' }}>
+                                                {company.serviceCount} {copy.servicesShort} · {company.evaluations.toLocaleString(locale)} {copy.evaluationsShort}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </PanelCard>

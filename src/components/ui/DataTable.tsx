@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, Filter } from 'lucide-react';
+import type React from 'react';
 import type { ReactNode, TdHTMLAttributes, ThHTMLAttributes } from 'react';
 
 export const DATA_TABLE_SHELL_CLASS =
@@ -18,7 +19,7 @@ export const DATA_TABLE_HEAD_CELL_CLASS =
 export const DATA_TABLE_CELL_CLASS = 'px-5 py-3.5 text-sm';
 
 export const TABLE_CHECKBOX_CLASS =
-    'size-4 cursor-pointer rounded border-zinc-300 bg-white text-violet-600 focus:ring-violet-500 focus:ring-offset-0 dark:border-zinc-600 dark:bg-zinc-900 dark:text-violet-500';
+    'size-4 cursor-pointer rounded accent-violet-600 dark:accent-violet-400 focus:ring-violet-500 focus:ring-offset-0';
 
 export const TABLE_BADGE_COLORS = {
     violet: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
@@ -69,9 +70,10 @@ interface DataTableRowProps {
     children: ReactNode;
     index?: number;
     className?: string;
+    onClick?: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-export function DataTableRow({ children, index = 0, className = '' }: DataTableRowProps) {
+export function DataTableRow({ children, index = 0, className = '', onClick }: DataTableRowProps) {
     return (
         <motion.tr
             initial={{ opacity: 0, y: 6 }}
@@ -79,6 +81,7 @@ export function DataTableRow({ children, index = 0, className = '' }: DataTableR
             transition={{ delay: index * 0.03 }}
             className={`transition-colors ${className}`}
             style={{ borderBottom: '1px solid var(--color-border)' }}
+            onClick={onClick}
             onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(var(--rgb-text),0.03)';
             }}
@@ -221,13 +224,18 @@ export function DataTableHeaderSelect({
     children: ReactNode;
 }) {
     return (
-        <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="cursor-pointer border-0 bg-transparent p-0 text-xs font-bold uppercase tracking-wider focus:ring-0"
-            style={{ color: 'var(--color-text-alt)' }}
-        >
-            {children}
-        </select>
+        <span className="relative inline-flex items-center" title="Filtrar">
+            <Filter
+                className="size-3.5 pointer-events-none"
+                style={{ color: value ? 'var(--color-purple)' : 'var(--color-text-alt)' }}
+            />
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="absolute inset-0 w-full cursor-pointer opacity-0"
+            >
+                {children}
+            </select>
+        </span>
     );
 }

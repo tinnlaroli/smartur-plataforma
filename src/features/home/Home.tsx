@@ -1,21 +1,31 @@
-import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { dashboardApi, type DashboardStats } from './api/dashboardApi';
 import {
     DashboardHeader,
     DashboardLoadingShell,
-    DashboardPreferencesPanel,
     KpiStrip,
     OperationalMixCard,
     RecentActivityCard,
+    ScoreDistributionCard,
+    TopCompaniesCard,
     TopServicesCard,
     TrendChartCard,
+    UserDistributionCard,
 } from './components/DashboardWidgets';
+import { WidgetGrid } from './components/WidgetGrid';
+import { WidgetCatalog } from './components/WidgetCatalog';
 import { useDashboardPreferences } from './hooks/useDashboardPreferences';
+import { useWidgetGrid } from './hooks/useWidgetGrid';
 import { DASHBOARD_COLORS, deriveDashboardViewModel } from './utils/dashboard';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { getDashboardText } from '../../shared/i18n/dashboardLocale';
+import MLTelemetryWidget from './widgets/MLTelemetryWidget';
+import CoverageWidget from './widgets/CoverageWidget';
+import LangSwitchWidget from './widgets/LangSwitchWidget';
+import B2BFunnelWidget from './widgets/B2BFunnelWidget';
 
+/* ── Loading spinner ────────────────────────────────────────────────── */
 const DashboardLoader = ({ label }: { label: string }) => (
     <div className="flex flex-col items-center gap-4 sy-fade-up">
         <div className="relative size-14">
@@ -36,25 +46,44 @@ const DashboardLoader = ({ label }: { label: string }) => (
     </div>
 );
 
+/* ── Main component ─────────────────────────────────────────────────── */
 export const Home = () => {
     const { lang } = useLanguage();
     const copy = getDashboardText(lang);
+
+    /* Data state */
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [preferencesOpen, setPreferencesOpen] = useState(false);
-    const { preferences, setChartMode, setDensity, toggleWidget, resetPreferences } = useDashboardPreferences();
 
+    /* Preferences (chart mode, density, time range) */
+    const { preferences } = useDashboardPreferences();
+
+    /* Widget grid state (instances, edit mode, catalog) */
+    const {
+        instances,
+        isEditing,
+        catalogOpen,
+        activeWidgetIds,
+        addWidget,
+        removeWidget,
+        moveWidget,
+        resizeWidget,
+        toggleEditing,
+        openCatalog,
+        closeCatalog,
+        resetGrid,
+    } = useWidgetGrid();
+
+    /* ── Data fetching ─────────────────────────────────────────────── */
     const fetchStats = async (mode: 'initial' | 'refresh' = 'initial') => {
         if (mode === 'refresh' && stats) {
             setRefreshing(true);
         } else {
             setLoading(true);
         }
-
         setError(null);
-
         try {
             const nextStats = await dashboardApi.getStats();
             setStats(nextStats);
@@ -68,43 +97,125 @@ export const Home = () => {
 
     useEffect(() => {
         void fetchStats('initial');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const viewModel = useMemo(() => (
-        stats ? deriveDashboardViewModel(stats, lang) : null
-    ), [lang, stats]);
+    /* ── View model derivation ─────────────────────────────────────── */
+    const viewModel = useMemo(
+        () => (stats ? deriveDashboardViewModel(stats, lang, preferences.timeRange) : null),
+        [lang, stats, preferences.timeRange],
+    );
 
-    const supportWidgets = useMemo(() => {
-        if (!viewModel || !stats) return [];
+    /* ── Widget renderer ───────────────────────────────────────────── */
+    const renderWidget = useCallback(
+        (widgetId: string): ReactNode => {
+            const { density, chartMode, timeRange } = preferences;
 
-        const activityItems = viewModel.recentActivity.slice(0, preferences.density === 'compact' ? 4 : 5);
-
-        return [
-            preferences.showTopServices
-                ? (
-                    <TopServicesCard
-                        key="top-services"
-                        services={viewModel.topServices}
-                        summary={viewModel.topServicesSummary}
-                        density={preferences.density}
+            // Skeleton while loading
+            if (!viewModel || !stats) {
+                return (
+                    <div
+                        className="flex h-full items-center justify-center rounded-[28px] border sy-shimmer-pulse"
+                        style={{
+                            background: 'var(--color-bg)',
+                            borderColor: 'var(--color-border)',
+                        }}
                     />
-                )
-                : null,
-            preferences.showRecentActivity
-                ? (
-                    <RecentActivityCard
-                        key="recent-activity"
-                        activity={activityItems}
-                        summary={viewModel.activitySummary}
-                        density={preferences.density}
-                    />
-                )
-                : null,
-        ].filter((widget): widget is ReactElement => widget !== null);
-    }, [preferences.density, preferences.showRecentActivity, preferences.showTopServices, stats, viewModel]);
+                );
+            }
 
-    const showOperationalChart = preferences.showUserDistribution;
+            switch (widgetId) {
+                case 'kpi-strip':
+                    return <KpiStrip metrics={viewModel.metrics} density={density} />;
 
+                case 'trend-chart':
+                    return (
+                        <TrendChartCard
+                            chartMode={chartMode}
+                            data={viewModel.trendData}
+                            summary={viewModel.trendSummary}
+                            insights={viewModel.trendInsights}
+                            density={density}
+                            timeRange={timeRange}
+                        />
+                    );
+
+                case 'operational-mix':
+                    return (
+                        <OperationalMixCard
+                            data={viewModel.operationalData}
+                            summary={viewModel.operationalSummary}
+                            density={density}
+                        />
+                    );
+
+                case 'top-services':
+                    return (
+                        <TopServicesCard
+                            services={viewModel.topServices}
+                            summary={viewModel.topServicesSummary}
+                            density={density}
+                        />
+                    );
+
+                case 'user-distribution':
+                    return (
+                        <UserDistributionCard
+                            data={viewModel.distributionData}
+                            totalUsers={stats.total_users}
+                            summary={viewModel.distributionSummary}
+                            density={density}
+                        />
+                    );
+
+                case 'recent-activity':
+                    return (
+                        <RecentActivityCard
+                            activity={viewModel.recentActivity}
+                            summary={viewModel.activitySummary}
+                            density={density}
+                        />
+                    );
+
+                case 'score-distribution':
+                    return (
+                        <ScoreDistributionCard
+                            data={viewModel.scoreRangeBands}
+                            summary={viewModel.scoreRangeSummary}
+                            density={density}
+                        />
+                    );
+
+                case 'top-companies':
+                    return (
+                        <TopCompaniesCard
+                            companies={viewModel.topCompanies}
+                            summary={viewModel.topCompaniesSummary}
+                            density={density}
+                        />
+                    );
+
+                /* ── New widgets ─────────────────────────────────── */
+                case 'ml-telemetry':
+                    return <MLTelemetryWidget density={density} />;
+
+                case 'coverage':
+                    return <CoverageWidget stats={stats} density={density} />;
+
+                case 'lang-switch':
+                    return <LangSwitchWidget />;
+
+                case 'b2b-funnel':
+                    return <B2BFunnelWidget stats={stats} density={density} />;
+
+                default:
+                    return null;
+            }
+        },
+        [viewModel, stats, preferences],
+    );
+
+    /* ── Loading state ─────────────────────────────────────────────── */
     if (loading) {
         return (
             <div className="relative">
@@ -124,6 +235,7 @@ export const Home = () => {
         );
     }
 
+    /* ── Error state ───────────────────────────────────────────────── */
     if (error && !stats) {
         return (
             <div className="flex h-full items-center justify-center">
@@ -152,79 +264,39 @@ export const Home = () => {
     if (!stats || !viewModel) return null;
 
     return (
-        <div className="relative flex h-[calc(100vh-9rem)] flex-col gap-4 overflow-hidden">
-            {preferencesOpen && (
-                <button
-                    type="button"
-                    aria-label={copy.home.closePreferences}
-                    className="absolute inset-0 z-10 cursor-default"
-                    onClick={() => setPreferencesOpen(false)}
-                />
-            )}
-
+        <div className="relative flex flex-col gap-4">
+            {/* ── Header ──────────────────────────────────────────── */}
             <DashboardHeader
                 onRefresh={() => { void fetchStats('refresh'); }}
                 refreshing={refreshing}
-                preferencesOpen={preferencesOpen}
-                onTogglePreferences={() => setPreferencesOpen((current) => !current)}
+                isEditing={isEditing}
+                onToggleEditing={toggleEditing}
+                onOpenCatalog={openCatalog}
+                onResetGrid={resetGrid}
             />
 
-            <DashboardPreferencesPanel
-                open={preferencesOpen}
-                preferences={preferences}
-                onChartModeChange={setChartMode}
-                onDensityChange={setDensity}
-                onToggleWidget={toggleWidget}
-                onReset={resetPreferences}
+            {/* ── Widget grid ─────────────────────────────────────── */}
+            <WidgetGrid
+                instances={instances}
+                isEditing={isEditing}
+                renderWidget={renderWidget}
+                onRemove={removeWidget}
+                onMove={moveWidget}
+                onResize={resizeWidget}
             />
 
-            <KpiStrip metrics={viewModel.metrics} density={preferences.density} />
+            {/* ── Widget catalog drawer ────────────────────────────── */}
+            <WidgetCatalog
+                open={catalogOpen}
+                onClose={closeCatalog}
+                activeWidgetIds={activeWidgetIds}
+                onAdd={addWidget}
+            />
 
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 xl:grid-rows-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-                <div className={`grid min-h-0 gap-4 ${showOperationalChart ? 'xl:grid-cols-12' : 'grid-cols-1'}`}>
-                    <div className={showOperationalChart ? 'min-h-[24rem] xl:col-span-8' : 'min-h-[24rem]'}>
-                        <TrendChartCard
-                            chartMode={preferences.chartMode}
-                            data={viewModel.trendData}
-                            summary={viewModel.trendSummary}
-                            insights={viewModel.trendInsights}
-                            density={preferences.density}
-                        />
-                    </div>
-
-                    {showOperationalChart && (
-                        <div className="min-h-[22rem] xl:col-span-4">
-                            <OperationalMixCard
-                                data={viewModel.operationalData}
-                                summary={viewModel.operationalSummary}
-                                density={preferences.density}
-                            />
-                        </div>
-                    )}
-                </div>
-
-                {supportWidgets.length > 0 ? (
-                    <div className={`grid min-h-0 gap-4 ${supportWidgets.length > 1 ? 'xl:grid-cols-2' : 'grid-cols-1'}`}>
-                        {supportWidgets}
-                    </div>
-                ) : !showOperationalChart ? (
-                    <div
-                        className="rounded-[28px] border p-5 shadow-[0_10px_35px_rgba(15,23,42,0.06)] sy-fade-up"
-                        style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
-                    >
-                        <p className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
-                            {copy.home.hiddenWidgetsTitle}
-                        </p>
-                        <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--color-text-alt)' }}>
-                            {copy.home.hiddenWidgetsDescription}
-                        </p>
-                    </div>
-                ) : null}
-            </div>
-
+            {/* ── Refresh overlay ─────────────────────────────────── */}
             <div
                 aria-hidden={!refreshing}
-                className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[32px] backdrop-blur-[2px]"
+                className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center backdrop-blur-[2px]"
                 style={{
                     background: 'rgba(var(--rgb-bg), 0.58)',
                     opacity: refreshing ? 1 : 0,

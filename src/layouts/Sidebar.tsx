@@ -2,12 +2,13 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     X, Users, Building2, Wrench, Settings, MapPin,
     ChevronLeft, ChevronRight, Home, LogOut, UserCircle,
-    Activity, Award, Star, BarChart3, FileText, MessageSquare, Mail, BrainCircuit,
+    Award, Star, BarChart3, FileText, MessageSquare, Mail, BrainCircuit, Bell,
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, useUserPreferences } from '../contexts/LanguageContext';
 import { useAuthModal } from '../features/auth/context/AuthModalContext';
+import { TermsModal } from '../features/auth/components/TermsModal';
 
 interface SidebarProps { isOpen: boolean; onClose: () => void; }
 
@@ -20,10 +21,10 @@ interface MenuItem {
 const MENU_GROUP_KEYS = [
     { labelKey: 'sidebar.group.principal',      items: ['home'] },
     { labelKey: 'sidebar.group.gestion',        items: ['users', 'companies', 'services', 'poi', 'locations'] },
-    { labelKey: 'sidebar.group.mobile',         items: ['community', 'contacts', 'profiles', 'activities'] },
+    { labelKey: 'sidebar.group.mobile',         items: ['community', 'contacts', 'profiles'] },
     { labelKey: 'sidebar.group.certifications', items: ['certifications', 'instruments'] },
     { labelKey: 'sidebar.group.reports',        items: ['stats'] },
-    { labelKey: 'sidebar.group.system',         items: ['ml', 'settings'] },
+    { labelKey: 'sidebar.group.system',         items: ['ml', 'notifications', 'settings'] },
 ];
 
 const getInitials = (name: string) =>
@@ -31,6 +32,7 @@ const getInitials = (name: string) =>
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
     const navigate = useNavigate();
     const { openModal } = useAuthModal();
     const { t } = useLanguage();
@@ -44,7 +46,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         { id: 'services',       label: t('sidebar.services'),       icon: Wrench,     path: '/dashboard/servicios',                  roles: [1] },
         { id: 'locations',      label: t('sidebar.locations'),      icon: MapPin,     path: '/dashboard/ubicaciones',                roles: [1] },
         { id: 'profiles',       label: t('sidebar.profiles'),       icon: UserCircle, path: '/dashboard/perfiles',                   roles: [1] },
-        { id: 'activities',     label: t('sidebar.activities'),     icon: Activity,   path: '/dashboard/actividades',                roles: [1] },
         { id: 'certifications', label: t('sidebar.certifications'), icon: Award,      path: '/dashboard/certificaciones',            roles: [1] },
         { id: 'poi',            label: t('sidebar.poi'),            icon: Star,       path: '/dashboard/poi',                        roles: [1] },
         { id: 'community',      label: t('sidebar.community'),      icon: MessageSquare, path: '/dashboard/comunidad',               roles: [1] },
@@ -52,6 +53,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         { id: 'stats',          label: t('sidebar.stats'),          icon: BarChart3,  path: '/dashboard/estadisticas',               roles: [1] },
         { id: 'instruments',    label: t('sidebar.instruments'),    icon: FileText,   path: '/dashboard/instrumentos',               roles: [1] },
         { id: 'ml',             label: t('sidebar.ml'),             icon: BrainCircuit, path: '/dashboard/ml',                       roles: [1] },
+        { id: 'notifications',  label: t('sidebar.notifications'),  icon: Bell,       path: '/dashboard/notificaciones',             roles: [1] },
         { id: 'settings',       label: t('sidebar.settings'),       icon: Settings,   path: '/dashboard/configuracion',              roles: [1] },
     ];
 
@@ -229,6 +231,30 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     ))}
                 </nav>
 
+                {/* ── Legal links ── */}
+                {!isCollapsed && (
+                    <div
+                        className="flex justify-center gap-3 px-4 py-2"
+                        style={{ borderTop: '1px solid var(--color-border)' }}
+                    >
+                        <button
+                            onClick={() => setLegalModal('terms')}
+                            className="text-[10px] transition-colors hover:underline"
+                            style={{ color: 'var(--color-text-alt)' }}
+                        >
+                            {t('sidebar.terms')}
+                        </button>
+                        <span style={{ color: 'var(--color-border)' }}>·</span>
+                        <button
+                            onClick={() => setLegalModal('privacy')}
+                            className="text-[10px] transition-colors hover:underline"
+                            style={{ color: 'var(--color-text-alt)' }}
+                        >
+                            {t('sidebar.privacy')}
+                        </button>
+                    </div>
+                )}
+
                 {/* ── Footer ── */}
                 <div
                     className="shrink-0 border-t p-2"
@@ -286,7 +312,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     )}
                 </div>
             </aside>
+
+            {/* Legal modals */}
+            {legalModal && (
+                <TermsModal type={legalModal} onClose={() => setLegalModal(null)} />
+            )}
         </>
-        
+
     );
 }
